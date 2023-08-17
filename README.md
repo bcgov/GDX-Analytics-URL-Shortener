@@ -1,6 +1,14 @@
-# url-shortener
+# GDX-Analytics-URL-Shortener
 [![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](<Redirect-URL>) 
 This template should help get you started developing with Vue 3 in Vite.
+
+## Requirements 
+TBD
+
+## Project Status
+
+This project is currently under development and actively supported by the GDX Analytics Team.
+
 
 ## Recommended IDE Setup
 
