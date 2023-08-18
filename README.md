@@ -35,3 +35,7 @@ npm run dev
 ```sh
 npm run build
 ```
+
+## Getting Help or Reporting an Issue
+ 
+For inquiries about starting a new analytics account please contact the GDX Analytics Team.
