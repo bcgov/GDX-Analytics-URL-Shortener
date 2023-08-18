@@ -21,7 +21,6 @@ TBD
 - Using point form notes
 - Describe the folder contents
 - At a high level
->>
  
 ## Related Repositories
  
