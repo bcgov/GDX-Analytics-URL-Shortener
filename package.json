@@ -10,8 +10,9 @@
   },
   "dependencies": {
     "@vitejs/plugin-vue": "^4.2.3",
-    "node": "^20.5.0",
-    "vue": "^3.3.4"
+    "node": "16.x",
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",
