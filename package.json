@@ -1,20 +1,15 @@
 {
-  "name": "url-shortener",
-  "version": "0.0.0",
-  "private": true,
+  "name": "vue-cli-template-webpack",
+  "version": "1.3.1",
+  "license": "MIT",
+  "description": "A full-featured Webpack setup with hot-reload, lint-on-save, unit testing & css extraction.",
   "scripts": {
-    "start": "npm install vite && npm run build",
-    "dev": "vite",
-    "build": "npm install vite && vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@vitejs/plugin-vue": "^4.2.3",
-    "node": "^20.5.0",
-    "vue": "^3.3.4"
+    "docs": "cd docs && gitbook serve",
+    "docs:deploy": "bash ./deploy-docs.sh",
+    "build": "node build/build.js"
+  
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^4.2.3",
-    "vite": "^4.4.9"
+    "vue-cli": "^2.8.1"
   }
 }
