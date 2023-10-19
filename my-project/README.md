@@ -1,6 +1,4 @@
-# veenu_template
 
-> template
 
 ## Build Setup
 
