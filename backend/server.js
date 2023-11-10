@@ -5,12 +5,16 @@ import passport from 'passport';
 import { Issuer, Strategy } from 'openid-client';
 import * as dotenv from 'dotenv';
 import { setRoutes } from './routes.js';
+import cors from 'cors';
 
 const store = new session.MemoryStore();
+
 
 dotenv.config();
 
 const app = express();
+// Use CORS middleware
+app.use(cors());
 
 app.set('view engine', 'ejs');
 
