@@ -38,14 +38,13 @@ export const setRoutes = (router) => {
     )}&id_token_hint=${tokenset.id_token}`;
     res.redirect(`https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=${encodeURIComponent(retUrl)}`);
   });
-  // Add a new route for URL shortening
-  router.post('/shorten', checkAuthenticated, (req, res, next) => {
-  // Extract the original URL from the request body
+  router.post('/shorten', (req, res, next) => {
     const { originalUrl } = req.body;
-
-  // Perform URL shortening logic here, you can use your URL shortening logic or service
-    const shortenedUrl = 'YourShortenedURL'; // Replace this with your logic
-
+  
+    // Hardcoded shortened URL for testing
+    const shortenedUrl = 'http://localhost:3000/this_is_backend'; // Replace with logic
+  
     res.json({ shortenedUrl }); // Respond with the shortened URL
   });
+  
 };
