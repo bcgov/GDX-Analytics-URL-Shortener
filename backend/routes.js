@@ -42,7 +42,7 @@ export const setRoutes = (router) => {
     const { originalUrl } = req.body;
   
     // Hardcoded shortened URL for testing
-    const shortenedUrl = 'http://localhost:3000/this_is_backend'; // Replace with logic
+    const shortenedUrl = 'http://localhost:3000/this_is_backend_confirmed'; // Replace with logic
   
     res.json({ shortenedUrl }); // Respond with the shortened URL
   });
