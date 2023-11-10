@@ -5,7 +5,7 @@ A URL shortener service that generates shorter URLs and redirects short URLs to 
  
 ## Features
  
-The GDX URL Shortener Project is a GDX Analytics project supported by GCPE that is designed to support efficient testing and trcking of web content. It features a URL shortener tool and a re-direct service.
+The GDX URL Shortener Project is a GDX Analytics project supported by GCPE that is designed to support efficient testing and tracking of web content. It features a short URL generation tool and a re-direct service.
  
 ## Project Status
 
