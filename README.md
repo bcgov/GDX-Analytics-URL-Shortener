@@ -11,9 +11,8 @@ The GDX URL Shortener Project is a GDX Analytics project supported by GCPE that 
 
 This project is currently under development and actively supported by the GDX Analytics Team.
 
-Check backend and frontend folder for thier respective Readme and installation steps
+Check the backend/ and frontend/ folders for their respective Readme and installation steps.
  
-<<
 ## Contents by Directory:
 
 
