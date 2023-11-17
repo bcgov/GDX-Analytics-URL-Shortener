@@ -6,83 +6,81 @@ import HelloWorld from './components/HelloWorld.vue'
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+  <div class="banner">
+    <a href="https://gov.bc.ca">
+      <img src="./assets/logo-banner.png" alt="Go to the Government of British Columbia website" />
+    </a>
+    <h1>URL Shortener and Redirection</h1>
+  </div>
+  <div class="other">
+  <!--
+    This place is for anything that needs to be right aligned
+    beside the logo.
+  -->
+    &nbsp;
+  </div>
+</header>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-        <RouterLink to="/shorten">Shorten</RouterLink>
-        
-      </nav>
-    </div>
-  </header>
 
   <RouterView />
 </template>
 
 <style scoped>
 header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
+  background-color: #036;
+  border-bottom: 2px solid #fcba19;
+  padding: 0 65px 0 65px;
+  color: #fff;
+  display: flex;
+  height: 65px;
+  top: 0px;
+  position: fixed;
   width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
+header h1 {
+  font-family: ‘BCSans’, ‘Noto Sans’, Verdana, Arial, sans-serif;
+  font-weight: normal;  /* 400 */
+  margin: 5px 5px 0 18px;
+  visibility: hidden;
 }
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+header .banner {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 0 10px 0 0;
+  /* border-style: dotted;
+  border-width: 1px;
+  border-color: lightgrey; */
 }
 
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
+header .other {
+  display: flex;
+  flex-grow: 1;
+  /* border-style: dotted;
+  border-width: 1px;
+  border-color: lightgrey; */
 }
 
-nav a:first-of-type {
-  border: 0;
-}
+/*
+  These are sample media queries only. Media queries are quite subjective
+  but, in general, should be made for the three different classes of screen
+  size: phone, tablet, full.
+*/
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
+@media screen and (min-width: 600px) and (max-width: 899px) {
+  header h1 {
+    font-size: calc(7px + 2.2vw);
+    visibility: visible;
   }
 }
+
+@media screen and (min-width: 900px) {
+  header h1 {
+    font-size: 2.0em;
+    visibility: visible;
+  }
+}
+
 </style>
