@@ -38,13 +38,29 @@ export const setRoutes = (router) => {
     )}&id_token_hint=${tokenset.id_token}`;
     res.redirect(`https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=${encodeURIComponent(retUrl)}`);
   });
+
+  function generateRandomString(length) {
+    const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let randomString = '';
+  
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      randomString += characters.charAt(randomIndex);
+    }
+  
+    return randomString;
+  }
+  
   router.post('/shorten', (req, res, next) => {
-    const { originalUrl } = req.body;
+    const { targetUrl, description, expiryDate } = req.body;
   
-    // Hardcoded shortened URL for testing
-    const shortenedUrl = 'http://localhost:3000/this_is_backend_confirmed'; // Replace with logic
+    const shortenedUrlString = generateRandomString(6); // Change 6 to 8 for an 8-character string
+    const shortenedUrl = `https://link.gov.bc.ca/${shortenedUrlString}`;
   
-    res.json({ shortenedUrl }); // Respond with the shortened URL
+    // You can include the shortened URL in a response
+    res.json({ shortenedUrl });
   });
+  
+  
   
 };
