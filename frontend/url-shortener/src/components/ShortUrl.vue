@@ -26,7 +26,7 @@
         </div>
       </form>
       <div v-if="shortenedUrl">
-        <p>ID: 1</p>
+        <p>Custom ID: {{ customId }}</p>
         <p>Shortened URL: {{ shortenedUrl }}</p>
         <p>Target URL: {{ targetUrl }}</p>
         <p>Notes: {{ description }}</p>
@@ -49,13 +49,13 @@ import axios from 'axios';
 const targetUrl = ref('');
 const description = ref('');
 const expiryDate = ref('');
-const id = ref('');
+const customId = ref('');
 const tags = ref('');
 const shortenedUrl = ref('');
 const error = ref('');
 
 const shortenURL = async () => {
-  console.log('Values before sending:', targetUrl.value, description.value, expiryDate.value, id.value, tags.value);
+  console.log('Values before sending:', targetUrl.value, description.value, expiryDate.value, customId.value, tags.value);
 
   try {
     console.log('Attempting URL Shortening...');
@@ -63,16 +63,16 @@ const shortenURL = async () => {
       targetUrl: targetUrl.value,
       description: description.value,
       expiryDate: expiryDate.value,
-      id: id.value,
-      tags: tags.value,
-      createdBy: 'Veenu Veenu',
+
       createdTime: new Date().toLocaleString(), // Returns local time
     });
     console.log('Response:', response.data); // Log the response data
     shortenedUrl.value = response.data.shortenedUrl;
+    customId.value = response.data.customId;
     error.value = ''; // Reset error on successful response
   } catch (err: any) {
-    console.error('Error:', err);
+    console.error('Error:', error.message);
+    console.error('Response Data:', error.response.data);
     if (err.response) {
       error.value = err.response.data.message || 'Error occurred';
     } else {
