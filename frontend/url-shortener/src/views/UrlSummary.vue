@@ -5,7 +5,8 @@
     <p>Shortened URL: {{ shortenedUrl }}</p>
     <p>Target URL: {{ targetUrl }}</p>
     <p>Notes: {{ description }}</p>
-    <p>Expiry Date: {{ expiryDate }}</p>        
+    <p>Expiry Date: {{ expiryDate }}</p>
+    <!-- Add the following lines for tags, created by, and created time -->
     <p>Tags: {{ tags }}</p>
     <p>Created By: {{ createdBy }}</p>
     <p>Created Time: {{ createdTime }}</p>
@@ -14,8 +15,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router'; // Import useRoute
 import axios from 'axios';
 
+const route = useRoute(); // Use useRoute to get access to $route
 const customId = ref('');
 const shortenedUrl = ref('');
 const targetUrl = ref('');
@@ -26,20 +29,35 @@ const createdBy = ref('');
 const createdTime = ref('');
 
 onMounted(async () => {
-  // Assign the customId value from the route parameters
-  customId.value = $route.params.customId;
+  // Assign the customId value from the route parameters using useRoute
+  customId.value = route.params.customId;
 
-  // Retrieve data from the backend using customId
-  const response = await axios.get(`http://localhost:3000/url-summary/${customId.value}`);
-  const data = response.data;
+  try {
+    // Retrieve data from the backend using customId
+    const response = await axios.get(`http://localhost:3000/url-summary/${customId.value}`);
+    const data = response.data;
 
-  // Update other data properties based on the retrieved data
-  shortenedUrl.value = data.shortenedUrl;
-  targetUrl.value = data.targetUrl;
-  description.value = data.description;
-  expiryDate.value = data.expiryDate;
-  tags.value = data.tags;
-  createdBy.value = data.createdBy;
-  createdTime.value = data.createdTime;
+    // Update data properties based on the retrieved data
+    shortenedUrl.value = data.shortenedUrl;
+    targetUrl.value = data.targetUrl;
+    description.value = data.description;
+    expiryDate.value = data.expiryDate;
+
+    // Check if these properties exist in the response before updating
+    if ('tags' in data) {
+      tags.value = data.tags;
+    }
+
+    if ('createdBy' in data) {
+      createdBy.value = data.createdBy;
+    }
+
+    if ('createdTime' in data) {
+      createdTime.value = data.createdTime;
+    }
+  } catch (error) {
+    console.error('Error retrieving URL details:', error);
+    // Handle the error gracefully, e.g., show a user-friendly message
+  }
 });
 </script>

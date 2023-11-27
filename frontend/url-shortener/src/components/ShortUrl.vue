@@ -26,7 +26,14 @@
         </div>
       </form>
       <div v-if="shortenedUrl">
-        <p>Custom ID: {{ customId }}</p>
+  <p>
+    Custom ID: 
+    <router-link 
+      :to="{ name: 'url-summary', params: { customId: customId } }"
+    >
+      {{ customId }}
+    </router-link>
+  </p>
         <p>Shortened URL: {{ shortenedUrl }}</p>
         <p>Target URL: {{ targetUrl }}</p>
         <p>Notes: {{ description }}</p>
