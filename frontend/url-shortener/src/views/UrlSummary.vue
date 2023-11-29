@@ -2,7 +2,7 @@
   <div>
     <h1>URL Summary</h1>
     <p>Custom ID: {{ customId }}</p>
-    <p>Shortened URL: {{ shortenedUrl }}</p>
+    <p>Shortened URL: {{ shortenedUrlString }}</p>
     <p>Target URL: {{ targetUrl }}</p>
     <p>Notes: {{ description }}</p>
     <p>Expiry Date: {{ expiryDate }}</p>
@@ -10,6 +10,8 @@
     <p>Tags: {{ tags }}</p>
     <p>Created By: {{ createdBy }}</p>
     <p>Created Time: {{ createdTime }}</p>
+    <!-- Add a router-link to navigate to the URL List page -->
+    <router-link :to="{ name: 'url-table' }">Check all URLs</router-link>
   </div>
 </template>
 
@@ -20,7 +22,7 @@ import axios from 'axios';
 
 const route = useRoute(); // Use useRoute to get access to $route
 const customId = ref('');
-const shortenedUrl = ref('');
+const shortenedUrlString = ref('');
 const targetUrl = ref('');
 const description = ref('');
 const expiryDate = ref('');
@@ -38,7 +40,7 @@ onMounted(async () => {
     const data = response.data;
 
     // Update data properties based on the retrieved data
-    shortenedUrl.value = data.shortenedUrl;
+    shortenedUrlString.value = data.shortenedUrlString;
     targetUrl.value = data.targetUrl;
     description.value = data.description;
     expiryDate.value = data.expiryDate;
