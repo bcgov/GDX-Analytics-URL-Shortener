@@ -1,38 +1,22 @@
-# SSO Pathfinder Confidential Client Using Node-Express
+# URL-S Backend
 
-## Description
+Instructions for configuring and starting the URL-S backend apps: Node.js Express and MongoDB.
 
-This is an example backend app that authenticates users using OAuth 2.0 standard flow
+## Local Setup - TLDR
+ **`Step 1`**. Make sure you have Node.js installed in your local machine. If not download from here https://nodejs.org/en/ 
+ 
+ **`Step 2`**. Make sure you have MongoDB running. Install Homebrew and then `brew install mongodb-community@7.0`. Make sure you have the Mongoos Compass GUI app available - find it at https://www.mongodb.com/try/download/compass. Start the database servce with `brew services start mongodb-community`
+ 
+ **`Step 3`**. Create an .env file to store the BC Government Single Sign-on SSO secret. Copy .env.template to .env. Download the secret from https://bcgov.github.io/sso-requests; click Login; select the URL Shortener project; click Download in INTEGRATION DETAILS; Open the downloaded .json file in a text editor. Copy and paste the secret value into the new .env file. Note that .gitignore lists .env - it will not be added to the repository. 
+ 
+ **`Step 4`**. From the backend folder, run `npm install` in the terminal to install required dependencies.
+ 
+ **`Step 5`**. From the backend folder, run `npm run start` in the terminal to start the app.
 
-## Getting Started
 
-## Pre-requisites
+## Details
 
-- You require an integration with client type `confidential` before you can start using this example app
-- Navigate to [SSO Onboarding](https://github.com/bcgov/sso-keycloak/wiki/SSO-Onboarding) to know more about creating an integration
+## Single Sign-on Pre-requisite
 
-## Installing
-
-- Update below required values and add them to a `.env` file and save it in project directory
-
-  ```sh
-  SSO_SESSION_SECRET=s3cr3t
-  SSO_AUTH_SERVER_URL=https://dev.loginproxy.gov.bc.ca/auth
-  SSO_REALM=
-  SSO_CLIENT_ID=
-  SSO_CLIENT_SECRET=
-  SSO_LOGOUT_REDIRECT_URI=http://localhost:3000
-  ```
-
-In the project directory, you can run either `yarn` or `npm` commands:
-
-### `yarn install` or `npm install`
-
-Installs dependencies from `package.json`
-
-### `yarn start` or `npm run start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.
+- We needed a BC Government Single Sign-on integration with client type `confidential` before we could start using SSO in the URL-S app
+- We went to [SSO Onboarding](https://github.com/bcgov/sso-keycloak/wiki/SSO-Onboarding) to learn about and request this integration.
