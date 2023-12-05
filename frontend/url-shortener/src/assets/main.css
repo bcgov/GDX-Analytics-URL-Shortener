@@ -1,35 +1,371 @@
+/* src/assets/main.css */
+
 @import './base.css';
 
+/* Reset default margin and padding for body and html */
+body, html {
+  margin: 0;
+  padding: 0;
+}
+
+/* Global styles for URL shortener container */
+.url-shortener {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Global layout styles */
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-
-  font-weight: normal;
+  display: grid;
+  grid-template-columns: 1fr;
+  max-width: auto;
+  margin: 0;
 }
 
-a,
-.green {
+/* Header styles */
+header {
+  background-color: #036;
+  border-bottom: 2px solid #fcba19;
+  padding: 0 30px;
+  color: #fff;
+  display: flex;
+  height: 65px;
+  top: 0;
+  position: fixed;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  z-index: 1000; /* Ensure header is above other elements */
+}
+
+/* Banner styles */
+.banner {
+  display: flex;
+  align-items: center;
+}
+
+.banner a {
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+.banner img {
+  margin-right: 10px;
+  max-height: 100%; /* Ensure the logo doesn't exceed the height of the header */
+}
+
+.banner h1 {
+  font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
+  font-weight: normal;
+  margin: 0;
+}
+
+/* Other styles */
+.other {
+  display: flex;
+  align-items: center;
+}
+
+/* Navigation bar styles */
+nav {
+  display: flex;
+  margin-top: 65px;
+  background-color: #003366;
+  color: #fff;
+  width: 100%;
+  padding: 10px 30px;
+  box-sizing: border-box;
+}
+
+.nav-left,
+.nav-right {
+  display: flex;
+}
+
+.nav-left {
+  margin-right: auto; /* Pushes nav-left to the left side */
+}
+
+.nav-right {
+  margin-left: auto; /* Pushes nav-right to the right side */
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  padding: 10px;
+  transition: background-color 0.3s ease;
+}
+
+nav a:hover {
+  background-color: #002255;
+}
+
+
+
+/* Styles from the shorturl component */
+/* Add these styles to your main.css or a dedicated CSS file for this component */
+
+.url-shortener {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Add these styles to your main.css or a dedicated CSS file for this component */
+
+.form-heading {
+
+  font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
+  font-size: 2em;
+  font-weight: bold;
+  text-align: center;
+  color: #003366; /* Adjust the color to match your design */
+  margin-bottom: 20px; /* Add some spacing below the heading */
+}
+
+
+.input-group {
+  display: grid;
+  gap: 20px;
+}
+
+.input-container {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+input,
+textarea,
+button,
+select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+}
+
+button {
+  background-color: #013366;
+  color: #fff;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Styles for the success message */
+.success-message {
+  color: green;
+  margin-top: 10px;
+}
+
+/* Styles for the error message */
+.error-message {
+  color: red;
+  margin-top: 10px;
+}
+
+/* Styles for URL table component */
+.container {
+  max-width: 100%; /* Adjusted to utilize full width */
+  margin: 0;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Filter section styles */
+.filter-section {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filter-section label {
+  font-weight: bold;
+}
+
+.filter-section input,
+.filter-section select,
+.filter-section button {
+  padding: 10px; /* Adjusted padding for better consistency */
+  border: 1px solid #ddd;
+}
+
+.filter-section button {
+  background-color: #013366;
+  color: #fff;
+  cursor: pointer;
+  border: none;
+  border-radius: 3px;
+}
+
+/* Table styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+th {
+  cursor: pointer;
+  user-select: none;
+  color: #013366;
+  transition: color 0.3s ease;
+}
+
+th:hover {
+  background-color: #f0f0f0;
+}
+
+/* Alternating row colors */
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Hover effect on rows */
+tbody tr:hover {
+  background-color: #e6f7ff;
+}
+
+/* Pagination styles */
+.pagination-info, .pagination-controls {
+  margin-top: 20px;
+}
+
+.pagination-controls button {
+  padding: 10px; /* Adjusted padding for better consistency */
+  background-color: #013366;
+  color: #fff;
+  cursor: pointer;
+  margin-right: 5px;
+  border: none;
+  border-radius: 3px;
+}
+
+
+/* Footer Styles */
+
+.footer {
+  background-color: #036;
+  border-top: 2px solid #fcba19;
+  color: #fff;
+  font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
+}
+
+.content-container {
+  width: 100%;
+  max-width: 1280px; /* Optionally, set a max-width for larger screens */
+  margin: 0 auto; /* Center the container on the page */
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Align items vertically in the center */
+  height: 46px;
+}
+
+ul {
+  display: flex;
+  justify-content: space-around; /* Distribute space evenly between items */
+  width: 100%; /* Take up the full width of the container */
+  margin: 0;
+  color: #fff;
+  list-style: none;
+}
+
+ul li {
+  flex: 1; /* Each list item takes equal space */
+}
+
+ul li a {
+  font-size: 0.813em;
+  font-weight: normal;
+  color: #fff;
+  text-decoration: none;
+  padding: 10px; /* Adjust padding for better touch/click targets */
+  text-align: center; /* Center text within each link */
+  border-right: 1px solid #4b5e7e; /* Add right border to separate links */
+}
+
+ul li:last-child a {
+  border-right: none; /* Remove right border for the last link */
+}
+
+ul li a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+:focus {
+  outline: 4px solid #3B99FC;
+  outline-offset: 1px;
+}
+
+/* Add some spacing between the footer and the content */
+.spacer {
+  flex: 1 0 auto;
+  padding: 20px;
+}
+
+
+@media screen and (max-width: 768px) {
+  /* Adjustments for smaller screens */
+
+  header {
+    padding: 0 10px; /* Adjust padding for smaller screens */
+  }
+
+  .banner h1 {
+    font-size: 1.2em; /* Adjust font size for smaller screens */
+  }
+
+  nav {
+    flex-direction: column; /* Stack navigation links vertically on smaller screens */
+    align-items: center; /* Center-align navigation links */
+    padding: 10px; /* Adjust padding for smaller screens */
+  }
+
+  nav a {
+    margin: 5px 0; /* Add margin between navigation links for better spacing */
+    text-align: center; /* Center-align navigation links */
+  }
+
+  footer {
+    padding: 10px; /* Adjust padding for smaller screens */
+  }
+
+  footer .container {
+    height: auto; /* Adjust height for smaller screens */
+  }
+
+  footer ul {
+    flex-direction: column; /* Stack list items vertically on smaller screens */
+  }
+
+  footer ul li a {
+    border-right: none; /* Remove right border for list items on smaller screens */
+    border-bottom: 1px solid #4b5e7e; /* Add bottom border for separation */
+    padding: 5px 0; /* Adjust padding for list items on smaller screens */
   }
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
-}

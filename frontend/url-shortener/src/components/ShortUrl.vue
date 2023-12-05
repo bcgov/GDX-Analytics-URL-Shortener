@@ -1,9 +1,7 @@
 <template>
   <div>
     <div class="url-shortener">
-      <p></p>
-      &nbsp;<br>
-      <h1>Create a short URL</h1>
+      <h1 class="form-heading">Short URL Form</h1>
       <form @submit.prevent="shortenURL">
         <div class="input-group">
           <div class="input-container">
@@ -97,51 +95,3 @@ const createdTime = new Date().toLocaleString(); // Initialize createdTime when 
 
 </script>
 
-<style scoped>
-.url-shortener {
-  display: flex;
-  flex-direction: column;
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.input-container {
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-}
-
-.input-container label {
-  font-weight: bold;
-  color: #000; /* Black text color */
-  display: inline-block;
-  width: 30%;
-  margin-right: 10px;
-}
-
-h1 {
-  margin-bottom: 10px; /* Add some space between the heading and the form */
-}
-
-input, textarea {
-  border: 1px solid #000; /* Black border */
-  padding: 5px;
-  color: #000; /* Black text color */
-  width: 100%;
-}
-
-button {
-  background-color: #003366; /* Black button background */
-  color: #fff; /* White button text */
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-  width: 100%;
-}
-
-
-
-</style>
