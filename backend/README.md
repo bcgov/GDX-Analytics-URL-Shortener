@@ -17,7 +17,7 @@ Instructions for configuring and starting the URL-S backend apps: Node.js Expres
 
 **`Step 7`**. Open a browser and visit http://localhost:3000/. Click 'Proceed to login...' to enter your IDIR credentials
 
-**`Step 8`**. Complete the the Frontend installation steps in the /frontend folder README.
+**`Step 8`**. Complete the the Frontend installation steps in the /frontend/url-shortener folder README.
 
 
 
