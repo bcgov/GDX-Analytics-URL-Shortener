@@ -7,8 +7,8 @@ It is recommended that you install and start the Backend applications before usi
 ## Local Setup
 **`Step 1`**. Open a terminal (option to do this in MS Code). Change directory to the frontend/url-shortener folder
   
-**`Step 2`**. Run `npm install` in the terminal to install required dependencies.
+**`Step 2`**. From the /url-shortener folder, run `npm install` in the terminal to install required dependencies.
  
-**`Step 3`**. Run `npm run dev` in the terminal to start the app.
+**`Step 3`**. From the /url-shortener folder, run `npm run dev` in the terminal to start the app.
 
 **`Step 4`**. Open a browser and visit the app dev site at http://localhost:5173
