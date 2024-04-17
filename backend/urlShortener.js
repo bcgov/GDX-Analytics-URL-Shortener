@@ -4,7 +4,7 @@ import { UrlModel } from './db.js';
 import { generateRandomString } from './randomstring.js';
 
 export const shortenUrl = async (req, res, next) => {
-  const { targetUrl, description, expiryDate } = req.body;
+  const { targetUrl, description, expiryDate, createdTime } = req.body;
 
   try {
     // Get the latest customId from the database
@@ -22,6 +22,7 @@ export const shortenUrl = async (req, res, next) => {
       targetUrl,
       description,
       expiryDate,
+      createdTime,
       shortenedUrlString,
       customId: nextId,
     });

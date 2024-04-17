@@ -6,8 +6,8 @@
     <p>Target URL: {{ targetUrl }}</p>
     <p>Notes: {{ description }}</p>
     <p>Expiry Date: {{ expiryDate }}</p>
-    <!-- Add the following lines for tags, created by, and created time -->
-    <p>Tags: {{ tags }}</p>
+    <!-- Add the following lines for tags, created by, and created time 
+    <p>Tags: {{ tags }}</p>-->
     <p>Created By: {{ createdBy }}</p>
     <p>Created Time: {{ createdTime }}</p>
     <!-- Add a router-link to navigate to the URL List page -->
@@ -26,7 +26,7 @@ const shortenedUrlString = ref('');
 const targetUrl = ref('');
 const description = ref('');
 const expiryDate = ref('');
-const tags = ref('');
+//const tags = ref('');
 const createdBy = ref('');
 const createdTime = ref('');
 
@@ -46,9 +46,9 @@ onMounted(async () => {
     expiryDate.value = data.expiryDate;
 
     // Check if these properties exist in the response before updating
-    if ('tags' in data) {
-      tags.value = data.tags;
-    }
+    //if ('tags' in data) {
+    //  tags.value = data.tags;
+    //}
 
     if ('createdBy' in data) {
       createdBy.value = data.createdBy;

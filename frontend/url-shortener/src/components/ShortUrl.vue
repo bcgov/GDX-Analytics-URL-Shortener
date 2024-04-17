@@ -9,17 +9,19 @@
             <input v-model="targetUrl" placeholder="Enter URL to shorten" />
           </div>
           <div class="input-container">
-            <label for="description">Notes: </label>
-            <textarea v-model="description" placeholder="Enter Notes"></textarea>
-          </div>
-          <div class="input-container">
             <label for="expiryDate">Expiry Date: </label>
             <input type="date" v-model="expiryDate" placeholder="Choose Expiry Date" />
           </div>
           <div class="input-container">
+            <label for="description">Notes: </label>
+            <textarea v-model="description" placeholder="Enter Notes"></textarea>
+          </div>
+<!-- 
+          <div class="input-container">
             <label for="tags">Tags: </label>
             <input v-model="tags" placeholder="Enter Tags" />
           </div>
+--> 
           <button type="submit">Shorten URL</button>
         </div>
       </form>
@@ -36,7 +38,7 @@
         <p>Target URL: {{ targetUrl }}</p>
         <p>Notes: {{ description }}</p>
         <p>Expiry Date: {{ expiryDate }}</p>        
-        <p>Tags: {{ tags }}</p>
+        <!--<p>Tags: {{ tags }}</p>-->
         <p>Created By: Veenu Veenu</p>
         <p>Created Time: {{ createdTime }}</p>
       </div>
@@ -55,12 +57,12 @@ const targetUrl = ref('');
 const description = ref('');
 const expiryDate = ref('');
 const customId = ref('');
-const tags = ref('');
+//const tags = ref('');
 const shortenedUrl = ref('');
 const error = ref('');
 
 const shortenURL = async () => {
-  console.log('Values before sending:', targetUrl.value, description.value, expiryDate.value, customId.value, tags.value);
+  console.log('Values before sending:', targetUrl.value, description.value, expiryDate.value, customId.value);
 
   try {
     console.log('Attempting URL Shortening...');
