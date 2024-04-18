@@ -26,12 +26,10 @@
         <p><strong>Short URL:</strong> <a :href="shortenedUrl">{{ shortenedUrl }}</a></p>
         <p><strong>Target URL:</strong> <a :href="targetUrl">{{ targetUrl }}</a></p>
         <p><strong>Internal Link: </strong> 
-          <router-link :to="{ name: 'url-summary', params: { customId: customId } }">
-            {{ customId }}
-          </router-link>
+          <a :href="internalLink">{{ internalLink }}</a>
         </p>
         <p><strong>Expiry Date:</strong> {{ expiryDate }}</p>
-        <p><strong>Created Time:</strong> {{ createdTime }}</p>
+        <p><strong>Created Time:</strong> {{ formattedTime }}</p>
         <p><strong>Notes:</strong> {{ description }}</p>
       </div>
       <div v-if="error" class="error-message">
@@ -42,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import axios from 'axios';
 
 const targetUrl = ref('');
@@ -51,21 +49,25 @@ const expiryDate = ref('');
 const customId = ref('');
 const shortenedUrl = ref('');
 const error = ref('');
-let createdTime = ref('');
+const createdTime = ref('');
+const formattedTime = ref('');
+const internalLink = computed(() => `http://localhost:5173/url-summary/${customId.value}`);
 
 const shortenURL = async () => {
   try {
-    const currentTime = new Date().toLocaleString();
+    const currentTime = new Date();
+    const localTime = new Date(currentTime.toLocaleString('en-US', { timeZone: 'America/Vancouver' }));
     const response = await axios.post('http://localhost:3000/shorten', {
       targetUrl: targetUrl.value,
       description: description.value,
       expiryDate: expiryDate.value,
-      createdTime: currentTime,
+      createdTime: localTime, // Send localTime instead of currentTime
     });
     shortenedUrl.value = response.data.shortenedUrl;
     customId.value = response.data.customId;
     error.value = '';
-    createdTime.value = currentTime; // Update createdTime when submit button is pressed
+    createdTime.value = localTime; // Store localTime in createdTime
+    formattedTime.value = formatTime(localTime); // Format localTime when submit button is pressed
   } catch (err: any) {
     if (err.response) {
       error.value = err.response.data.message || 'Error occurred';
@@ -75,10 +77,25 @@ const shortenURL = async () => {
   }
 };
 
+
+const formatTime = (time) => {
+  const year = time.getFullYear();
+  const month = String(time.getMonth() + 1).padStart(2, '0');
+  const day = String(time.getDate()).padStart(2, '0');
+  const hour = String(time.getHours()).padStart(2, '0');
+  const minute = String(time.getMinutes()).padStart(2, '0');
+  const second = String(time.getSeconds()).padStart(2, '0');
+  return `${year}-${month}-${day}, ${hour}:${minute}:${second}`;
+};
+
 // Function to check if the URL is in a valid format
 const isValidUrl = (url) => {
-  const pattern = /^(ftp|http|https):\/\/[^ "]+$/;
-  return pattern.test(url);
+  try {
+    new URL(url);
+    return true;
+  } catch (e) {
+    return false;
+  }
 };
 
 // Function to check if the expiry date is in the past
