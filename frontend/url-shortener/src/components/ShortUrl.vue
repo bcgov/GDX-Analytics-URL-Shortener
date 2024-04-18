@@ -16,7 +16,7 @@
           </div>
           <div class="input-container">
             <label for="description">Notes:</label>
-            <textarea v-model="description" placeholder="Enter Notes"></textarea>
+            <textarea v-model="description" placeholder="Enter Notes (optional)"></textarea>
           </div>
           <button type="submit">Shorten URL</button>
         </div>
