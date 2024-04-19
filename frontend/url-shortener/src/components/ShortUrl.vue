@@ -6,21 +6,22 @@
         <div class="input-group">
           <div class="input-container">
             <label for="targetURL">Target URL:</label>
-            <input v-model="targetUrl" placeholder="Enter URL to shorten" required />
+            <input v-model="targetUrl" placeholder="Enter URL to shorten (required)"/>
             <span class="error" v-if="!isValidUrl(targetUrl) && targetUrl">Please enter a valid URL (e.g., http://example.com)</span>
           </div>
           <div class="input-container">
-            <label for="expiryDate">Expiry Date:</label>
-            <input type="date" v-model="expiryDate" placeholder="Choose Expiry Date" required />
+            <label for="expiryDate">Expiry Date (Optional):</label>
+            <input type="date" v-model="expiryDate" placeholder="Choose Expiry Date" />
             <span class="error" v-if="isPastDate(expiryDate) && expiryDate">Please select a future expiry date</span>
           </div>
           <div class="input-container">
-            <label for="description">Notes:</label>
-            <textarea v-model="description" placeholder="Enter Notes (optional)"></textarea>
+            <label for="description">Notes (Optional):</label>
+            <textarea v-model="description" placeholder="Enter Notes"></textarea>
           </div>
           <button type="submit">Shorten URL</button>
         </div>
       </form>
+      <br />
       <br />
       <div v-if="shortenedUrl" class="url-details">
         <p><strong>Short URL:</strong> <a :href="shortenedUrl">{{ shortenedUrl }}</a></p>
