@@ -6,7 +6,7 @@
         <div class="input-group">
           <div class="input-container">
             <label for="targetURL">Target URL:</label>
-            <input v-model="targetUrl" placeholder="Enter URL to shorten (required)"/>
+            <input v-model="targetUrl" placeholder="Enter URL to shorten"/>
             <span class="error" v-if="!isValidUrl(targetUrl) && targetUrl">Please enter a valid URL (e.g., http://example.com)</span>
           </div>
           <div class="input-container">
