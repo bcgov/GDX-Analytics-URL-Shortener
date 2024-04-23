@@ -5,93 +5,133 @@
       <form @submit.prevent="shortenURL">
         <div class="input-group">
           <div class="input-container">
-            <label for="targetURL">Target URL: </label>
-            <input v-model="targetUrl" placeholder="Enter URL to shorten" />
+            <label for="targetURL">Target URL:</label>
+            <input v-model="targetUrl" placeholder="Enter URL to shorten"/>
+            <span class="error" v-if="!isValidUrl(targetUrl) && targetUrl">Please enter a valid URL (e.g., http://example.com)</span>
           </div>
           <div class="input-container">
-            <label for="description">Notes: </label>
-            <textarea v-model="description" placeholder="Enter Notes"></textarea>
-          </div>
-          <div class="input-container">
-            <label for="expiryDate">Expiry Date: </label>
+            <label for="expiryDate">Expiry Date (Optional):</label>
             <input type="date" v-model="expiryDate" placeholder="Choose Expiry Date" />
+            <span class="error" v-if="isPastDate(expiryDate) && expiryDate">Please select a future expiry date</span>
           </div>
           <div class="input-container">
-            <label for="tags">Tags: </label>
-            <input v-model="tags" placeholder="Enter Tags" />
+            <label for="description">Notes (Optional):</label>
+            <textarea v-model="description" placeholder="Enter Notes"></textarea>
           </div>
           <button type="submit">Shorten URL</button>
         </div>
       </form>
-      <div v-if="shortenedUrl">
-  <p>
-    Custom ID: 
-    <router-link 
-      :to="{ name: 'url-summary', params: { customId: customId } }"
-    >
-      {{ customId }}
-    </router-link>
-  </p>
-        <p>Shortened URL: {{ shortenedUrl }}</p>
-        <p>Target URL: {{ targetUrl }}</p>
-        <p>Notes: {{ description }}</p>
-        <p>Expiry Date: {{ expiryDate }}</p>        
-        <p>Tags: {{ tags }}</p>
-        <p>Created By: Veenu Veenu</p>
-        <p>Created Time: {{ createdTime }}</p>
+      <br />
+      <br />
+      <div v-if="shortenedUrl" class="url-details">
+        <p><strong>Short URL:</strong> <a :href="shortenedUrl">{{ shortenedUrl }}</a></p>
+        <p><strong>Target URL:</strong> <a :href="targetUrl">{{ targetUrl }}</a></p>
+        <p><strong>Internal Link: </strong> 
+          <a :href="internalLink">{{ internalLink }}</a>
+        </p>
+        <p><strong>Expiry Date:</strong> {{ expiryDate }}</p>
+        <p><strong>Created Time:</strong> {{ formattedTime }}</p>
+        <p><strong>Notes:</strong> {{ description }}</p>
       </div>
-      <div v-if="error">
-        <p>Error: {{ error }}</p>
+      <div v-if="error" class="error-message">
+        <p><strong>Error:</strong> {{ error }}</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import axios from 'axios';
 
 const targetUrl = ref('');
 const description = ref('');
 const expiryDate = ref('');
 const customId = ref('');
-const tags = ref('');
 const shortenedUrl = ref('');
 const error = ref('');
+const createdTime = ref('');
+const formattedTime = ref('');
+const internalLink = computed(() => `http://localhost:5173/url-summary/${customId.value}`);
 
 const shortenURL = async () => {
-  console.log('Values before sending:', targetUrl.value, description.value, expiryDate.value, customId.value, tags.value);
-
   try {
-    console.log('Attempting URL Shortening...');
+    const currentTime = new Date();
+    const localTime = new Date(currentTime.toLocaleString('en-US', { timeZone: 'America/Vancouver' }));
     const response = await axios.post('http://localhost:3000/shorten', {
       targetUrl: targetUrl.value,
       description: description.value,
       expiryDate: expiryDate.value,
-
-      createdTime: new Date().toLocaleString(), // Returns local time
+      createdTime: localTime, // Send localTime instead of currentTime
     });
-    console.log('Response:', response.data); // Log the response data
     shortenedUrl.value = response.data.shortenedUrl;
     customId.value = response.data.customId;
-    error.value = ''; // Reset error on successful response
+    error.value = '';
+    createdTime.value = localTime; // Store localTime in createdTime
+    formattedTime.value = formatTime(localTime); // Format localTime when submit button is pressed
   } catch (err: any) {
-    console.error('Error:', error.message);
-    console.error('Response Data:', error.response.data);
     if (err.response) {
       error.value = err.response.data.message || 'Error occurred';
     } else {
       error.value = 'Error occurred';
     }
-
-    if (!(err instanceof Error)) {
-      console.error('Unexpected Error:', err);
-      error.value = 'Unexpected Error occurred';
-    }
   }
 };
 
-const createdTime = new Date().toLocaleString(); // Initialize createdTime when component is created
+
+const formatTime = (time) => {
+  const year = time.getFullYear();
+  const month = String(time.getMonth() + 1).padStart(2, '0');
+  const day = String(time.getDate()).padStart(2, '0');
+  const hour = String(time.getHours()).padStart(2, '0');
+  const minute = String(time.getMinutes()).padStart(2, '0');
+  const second = String(time.getSeconds()).padStart(2, '0');
+  return `${year}-${month}-${day}, ${hour}:${minute}:${second}`;
+};
+
+// Function to check if the URL is in a valid format
+const isValidUrl = (url) => {
+  try {
+    new URL(url);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+// Function to check if the expiry date is in the past
+const isPastDate = (date) => {
+  const currentDate = new Date();
+  const selectedDate = new Date(date);
+  return selectedDate < currentDate;
+};
 
 </script>
 
+<style scoped>
+.url-shortener {
+  margin-top: 20px;
+}
+
+.form-heading {
+  margin-bottom: 20px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-container {
+  margin-bottom: 10px;
+}
+
+.error-message {
+  margin-top: 20px;
+  color: red;
+}
+
+.error {
+  color: red;
+}
+</style>

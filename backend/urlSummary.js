@@ -18,6 +18,7 @@ export const getUrlSummary = async (req, res) => {
       expiryDate: urlDetails.expiryDate,
       shortenedUrlString: urlDetails.shortenedUrlString,
       customId: urlDetails.customId,
+      createdTime: urlDetails.createdTime,
     });
   } catch (error) {
     console.error('Error retrieving URL details:', error);
