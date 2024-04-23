@@ -127,7 +127,10 @@ nav a:hover {
   color: #003366; /* Adjust the color to match your design */
   margin-bottom: 20px; /* Add some spacing below the heading */
 }
-
+/* Placeholder text styles */
+textarea::placeholder {
+  font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif; /* Match the font family with other elements */
+}
 
 .input-group {
   display: grid;

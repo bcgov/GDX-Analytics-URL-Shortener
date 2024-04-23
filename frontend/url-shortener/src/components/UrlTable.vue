@@ -39,7 +39,7 @@
           <th @click="sort('createdTime')" :class="{ 'sortable': true, 'asc': sortField === 'createdTime' }">
             Created Time {{ getSortIcon('createdTime') }}
           </th>
-          <th>Tags</th>
+          <!--<th>Tags</th>-->
           <th>Notes</th>
         </tr>
       </thead>
@@ -58,7 +58,7 @@
           
           <td>{{ url.createdBy }}</td>
           <td>{{ url.createdTime }}</td>
-          <td>{{ url.tags }}</td>
+          <!--<td>{{ url.tags }}</td>-->
           <td>{{ url.description }}</td>
         </tr>
       </tbody>
