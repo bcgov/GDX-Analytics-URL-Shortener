@@ -5,7 +5,7 @@ Instructions for configuring and starting the URL-S frontend app, Vue.js, and it
 Before doing the the frontend install and start, the Backend application must be installed and started. Follow instructions in the README in the Backend folder.
 
 ## Local Setup
-**`Step 1`**. Open a new terminal (option to do this in MS Code). Do not sue the terminal that is running the backend code. Change directory to the frontend/url-shortener folder
+**`Step 1`**. Open a new terminal (option to do this in MS Code). Do not use the terminal that is running the backend code. Change directory to the frontend/url-shortener folder.
   
 **`Step 2`**. From the /url-shortener folder, run `npm install` in the terminal to install required dependencies.
  
