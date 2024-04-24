@@ -21,6 +21,9 @@
     <button type="submit" :disabled="isSubmitting || formSubmitted">
       {{ isSubmitting || formSubmitted ? 'Form submitted successfully' : 'Shorten URL' }}
     </button>
+    <div v-if="formSubmitted">
+    <p style="text-align: right"><router-link to="/shorten" @click="reloadPage">Click to create a new Short URL</router-link></p>
+    </div>
   </div>
 </form>
 
@@ -46,7 +49,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import axios from 'axios';
-
+import { useRouter } from 'vue-router';
 const targetUrl = ref('');
 const description = ref('');
 const expiryDate = ref('');
@@ -101,7 +104,11 @@ const formatTime = (time) => {
   const second = String(time.getSeconds()).padStart(2, '0');
   return `${year}-${month}-${day}, ${hour}:${minute}:${second}`;
 };
+const router = useRouter();
 
+const reloadPage = () => {
+  location.reload();
+};
 // Function to check if the URL is in a valid format
 const isValidUrl = (url) => {
   try {
