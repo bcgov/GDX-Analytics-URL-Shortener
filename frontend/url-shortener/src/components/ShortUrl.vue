@@ -2,25 +2,28 @@
   <div>
     <div class="url-shortener">
       <h1 class="form-heading">Short URL Form</h1>
-      <form @submit.prevent="shortenURL">
-        <div class="input-group">
-          <div class="input-container">
-            <label for="targetURL">Target URL:</label>
-            <input v-model="targetUrl" placeholder="Enter URL to shorten"/>
-            <span class="error" v-if="!isValidUrl(targetUrl) && targetUrl">Please enter a valid URL (e.g., http://example.com)</span>
-          </div>
-          <div class="input-container">
-            <label for="expiryDate">Expiry Date (Optional):</label>
-            <input type="date" v-model="expiryDate" placeholder="Choose Expiry Date" />
-            <span class="error" v-if="isPastDate(expiryDate) && expiryDate">Please select a future expiry date</span>
-          </div>
-          <div class="input-container">
-            <label for="description">Notes (Optional):</label>
-            <textarea v-model="description" placeholder="Enter Notes"></textarea>
-          </div>
-          <button type="submit">Shorten URL</button>
-        </div>
-      </form>
+      <form @submit.prevent="submitForm">
+  <div class="input-group">
+    <div class="input-container">
+      <label for="targetURL">Target URL:</label>
+      <input v-model="targetUrl" placeholder="Enter URL to shorten" :disabled="formSubmitted"/>
+      <span class="error" v-if="!isValidUrl(targetUrl) && targetUrl">Please enter a valid URL (e.g., http://example.com)</span>
+    </div>
+    <div class="input-container">
+      <label for="expiryDate">Expiry Date (Optional):</label>
+      <input type="date" v-model="expiryDate" placeholder="Choose Expiry Date" :disabled="formSubmitted"/>
+      <span class="error" v-if="isPastDate(expiryDate) && expiryDate">Please select a future expiry date</span>
+    </div>
+    <div class="input-container">
+      <label for="description">Notes (Optional):</label>
+      <textarea v-model="description" placeholder="Enter Notes" :disabled="formSubmitted"></textarea>
+    </div>
+    <button type="submit" :disabled="isSubmitting || formSubmitted">
+      {{ isSubmitting || formSubmitted ? 'Form submitted successfully' : 'Shorten URL' }}
+    </button>
+  </div>
+</form>
+
       <br />
       <br />
       <div v-if="shortenedUrl" class="url-details">
@@ -52,9 +55,15 @@ const shortenedUrl = ref('');
 const error = ref('');
 const createdTime = ref('');
 const formattedTime = ref('');
+const isSubmitting = ref(false);
+const formSubmitted = ref(false);
 const internalLink = computed(() => `http://localhost:5173/url-summary/${customId.value}`);
 
-const shortenURL = async () => {
+const submitForm = async () => {
+  isSubmitting.value = true;
+  //console.log('isSubmitting:', isSubmitting.value);
+  //console.log('formSubmitted:', formSubmitted.value);
+
   try {
     const currentTime = new Date();
     const localTime = new Date(currentTime.toLocaleString('en-US', { timeZone: 'America/Vancouver' }));
@@ -62,22 +71,26 @@ const shortenURL = async () => {
       targetUrl: targetUrl.value,
       description: description.value,
       expiryDate: expiryDate.value,
-      createdTime: localTime, // Send localTime instead of currentTime
+      createdTime: localTime,
     });
     shortenedUrl.value = response.data.shortenedUrl;
     customId.value = response.data.customId;
     error.value = '';
-    createdTime.value = localTime; // Store localTime in createdTime
-    formattedTime.value = formatTime(localTime); // Format localTime when submit button is pressed
+    createdTime.value = localTime;
+    formattedTime.value = formatTime(localTime);
+    formSubmitted.value = true; // Set formSubmitted to true after successful submission
   } catch (err: any) {
     if (err.response) {
       error.value = err.response.data.message || 'Error occurred';
     } else {
       error.value = 'Error occurred';
     }
+  } finally {
+    isSubmitting.value = false;
+    //console.log('isSubmitting:', isSubmitting.value);
+    //console.log('formSubmitted:', formSubmitted.value);
   }
 };
-
 
 const formatTime = (time) => {
   const year = time.getFullYear();
@@ -133,5 +146,10 @@ const isPastDate = (date) => {
 
 .error {
   color: red;
+}
+button:disabled {
+  background-color: lightgray;
+  color: gray; 
+  cursor: not-allowed;
 }
 </style>
