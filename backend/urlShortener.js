@@ -9,7 +9,7 @@ export const shortenUrl = async (req, res, next) => {
   try {
     // Get the current time in the Pacific/Vancouver timezone
     const createdTime = moment.tz('America/Vancouver').toDate();
-    console.log('createdTime:', createdTime);
+    //console.log('createdTime:', createdTime);
 
     // Get the latest customId from the database
     const lastUrl = await UrlModel.findOne({}, {}, { sort: { customId: -1 } }).exec();
