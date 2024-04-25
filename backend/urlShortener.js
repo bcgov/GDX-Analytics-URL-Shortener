@@ -1,5 +1,5 @@
 // urlShortener.js
-
+import moment from 'moment-timezone'; // Import Moment.js with timezone support
 import { UrlModel } from './db.js';
 import { generateRandomString } from './randomstring.js';
 
@@ -7,6 +7,10 @@ export const shortenUrl = async (req, res, next) => {
   const { targetUrl, description, expiryDate } = req.body;
 
   try {
+    // Get the current time in the Pacific/Vancouver timezone
+    const createdTime = moment.tz('America/Vancouver').toDate();
+    //console.log('createdTime:', createdTime);
+
     // Get the latest customId from the database
     const lastUrl = await UrlModel.findOne({}, {}, { sort: { customId: -1 } }).exec();
     const idCounter = lastUrl ? lastUrl.customId : 999;
@@ -22,6 +26,7 @@ export const shortenUrl = async (req, res, next) => {
       targetUrl,
       description,
       expiryDate,
+      createdTime,
       shortenedUrlString,
       customId: nextId,
     });

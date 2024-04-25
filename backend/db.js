@@ -12,6 +12,7 @@ const urlSchema = new mongoose.Schema({
   expiryDate: { type: Date },
   shortenedUrlString: { type: String, unique: true },
   customId: { type: Number, unique: true, required: true, default: 999 },
+  createdTime: { type: Date },
 });
 
 // Create a model based on the schema
