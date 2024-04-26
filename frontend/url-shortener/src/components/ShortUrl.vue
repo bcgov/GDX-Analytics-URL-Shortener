@@ -26,12 +26,33 @@
     </div>
   </div>
 </form>
+<br />
+<br />
+<div v-if="formSubmitted">
+    <div style="text-align:center;">
+        <strong style="font-size: 1.5em;">Short URL: </strong> <!-- Doubling the font size -->
+        <a :href="shortenedUrl" class="short-url" style="font-size: 1.5em;">{{ shortenedUrl.replace('https://', '') }}</a> <!-- Doubling the font size -->
+        <a href="#" class="copy-btn" @click="copyToClipboard(shortenedUrl.replace('https://', ''))">
+            <img src="../assets/copy.svg" alt="Copy icon">
+        </a>
+        <p style="color: green;">{{ copiedMessage }}</p> <!-- Display copied message -->
+    </div>
+</div>
 
       <br />
       <br />
       <div v-if="shortenedUrl" class="url-details">
-        <p><strong>Short URL:</strong> <a :href="shortenedUrl">{{ shortenedUrl }}</a></p>
-        <p><strong>Target URL:</strong> <a :href="targetUrl">{{ targetUrl }}</a></p>
+        <p><strong style="color: black;">Additional details:</strong></p>
+        <p><strong>Full Short URL:</strong> 
+        <a :href="shortenedUrl" class="full-short-url">{{ shortenedUrl }}</a> 
+        <a href="#" class="copy-btn" @click="copyToClipboard(shortenedUrl)">
+            <img src="../assets/copy.svg" alt="Copy icon">
+        </a>
+    </p>
+    <div class="target-url-container">
+        <p><strong>Target URL:</strong><a :href="targetUrl" class="target-url">{{ targetUrl }}</a></p>
+    </div>
+
         <p><strong>Internal Link: </strong> 
           <a :href="internalLink">{{ internalLink }}</a>
         </p>
@@ -126,6 +147,22 @@ const isPastDate = (date) => {
   return selectedDate < currentDate;
 };
 
+const copyToClipboard = (text) => {
+    const input = document.createElement('textarea');
+    input.value = text;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
+    copiedMessage.value = 'URL copied!';
+    setTimeout(() => {
+        copiedMessage.value = '';
+    }, 5000); // Hide the message after 5 seconds
+};
+
+const copiedMessage = ref('');
+
+
 </script>
 
 <style scoped>
@@ -159,4 +196,39 @@ button:disabled {
   color: gray; 
   cursor: not-allowed;
 }
+
+
+.short-url {
+  color: blue; /* You can adjust the color as needed */
+  font-weight: bold;
+}
+
+.copy-btn {
+  display: inline-block;
+  width: 18px; /* Adjust as needed */
+  height: 18px; /* Adjust as needed */
+  background-image: url('../assets/copy.svg'); /* Path to your copy icon */
+  background-size: cover;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  margin-left: 10px; /* Adjust as needed for spacing */
+}
+
+
+.copy-btn:hover {
+  background-color: #0056b3; /* Darker blue color on hover */
+}
+
+.target-url-container {
+    max-width: 80%; /* Adjust the maximum width as needed */
+}
+
+.target-url {
+    display: inline-block;
+    max-width: 100%; /* Ensure the link takes the full width of its container */
+    word-wrap: break-word; /* Enable text wrapping */
+    overflow-wrap: break-word; /* For broader compatibility */
+}
+
+
 </style>
