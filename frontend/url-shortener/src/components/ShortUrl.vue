@@ -35,6 +35,7 @@
         <a href="#" class="copy-btn" @click="copyToClipboard(shortenedUrl.replace('https://', ''))">
             <img src="../assets/copy.svg" alt="Copy icon">
         </a>
+        <p style="color: green;">{{ copiedMessage }}</p> <!-- Display copied message -->
     </div>
 </div>
 
@@ -48,7 +49,10 @@
             <img src="../assets/copy.svg" alt="Copy icon">
         </a>
     </p>
-        <p><strong>Target URL:</strong> <a :href="targetUrl">{{ targetUrl }}</a></p>
+    <div class="target-url-container">
+        <p><strong>Target URL:</strong><a :href="targetUrl" class="target-url">{{ targetUrl }}</a></p>
+    </div>
+
         <p><strong>Internal Link: </strong> 
           <a :href="internalLink">{{ internalLink }}</a>
         </p>
@@ -150,7 +154,13 @@ const copyToClipboard = (text) => {
     input.select();
     document.execCommand('copy');
     document.body.removeChild(input);
+    copiedMessage.value = 'URL copied!';
+    setTimeout(() => {
+        copiedMessage.value = '';
+    }, 5000); // Hide the message after 5 seconds
 };
+
+const copiedMessage = ref('');
 
 
 </script>
@@ -208,4 +218,17 @@ button:disabled {
 .copy-btn:hover {
   background-color: #0056b3; /* Darker blue color on hover */
 }
+
+.target-url-container {
+    max-width: 80%; /* Adjust the maximum width as needed */
+}
+
+.target-url {
+    display: inline-block;
+    max-width: 100%; /* Ensure the link takes the full width of its container */
+    word-wrap: break-word; /* Enable text wrapping */
+    overflow-wrap: break-word; /* For broader compatibility */
+}
+
+
 </style>
