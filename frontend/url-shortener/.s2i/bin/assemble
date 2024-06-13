@@ -7,7 +7,7 @@ set -e
 mkdir -p /opt/app-root/src
 cp -R /tmp/src/* /opt/app-root/src/
 
-# Set permissions
+# Set ownership and permissions
 chown -R 1001:0 /opt/app-root/src
 
 # Navigate to the application directory
@@ -15,4 +15,10 @@ cd /opt/app-root/src
 
 # Install dependencies
 npm install
+
+# Fix permissions for specific directory causing issue
+mkdir -p node_modules/.vite
+chown -R 1001:0 node_modules/.vite
+
+# Run the application
 npm run dev
