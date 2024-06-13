@@ -1,1 +1,1 @@
-echo 'NPM_RUN=dev' > .s2i/environment
+NPM_RUN=dev
