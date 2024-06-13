@@ -1,9 +1,13 @@
 import mongoose from 'mongoose';
+
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/test', {
+const mongodbUser = process.env.MONGODB_USER;
+const mongodbPassword = process.env.MONGODB_PASSWORD;
+mongoose.connect(`mongodb://localhost:27017/mongodb`, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+
 
 // Create a schema for your data
 const urlSchema = new mongoose.Schema({
