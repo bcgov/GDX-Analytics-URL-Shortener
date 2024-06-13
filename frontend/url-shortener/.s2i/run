@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Custom run script for S2I
+echo "Starting application with npm run dev"
+exec npm run dev
