@@ -9,7 +9,7 @@ Instructions for configuring and starting the URL-S backend apps: Node.js Expres
  
  **`Step 3`**. Make sure you have the MongoDB Compass (GUI) app available. This desktop app is used to manage MongoDB databases. Install with `brew install --cask mongodb-compass`. Check that you can connect to the database at localhost:27017 (mongodb://localhost:27017).
  
- **`Step 4`**. In the /backend folder, create an .env file to store the BC Government Single Sign-on SSO secret. Copy .env.template to .env. Download the secret from https://bcgov.github.io/sso-requests; click Login; select the URL Shortener project; click Download in INTEGRATION DETAILS; Open the downloaded .json file in a text editor. Copy and paste the secret value into the new .env file. Note that .gitignore lists .env - it will not be added to the repository. 
+ **`Step 4`**. In the /backend folder, create a new file and rename as '.env' to store the BC Government Single Sign-on(SSO) secret. Copy '.env.template' contents to '.env'. Download the secret from https://bcgov.github.io/sso-requests; click Login; select the URL Shortener project; click Download in INTEGRATION DETAILS; Open the downloaded .json file in a text editor. Copy the secret value in "credentials": {"secret": "SSO_CLIENT_SECRET"} and paste it as the value to SSO_CLIENT_SECRET in your '.env' file. Make sure not to include any quotations around SSO_CLIENT_SECRET. Note that .gitignore lists .env - it will not be added to the repository. 
  
  **`Step 5`**. From the /backend folder, run `npm install` in the terminal to install required dependencies.
  
