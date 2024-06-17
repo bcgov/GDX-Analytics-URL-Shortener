@@ -3,63 +3,66 @@
     <div class="url-shortener">
       <h1 class="form-heading">Short URL Form</h1>
       <form @submit.prevent="submitForm">
-  <div class="input-group">
-    <div class="input-container">
-      <label for="targetURL">Target URL:</label>
-      <input v-model="targetUrl" placeholder="Enter URL to shorten" :disabled="formSubmitted"/>
-      <span class="error" v-if="!isValidUrl(targetUrl) && targetUrl">Please enter a valid URL (e.g., http://example.com)</span>
-    </div>
-    <div class="input-container">
-      <label for="expiryDate">Expiry Date (Optional):</label>
-      <input type="date" v-model="expiryDate" placeholder="Choose Expiry Date" :disabled="formSubmitted"/>
-      <span class="error" v-if="isPastDate(expiryDate) && expiryDate">Please select a future expiry date</span>
-    </div>
-    <div class="input-container">
-      <label for="description">Notes (Optional):</label>
-      <textarea v-model="description" placeholder="Enter Notes" :disabled="formSubmitted"></textarea>
-    </div>
-    <button type="submit" :disabled="isSubmitting || formSubmitted">
-      {{ isSubmitting || formSubmitted ? 'Form submitted successfully' : 'Shorten URL' }}
-    </button>
-    <div v-if="formSubmitted">
-    <p style="text-align: right"><router-link to="/shorten" @click="reloadPage">Click to create a new Short URL</router-link></p>
-    </div>
-  </div>
-</form>
-<br />
-<br />
-<div v-if="formSubmitted">
-    <div style="text-align:center;">
-        <strong style="font-size: 1.5em;">Short URL: </strong> <!-- Doubling the font size -->
-        <a :href="shortenedUrl" class="short-url" style="font-size: 1.5em;">{{ shortenedUrl.replace('https://', '') }}</a> <!-- Doubling the font size -->
-        <a href="#" class="copy-btn" @click="copyToClipboard(shortenedUrl.replace('https://', ''))">
-            <img src="../assets/copy.svg" alt="Copy icon">
-        </a>
-        <p style="color: green;">{{ copiedMessage }}</p> <!-- Display copied message -->
-    </div>
-</div>
+        <div class="input-group">
+          <div class="input-container">
+            <label for="targetURL">Target URL:</label>
+            <input v-model="targetUrl" placeholder="Enter URL to shorten" :disabled="formSubmitted"/>
+            <span class="error" v-if="!isValidUrl(targetUrl) && targetUrl">Please enter a valid URL (e.g., http://example.com)</span>
+          </div>
+          <div class="input-container">
+            <label for="expiryDate">Expiry Date (Optional):</label>
+            <input type="date" v-model="expiryDate" placeholder="Choose Expiry Date" :disabled="formSubmitted"/>
+            <span class="error" v-if="isPastDate(expiryDate) && expiryDate">Please select a future expiry date</span>
+          </div>
+          <div class="input-container">
+            <label for="description">Notes (Optional):</label>
+            <textarea v-model="description" placeholder="Enter Notes" :disabled="formSubmitted"></textarea>
+          </div>
+          <button type="submit" :disabled="isSubmitting || formSubmitted">
+            {{ isSubmitting || formSubmitted ? 'Form submitted successfully' : 'Shorten URL' }}
+          </button>
+          <div v-if="formSubmitted">
+            <p style="text-align: right"><router-link to="/shorten" @click="reloadPage">Click to create a new Short URL</router-link></p>
+          </div>
+        </div>
+      </form>
 
       <br />
       <br />
+
+      <div v-if="formSubmitted">
+        <div style="text-align:center;">
+          <strong style="font-size: 1.5em;">Short URL: </strong>
+          <a :href="shortenedUrl" class="short-url" style="font-size: 1.5em;">{{ shortenedUrl.replace('https://', '') }}</a>
+          <a href="#" class="copy-btn" @click="copyToClipboard(shortenedUrl.replace('https://', ''))">
+            <img src="../assets/copy.svg" alt="Copy icon">
+          </a>
+          <p style="color: green;">{{ copiedMessage }}</p>
+        </div>
+      </div>
+
+      <br />
+      <br />
+
       <div v-if="shortenedUrl" class="url-details">
         <p><strong style="color: black;">Additional details:</strong></p>
-        <p><strong>Full Short URL:</strong> 
-        <a :href="shortenedUrl" class="full-short-url">{{ shortenedUrl }}</a> 
-        <a href="#" class="copy-btn" @click="copyToClipboard(shortenedUrl)">
+        <p><strong>Full Short URL:</strong>
+          <a :href="shortenedUrl" class="full-short-url">{{ shortenedUrl }}</a>
+          <a href="#" class="copy-btn" @click="copyToClipboard(shortenedUrl)">
             <img src="../assets/copy.svg" alt="Copy icon">
-        </a>
-    </p>
-    <div class="target-url-container">
-        <p><strong>Target URL:</strong><a :href="targetUrl" class="target-url">{{ targetUrl }}</a></p>
-    </div>
-
-        <p><strong>Internal Link: </strong> 
+          </a>
+        </p>
+        <div class="target-url-container">
+          <p><strong>Target URL:</strong><a :href="targetUrl" class="target-url">{{ targetUrl }}</a></p>
+        </div>
+        <p><strong>Internal Link:</strong>
           <a :href="internalLink">{{ internalLink }}</a>
         </p>
         <p><strong>Expiry Date:</strong> {{ expiryDate }}</p>
         <p><strong>Created Time:</strong> {{ formattedTime }}</p>
         <p><strong>Notes:</strong> {{ description }}</p>
       </div>
+
       <div v-if="error" class="error-message">
         <p><strong>Error:</strong> {{ error }}</p>
       </div>
@@ -71,22 +74,24 @@
 import { ref, computed } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+
 const targetUrl = ref('');
 const description = ref('');
 const expiryDate = ref('');
 const customId = ref('');
 const shortenedUrl = ref('');
 const error = ref('');
-const createdTime = ref('');
+const createdTime = ref<string>('');
 const formattedTime = ref('');
 const isSubmitting = ref(false);
 const formSubmitted = ref(false);
+const copiedMessage = ref('');
+
 const internalLink = computed(() => `http://localhost:5173/url-summary/${customId.value}`);
+const router = useRouter();
 
 const submitForm = async () => {
   isSubmitting.value = true;
-  //console.log('isSubmitting:', isSubmitting.value);
-  //console.log('formSubmitted:', formSubmitted.value);
 
   try {
     const currentTime = new Date();
@@ -95,14 +100,15 @@ const submitForm = async () => {
       targetUrl: targetUrl.value,
       description: description.value,
       expiryDate: expiryDate.value,
-      createdTime: localTime,
+      createdTime: localTime.toISOString(), // Ensure createdTime is in ISO string format
     });
+
     shortenedUrl.value = response.data.shortenedUrl;
     customId.value = response.data.customId;
     error.value = '';
-    createdTime.value = localTime;
+    createdTime.value = localTime.toISOString(); // Convert localTime to ISO string
     formattedTime.value = formatTime(localTime);
-    formSubmitted.value = true; // Set formSubmitted to true after successful submission
+    formSubmitted.value = true;
   } catch (err: any) {
     if (err.response) {
       error.value = err.response.data.message || 'Error occurred';
@@ -111,12 +117,10 @@ const submitForm = async () => {
     }
   } finally {
     isSubmitting.value = false;
-    //console.log('isSubmitting:', isSubmitting.value);
-    //console.log('formSubmitted:', formSubmitted.value);
   }
 };
 
-const formatTime = (time) => {
+const formatTime = (time: Date) => {
   const year = time.getFullYear();
   const month = String(time.getMonth() + 1).padStart(2, '0');
   const day = String(time.getDate()).padStart(2, '0');
@@ -125,43 +129,38 @@ const formatTime = (time) => {
   const second = String(time.getSeconds()).padStart(2, '0');
   return `${year}-${month}-${day}, ${hour}:${minute}:${second}`;
 };
-const router = useRouter();
 
 const reloadPage = () => {
   location.reload();
 };
-// Function to check if the URL is in a valid format
-const isValidUrl = (url) => {
+
+const isValidUrl = (url: string) => {
   try {
     new URL(url);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 };
 
-// Function to check if the expiry date is in the past
-const isPastDate = (date) => {
+const isPastDate = (date: string) => {
   const currentDate = new Date();
   const selectedDate = new Date(date);
   return selectedDate < currentDate;
 };
 
-const copyToClipboard = (text) => {
-    const input = document.createElement('textarea');
-    input.value = text;
-    document.body.appendChild(input);
-    input.select();
-    document.execCommand('copy');
-    document.body.removeChild(input);
-    copiedMessage.value = 'URL copied!';
-    setTimeout(() => {
-        copiedMessage.value = '';
-    }, 5000); // Hide the message after 5 seconds
+const copyToClipboard = (text: string) => {
+  const input = document.createElement('textarea');
+  input.value = text;
+  document.body.appendChild(input);
+  input.select();
+  document.execCommand('copy');
+  document.body.removeChild(input);
+  copiedMessage.value = 'URL copied!';
+  setTimeout(() => {
+    copiedMessage.value = '';
+  }, 5000); // Hide the message after 5 seconds
 };
-
-const copiedMessage = ref('');
-
 
 </script>
 
@@ -191,44 +190,42 @@ const copiedMessage = ref('');
 .error {
   color: red;
 }
+
 button:disabled {
   background-color: lightgray;
-  color: gray; 
+  color: gray;
   cursor: not-allowed;
 }
 
-
 .short-url {
-  color: blue; /* You can adjust the color as needed */
+  color: blue;
   font-weight: bold;
 }
 
 .copy-btn {
   display: inline-block;
-  width: 18px; /* Adjust as needed */
-  height: 18px; /* Adjust as needed */
-  background-image: url('../assets/copy.svg'); /* Path to your copy icon */
+  width: 18px;
+  height: 18px;
+  background-image: url('../assets/copy.svg');
   background-size: cover;
   background-repeat: no-repeat;
   cursor: pointer;
-  margin-left: 10px; /* Adjust as needed for spacing */
+  margin-left: 10px;
 }
 
-
 .copy-btn:hover {
-  background-color: #0056b3; /* Darker blue color on hover */
+  background-color: #0056b3;
 }
 
 .target-url-container {
-    max-width: 80%; /* Adjust the maximum width as needed */
+  max-width: 80%;
 }
 
 .target-url {
-    display: inline-block;
-    max-width: 100%; /* Ensure the link takes the full width of its container */
-    word-wrap: break-word; /* Enable text wrapping */
-    overflow-wrap: break-word; /* For broader compatibility */
+  display: inline-block;
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
-
 
 </style>
