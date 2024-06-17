@@ -4,7 +4,7 @@ export const generateRandomString = length => {
   
   // Check if the input is a positive number
   if (typeof length !== 'number' || length <= 0) {
-    throw new Error('Length must be a positive number');
+    throw new Error('Random string length must be a positive number');
   }
 
   // Characters to use in the generated string
