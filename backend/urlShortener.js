@@ -19,7 +19,10 @@ export const shortenUrl = async (req, res, next) => {
     const nextId = idCounter + 1;
 
     // Generate a unique shortened URL string
-    const shortenedUrlString = generateRandomString(6);
+    let shortenedUrlString;
+    do {
+      shortenedUrlString = generateRandomString(6);
+    } while (await UrlModel.exists({ shortenedUrlString }));
 
     // Create a new document in the MongoDB collection
     const urlDocument = new UrlModel({
@@ -41,7 +44,7 @@ export const shortenUrl = async (req, res, next) => {
     res.json({ shortenedUrl, customId: nextId });
   } catch (error) {
     // Handle errors
-    console.error('Error processing URL:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+      console.error('Error processing URL:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
   }
 };
