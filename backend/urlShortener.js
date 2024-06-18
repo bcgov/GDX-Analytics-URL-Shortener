@@ -44,7 +44,7 @@ export const shortenUrl = async (req, res, next) => {
     res.json({ shortenedUrl, customId: nextId });
   } catch (error) {
     // Handle errors
-      console.error('Error processing URL:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error processing URL:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
