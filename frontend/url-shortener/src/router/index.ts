@@ -4,7 +4,7 @@ import UrlSummary from '../views/UrlSummary.vue'; // Import UrlSummary component
 import UrlTable from '../components/UrlTable.vue';
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.VITE_FRONTEND_BASE_URL),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/shorten',
