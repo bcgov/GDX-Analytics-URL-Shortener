@@ -86,9 +86,8 @@ const formattedTime = ref('');
 const isSubmitting = ref(false);
 const formSubmitted = ref(false);
 const copiedMessage = ref('');
-const frontendURL = import.meta.env.VITE_FRONTEND_BASE_URL || window.location.origin;
-const backendURL = import.meta.env.VITE_BACKEND_BASE_URL;
-const internalLink = computed(() => `${frontendURL}/url-summary/${customId.value}`);
+
+const internalLink = computed(() => `http://localhost:5173/url-summary/${customId.value}`);
 const router = useRouter();
 
 const submitForm = async () => {
@@ -97,11 +96,11 @@ const submitForm = async () => {
   try {
     const currentTime = new Date();
     const localTime = new Date(currentTime.toLocaleString('en-US', { timeZone: 'America/Vancouver' }));
-    const response = await axios.post(`${backendURL}/shorten`, {
+    const response = await axios.post('http://localhost:3000/shorten', {
       targetUrl: targetUrl.value,
       description: description.value,
       expiryDate: expiryDate.value,
-      createdTime: localTime.toISOString(),
+      createdTime: localTime.toISOString(), // Ensure createdTime is in ISO string format
     });
 
     shortenedUrl.value = response.data.shortenedUrl;
