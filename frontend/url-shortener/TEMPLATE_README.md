@@ -1,3 +1,7 @@
+> [!NOTE]  
+> This is a generic Readme template for Vue 3 in Vite.
+> Please refer to [frontend/README.md](../README.md) for configuring and starting the URL-S frontend app.
+
 # url-shortener
 ## How to run
 
