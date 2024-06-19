@@ -59,7 +59,7 @@
           <a :href="internalLink">{{ internalLink }}</a>
         </p>
         <p><strong>Expiry Date:</strong> {{ expiryDate }}</p>
-        <p><strong>Created Time:</strong> {{ formattedTime }}</p>
+        <p><strong>Created On:</strong> {{ formattedTime }}</p>
         <p><strong>Notes:</strong> {{ description }}</p>
       </div>
 
