@@ -98,11 +98,11 @@ const submitForm = async () => {
   try {
     const currentTime = new Date();
     const localTime = new Date(currentTime.toLocaleString('en-US', { timeZone: 'America/Vancouver' }));
-    const response = await axios.post(`${backendURL}/shorten`, {
+    const response = await axios.post('http://localhost:3000/shorten', {
       targetUrl: targetUrl.value,
       description: description.value,
       expiryDate: expiryDate.value,
-      createdTime: localTime.toISOString(),
+      createdTime: localTime.toISOString(), // Ensure createdTime is in ISO string format
     });
 
     shortenedUrl.value = response.data.shortenedUrl;
