@@ -5,7 +5,7 @@
       <label for="searchField">Search Field:</label>
       <select id="searchField" v-model="selectedSearchField">
         <option value="customId">Link #</option>
-        <option value="shortenedUrlString">Shortened URL</option>
+        <option value="shortenedUrlString">Short URL</option>
         <option value="targetUrl">Target URL</option>
         <!-- Add other fields as needed -->
       </select>
@@ -23,7 +23,7 @@
             Link # {{ getSortIcon('customId') }}
           </th>
           <th @click="sort('shortenedUrlString')" :class="{ 'sortable': true, 'asc': sortField === 'shortenedUrlString' }">
-            Shortened URL {{ getSortIcon('shortenedUrlString') }}
+            Short URL {{ getSortIcon('shortenedUrlString') }}
           </th>
           <th @click="sort('targetUrl')" :class="{ 'sortable': true, 'asc': sortField === 'targetUrl' }">
             Target URL {{ getSortIcon('targetUrl') }}

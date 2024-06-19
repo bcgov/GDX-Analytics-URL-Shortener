@@ -2,7 +2,7 @@
   <div>
     <h1>URL Summary</h1>
     <p>Link #: {{ customId }}</p>
-    <p>Shortened URL: {{ shortenedUrlString }}</p>
+    <p>Short URL: {{ shortenedUrlString }}</p>
     <p>Target URL: {{ targetUrl }}</p>
     <p>Notes: {{ description }}</p>
     <p>Expiry Date: {{ expiryDate }}</p>
