@@ -19,7 +19,10 @@ export const shortenUrl = async (req, res, next) => {
     const nextId = idCounter + 1;
 
     // Generate a unique shortened URL string
-    const shortenedUrlString = generateRandomString(6);
+    let shortenedUrlString;
+    do {
+      shortenedUrlString = generateRandomString(6);
+    } while (await UrlModel.exists({ shortenedUrlString }));
 
     // Create a new document in the MongoDB collection
     const urlDocument = new UrlModel({
