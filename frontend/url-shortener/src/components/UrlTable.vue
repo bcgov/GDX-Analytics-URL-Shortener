@@ -51,7 +51,17 @@
               {{ url.customId }}
             </router-link>
           </td>
-          <td>{{ url.shortenedUrlString }}</td>
+          <td>
+            <div>
+              <a :href="url.shortenedUrlString" target="_blank">
+                {{ url.shortenedUrlString.replace(/^https?:\/\//, '') }}
+              </a>
+              <button class="copy-btn" @click="copyToClipboard(url.shortenedUrlString)">
+                <img src="../assets/copy.svg" alt="Copy icon">
+              </button>
+              <p style="color: green;" v-if="url.copied">{{ copiedMessage }}</p>
+            </div>
+          </td>
           <td>{{ url.targetUrl }}</td>
           
           <td>{{ formatExpiryDate(url.expiryDate) }}</td>
@@ -203,4 +213,41 @@ const applyFilter = () => {
     return String(url[selectedSearchField.value]).toLowerCase().includes(searchTerm);
   });
 };
+
+// Function to copy URL to clipboard
+const copyToClipboard = (text) => {
+  const input = document.createElement('textarea');
+  input.value = text;
+  document.body.appendChild(input);
+  input.select();
+  document.execCommand('copy');
+  document.body.removeChild(input);
+
+  copiedMessage.value = 'URL copied!';
+  setTimeout(() => {
+    copiedMessage.value = '';
+  }, 5000); // Hide the message after 5 seconds
+};
+
 </script>
+
+<style scoped>
+
+.copy-btn {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  background-image: url('../assets/copy.svg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.copy-btn:hover {
+  background-color: #0056b3;
+}
+
+</style>
