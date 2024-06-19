@@ -4,7 +4,7 @@
     <div class="filter-section">
       <label for="searchField">Search Field:</label>
       <select id="searchField" v-model="selectedSearchField">
-        <option value="customId">Custom ID</option>
+        <option value="customId">Link #</option>
         <option value="shortenedUrlString">Shortened URL</option>
         <option value="targetUrl">Target URL</option>
         <!-- Add other fields as needed -->
@@ -20,7 +20,7 @@
       <thead>
         <tr>
           <th @click="sort('customId')" :class="{ 'sortable': true, 'asc': sortField === 'customId' }">
-            Custom ID {{ getSortIcon('customId') }}
+            Link # {{ getSortIcon('customId') }}
           </th>
           <th @click="sort('shortenedUrlString')" :class="{ 'sortable': true, 'asc': sortField === 'shortenedUrlString' }">
             Shortened URL {{ getSortIcon('shortenedUrlString') }}

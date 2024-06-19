@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>URL Summary</h1>
-    <p>Custom ID: {{ customId }}</p>
+    <p>Link #: {{ customId }}</p>
     <p>Shortened URL: {{ shortenedUrlString }}</p>
     <p>Target URL: {{ targetUrl }}</p>
     <p>Notes: {{ description }}</p>
