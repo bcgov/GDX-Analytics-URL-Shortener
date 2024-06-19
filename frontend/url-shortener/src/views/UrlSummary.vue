@@ -38,7 +38,7 @@ onMounted(async () => {
 
   try {
     // Retrieve data from the backend using customId
-    const response = await axios.get(`${frontendURL}/url-summary/${customId.value}`);
+    const response = await axios.get(`${backendURL}/url-summary/${customId.value}`);
     const data = response.data;
 
     // Update data properties based on the retrieved data
