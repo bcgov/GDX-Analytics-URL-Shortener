@@ -86,8 +86,10 @@ const formattedTime = ref('');
 const isSubmitting = ref(false);
 const formSubmitted = ref(false);
 const copiedMessage = ref('');
-
-const internalLink = computed(() => `http://localhost:5173/url-summary/${customId.value}`);
+const frontendURL = import.meta.env.VITE_FRONTEND_BASE_URL || window.location.origin;
+const backendURL = import.meta.env.VITE_BACKEND_BASE_URL;
+console.log('backendURL:', backendURL);
+const internalLink = computed(() => `${frontendURL}/url-summary/${customId.value}`);
 const router = useRouter();
 
 const submitForm = async () => {
@@ -161,7 +163,6 @@ const copyToClipboard = (text: string) => {
     copiedMessage.value = '';
   }, 5000); // Hide the message after 5 seconds
 };
-
 </script>
 
 <style scoped>

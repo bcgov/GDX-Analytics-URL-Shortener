@@ -99,12 +99,14 @@ const totalPages = ref(1);
 const sortField = ref('customId');
 const sortOrder = ref('asc');
 const selectedSearchField = ref('customId');
+const frontendURL = import.meta.env.VITE_FRONTEND_BASE_URL || window.location.origin;
+const backendURL = import.meta.env.VITE_BACKEND_BASE_URL;
 
 
 onMounted(async () => {
   try {
     // Retrieve the list of URLs from the backend using the new endpoint name
-    const response = await axios.get('http://localhost:3000/url-table');
+    const response = await axios.get(`${backendURL}/url-table`);
     urlTable.value = response.data || [];
 
     // Recalculate totalPages after fetching data
@@ -201,16 +203,4 @@ const applyFilter = () => {
     return String(url[selectedSearchField.value]).toLowerCase().includes(searchTerm);
   });
 };
-
-
-
-
 </script>
-
-
-
-
-
-
-
-
