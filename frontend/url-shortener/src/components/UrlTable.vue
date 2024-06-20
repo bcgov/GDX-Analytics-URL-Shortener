@@ -59,10 +59,10 @@
               <button class="copy-btn" @click="copyToClipboard(url.shortenedUrlString)">
                 <img src="../assets/copy.svg" alt="Copy icon">
               </button>
-              <p style="color: green;" v-if="url.copied">{{ copiedMessage }}</p>
             </div>
           </td>
-          <td class="nowrap-cell">{{ url.targetUrl }}</td>
+          <td class="targeturl-cell" :class="{ expanded: url.expanded }" @click="toggleExpand(url)">{{ url.targetUrl }}
+          </td>
           
           <td>{{ formatExpiryDate(url.expiryDate) }}</td>
           
@@ -109,6 +109,7 @@ const totalPages = ref(1);
 const sortField = ref('createdTime');
 const sortOrder = ref('desc');
 const selectedSearchField = ref('customId');
+const copiedMessage = ref('');
 const frontendURL = import.meta.env.VITE_FRONTEND_BASE_URL || window.location.origin;
 const backendURL = import.meta.env.VITE_BACKEND_BASE_URL;
 
@@ -215,19 +216,18 @@ const applyFilter = () => {
 };
 
 // Function to copy URL to clipboard
-const copyToClipboard = (text) => {
-  const input = document.createElement('textarea');
-  input.value = text;
-  document.body.appendChild(input);
-  input.select();
-  document.execCommand('copy');
-  document.body.removeChild(input);
-
-  copiedMessage.value = 'URL copied!';
-  setTimeout(() => {
-    copiedMessage.value = '';
-  }, 5000); // Hide the message after 5 seconds
+const copyToClipboard = async (text) => {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (err) {
+    console.error('Failed to copy text: ', err);
+  }
 };
+
+// Expand the target URL
+function toggleExpand(url) {
+  url.expanded = !url.expanded;
+}
 
 </script>
 
@@ -244,17 +244,32 @@ const copyToClipboard = (text) => {
   background-color: transparent;
   cursor: pointer;
   margin-left: 10px;
+  border: none;
+  outline: none;
+}
+
+.copy-btn:focus {
+  outline: none;
 }
 
 .copy-btn:hover {
   background-color: #0056b3;
 }
 
-.nowrap-cell {
+
+.targeturl-cell {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 300px; /* Adjust as necessary */
+  max-width: 300px;
+  cursor: pointer; /* Show pointer cursor to indicate clickability */
+}
+
+.targeturl-cell.expanded {
+  white-space: normal;
+  word-wrap: break-word;
+  max-height: none;
+  overflow-y: auto;
 }
 
 </style>
