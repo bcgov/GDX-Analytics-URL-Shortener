@@ -1,21 +1,17 @@
-# Use the official Node.js LTS (16.x) image as a base image
-FROM node:16
+# Use the official Node.js LTS Alpine image as a base image
+FROM node:lts-alpine
 
 # Set the working directory
 WORKDIR /usr/src/app
-
-# Fix npm cache ownership issue
-USER root
-RUN chown -R node:node /.npm
-
-# Switch back to the node user
-USER node
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
+
+# Change ownership of node_modules directory
+RUN chown -R node:node /usr/src/app/node_modules
 
 # Copy the rest of the application code
 COPY . .
