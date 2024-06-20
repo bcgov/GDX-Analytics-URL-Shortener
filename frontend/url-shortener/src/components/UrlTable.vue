@@ -51,15 +51,13 @@
               {{ url.customId }}
             </router-link>
           </td>
-          <td>
-            <div>
+          <td class="shorturl-cell">
               <a :href="url.shortenedUrlString" target="_blank">
                 {{ url.shortenedUrlString.replace(/^https?:\/\//, '') }}
               </a>
               <button class="copy-btn" @click="copyToClipboard(url.shortenedUrlString)">
                 <img src="../assets/copy.svg" alt="Copy icon">
               </button>
-            </div>
           </td>
           <td class="targeturl-cell" :class="{ expanded: url.expanded }" @click="toggleExpand(url)">{{ url.targetUrl }}
           </td>
@@ -256,13 +254,18 @@ function toggleExpand(url) {
   background-color: #0056b3;
 }
 
+.shorturl-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  min-width: 100px;
+}
 
 .targeturl-cell {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 300px;
-  cursor: pointer; /* Show pointer cursor to indicate clickability */
+  cursor: pointer;
 }
 
 .targeturl-cell.expanded {
