@@ -62,7 +62,7 @@
               <p style="color: green;" v-if="url.copied">{{ copiedMessage }}</p>
             </div>
           </td>
-          <td>{{ url.targetUrl }}</td>
+          <td class="nowrap-cell">{{ url.targetUrl }}</td>
           
           <td>{{ formatExpiryDate(url.expiryDate) }}</td>
           
@@ -248,6 +248,13 @@ const copyToClipboard = (text) => {
 
 .copy-btn:hover {
   background-color: #0056b3;
+}
+
+.nowrap-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px; /* Adjust as necessary */
 }
 
 </style>
