@@ -100,7 +100,7 @@ const sortField = ref('customId');
 const sortOrder = ref('asc');
 const selectedSearchField = ref('customId');
 const frontendURL = import.meta.env.VITE_FRONTEND_BASE_URL || window.location.origin;
-const backendURL = import.meta.env.VITE_BACKEND_BASE_URL;
+const backendURL = import.meta.env.VITE_BACKEND_BASE_URL || 'some_backend_url'; 
 
 
 onMounted(async () => {
