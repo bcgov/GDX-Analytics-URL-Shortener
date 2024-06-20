@@ -29,6 +29,9 @@ if (process.env.MONGODB_USER && process.env.MONGODB_PASSWORD) {
   }
 }
 
+let connectionAttempts = 0;
+const maxConnectionAttempts = 3; // Adjust this as needed
+
 async function connectToDatabase() {
   try {
     await mongoose.connect(mongoURL, {
@@ -38,8 +41,14 @@ async function connectToDatabase() {
     console.log('Connected to MongoDB');
   } catch (err) {
     console.error('Error connecting to MongoDB', err);
-    // Optionally retry connection after a delay or exit the process
-    setTimeout(connectToDatabase, 5000); // Retry after 5 seconds
+    connectionAttempts++;
+    if (connectionAttempts < maxConnectionAttempts) {
+      console.log(`Retrying connection in 5 seconds (Attempt ${connectionAttempts}/${maxConnectionAttempts})`);
+      setTimeout(connectToDatabase, 5000); // Retry after 5 seconds
+    } else {
+      console.error(`Max connection attempts (${maxConnectionAttempts}) reached. Exiting process.`);
+      process.exit(1); // Exit the process after max attempts
+    }
   }
 }
 
