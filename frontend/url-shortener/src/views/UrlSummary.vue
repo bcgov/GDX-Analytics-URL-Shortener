@@ -30,7 +30,7 @@ const expiryDate = ref('');
 const createdBy = ref('');
 const createdTime = ref('');
 const frontendURL = import.meta.env.VITE_FRONTEND_BASE_URL || window.location.origin;
-const backendURL = import.meta.env.VITE_BACKEND_BASE_URL;
+const backendURL = import.meta.env.VITE_BACKEND_BASE_URL || 'some_backend_url'; 
 onMounted(async () => {
   // Assign the customId value from the route parameters using useRoute
   customId.value = route.params.customId;
