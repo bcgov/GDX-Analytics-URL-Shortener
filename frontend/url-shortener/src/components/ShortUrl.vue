@@ -87,8 +87,9 @@ const isSubmitting = ref(false);
 const formSubmitted = ref(false);
 const copiedMessage = ref('');
 const frontendURL = import.meta.env.VITE_FRONTEND_BASE_URL || window.location.origin;
-const backendURL = import.meta.env.VITE_BACKEND_BASE_URL;
+const backendURL = import.meta.env.VITE_BACKEND_BASE_URL || 'some_backend_url'; 
 console.log('backendURL:', backendURL);
+console.log('mode:', import.meta.env.MODE);
 const internalLink = computed(() => `${frontendURL}/url-summary/${customId.value}`);
 const router = useRouter();
 
