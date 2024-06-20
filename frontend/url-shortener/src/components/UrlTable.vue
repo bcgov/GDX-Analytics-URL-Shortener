@@ -116,7 +116,7 @@ const backendURL = import.meta.env.VITE_BACKEND_BASE_URL;
 onMounted(async () => {
   try {
     // Retrieve the list of URLs from the backend using the new endpoint name
-    const response = await axios.get(`${backendURL}/url-table`);
+    const response = await axios.get(`${backendURL}/urls`);
     urlTable.value = response.data || [];
 
     // Recalculate totalPages after fetching data

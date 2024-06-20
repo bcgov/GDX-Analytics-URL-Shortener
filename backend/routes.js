@@ -18,7 +18,7 @@ export const setRoutes = (router) => {
   // Route to retrieve URL details based on custom ID
   router.get('/url-summary/:customId', getUrlSummary);
   // Route to retrieve the table of URLs
-  router.get('/url-table', getUrlTable);
+  router.get('/urls', getUrlTable);
 
 // ... (other routes)
 };
