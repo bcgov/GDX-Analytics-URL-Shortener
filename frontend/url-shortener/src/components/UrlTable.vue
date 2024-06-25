@@ -67,7 +67,8 @@
           <td>{{ url.createdBy }}</td>
           <td>{{ url.createdTime }}</td>
           <!--<td>{{ url.tags }}</td>-->
-          <td>{{ url.description }}</td>
+          <td class="description-cell" :class="{ expanded: url.expanded }" @click="toggleExpand(url)">{{ url.description }}
+          </td>
         </tr>
       </tbody>
     </table>
@@ -269,6 +270,21 @@ function toggleExpand(url) {
 }
 
 .targeturl-cell.expanded {
+  white-space: normal;
+  word-wrap: break-word;
+  max-height: none;
+  overflow-y: auto;
+}
+
+.description-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 400px;
+  cursor: pointer;
+}
+
+.description-cell.expanded {
   white-space: normal;
   word-wrap: break-word;
   max-height: none;
