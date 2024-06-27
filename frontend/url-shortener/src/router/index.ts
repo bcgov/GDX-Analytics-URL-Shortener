@@ -15,7 +15,7 @@ const routes = [
     component: UrlSummary,
   },
   {
-    path: '/url-table',
+    path: '/urls',
     name: 'url-table',
     component: UrlTable,
   },
