@@ -4,8 +4,8 @@
     <div class="filter-section">
       <label for="searchField">Search Field:</label>
       <select id="searchField" v-model="selectedSearchField">
-        <option value="customId">Custom ID</option>
-        <option value="shortenedUrlString">Shortened URL</option>
+        <option value="customId">Link #</option>
+        <option value="shortenedUrlString">Short URL</option>
         <option value="targetUrl">Target URL</option>
         <!-- Add other fields as needed -->
       </select>
@@ -20,10 +20,10 @@
       <thead>
         <tr>
           <th @click="sort('customId')" :class="{ 'sortable': true, 'asc': sortField === 'customId' }">
-            Custom ID {{ getSortIcon('customId') }}
+            Link # {{ getSortIcon('customId') }}
           </th>
           <th @click="sort('shortenedUrlString')" :class="{ 'sortable': true, 'asc': sortField === 'shortenedUrlString' }">
-            Shortened URL {{ getSortIcon('shortenedUrlString') }}
+            Short URL {{ getSortIcon('shortenedUrlString') }}
           </th>
           <th @click="sort('targetUrl')" :class="{ 'sortable': true, 'asc': sortField === 'targetUrl' }">
             Target URL {{ getSortIcon('targetUrl') }}
@@ -37,7 +37,7 @@
             Created By {{ getSortIcon('createdBy') }}
           </th>
           <th @click="sort('createdTime')" :class="{ 'sortable': true, 'asc': sortField === 'createdTime' }">
-            Created Time {{ getSortIcon('createdTime') }}
+            Created On {{ getSortIcon('createdTime') }}
           </th>
           <!--<th>Tags</th>-->
           <th>Notes</th>
@@ -51,15 +51,24 @@
               {{ url.customId }}
             </router-link>
           </td>
-          <td>{{ url.shortenedUrlString }}</td>
-          <td>{{ url.targetUrl }}</td>
+          <td class="shorturl-cell">
+              <a :href="url.shortenedUrlString" target="_blank">
+                {{ url.shortenedUrlString.replace(/^https?:\/\//, '') }}
+              </a>
+              <button class="copy-btn" @click="copyToClipboard(url.shortenedUrlString)">
+                <img src="../assets/copy.svg" alt="Copy icon">
+              </button>
+          </td>
+          <td class="targeturl-cell" :class="{ expanded: url.expanded }" @click="toggleExpand(url)">{{ url.targetUrl }}
+          </td>
           
           <td>{{ formatExpiryDate(url.expiryDate) }}</td>
           
           <td>{{ url.createdBy }}</td>
           <td>{{ url.createdTime }}</td>
           <!--<td>{{ url.tags }}</td>-->
-          <td>{{ url.description }}</td>
+          <td class="description-cell" :class="{ expanded: url.expanded }" @click="toggleExpand(url)">{{ url.description }}
+          </td>
         </tr>
       </tbody>
     </table>
@@ -96,9 +105,10 @@ const urlTable = ref([]);
 const itemsPerPage = 10;
 const currentPage = ref(1);
 const totalPages = ref(1);
-const sortField = ref('customId');
-const sortOrder = ref('asc');
+const sortField = ref('createdTime');
+const sortOrder = ref('desc');
 const selectedSearchField = ref('customId');
+const copiedMessage = ref('');
 const frontendURL = import.meta.env.VITE_FRONTEND_BASE_URL || window.location.origin;
 const backendURL = import.meta.env.VITE_BACKEND_BASE_URL || 'some_backend_url'; 
 
@@ -106,7 +116,7 @@ const backendURL = import.meta.env.VITE_BACKEND_BASE_URL || 'some_backend_url';
 onMounted(async () => {
   try {
     // Retrieve the list of URLs from the backend using the new endpoint name
-    const response = await axios.get(`${backendURL}/url-table`);
+    const response = await axios.get(`${backendURL}/urls`);
     urlTable.value = response.data || [];
 
     // Recalculate totalPages after fetching data
@@ -203,4 +213,82 @@ const applyFilter = () => {
     return String(url[selectedSearchField.value]).toLowerCase().includes(searchTerm);
   });
 };
+
+// Function to copy URL to clipboard
+const copyToClipboard = async (text) => {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (err) {
+    console.error('Failed to copy text: ', err);
+  }
+};
+
+// Expand the target URL
+function toggleExpand(url) {
+  url.expanded = !url.expanded;
+}
+
 </script>
+
+<style scoped>
+
+.copy-btn {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  background-image: url('../assets/copy.svg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  cursor: pointer;
+  margin-left: 10px;
+  border: none;
+  outline: none;
+}
+
+.copy-btn:focus {
+  outline: none;
+}
+
+.copy-btn:hover {
+  background-color: #0056b3;
+}
+
+.shorturl-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  min-width: 100px;
+}
+
+.targeturl-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+  cursor: pointer;
+}
+
+.targeturl-cell.expanded {
+  white-space: normal;
+  word-wrap: break-word;
+  max-height: none;
+  overflow-y: auto;
+}
+
+.description-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 400px;
+  cursor: pointer;
+}
+
+.description-cell.expanded {
+  white-space: normal;
+  word-wrap: break-word;
+  max-height: none;
+  overflow-y: auto;
+}
+
+</style>
