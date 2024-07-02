@@ -1,15 +1,15 @@
 <template>
   <div>
     <h1>URL Summary</h1>
-    <p>Custom ID: {{ customId }}</p>
-    <p>Shortened URL: {{ shortenedUrlString }}</p>
+    <p>Link #: {{ customId }}</p>
+    <p>Short URL: {{ shortenedUrlString }}</p>
     <p>Target URL: {{ targetUrl }}</p>
     <p>Notes: {{ description }}</p>
     <p>Expiry Date: {{ expiryDate }}</p>
     <!-- Add the following lines for tags, created by, and created time 
     <p>Tags: {{ tags }}</p>-->
     <p>Created By: {{ createdBy }}</p>
-    <p>Created Time: {{ createdTime }}</p>
+    <p>Created On: {{ createdTime }}</p>
     <!-- Add a router-link to navigate to the URL List page -->
     <router-link :to="{ name: 'url-table' }">Check all URLs</router-link>
   </div>
