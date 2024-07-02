@@ -7,27 +7,24 @@ console.log('NODE_ENV:', process.env.NODE_ENV);
 
 // Determine if the environment is local or not
 const isLocal = process.env.NODE_ENV === 'development';
-const mongodbHost = isLocal ? 'localhost' : (process.env.MONGODB_HOST || 'mongodb');
+const mongodbHost = isLocal ? 'localhost' : (process.env.MONGODB_HOST || 'mongodb.c6d33e-tools.svc.cluster.local');
 const mongodbDatabase = 'mongodb';  // Your database name
 const mongodbPort = '27017';  // Fixed port
 
 let mongoURL;
-
+//if there is a env variables, then 
 if (process.env.MONGODB_USER && process.env.MONGODB_PASSWORD) {
   const mongodbUser = process.env.MONGODB_USER;
   const mongodbPassword = process.env.MONGODB_PASSWORD;
-  if (isLocal) {
-    mongoURL = `mongodb://${mongodbUser}:${mongodbPassword}@${mongodbHost}:${mongodbPort}/${mongodbDatabase}`;
-  } else {
-    mongoURL = `mongodb://${mongodbUser}:${mongodbPassword}@${mongodbHost}:${mongodbPort}/${mongodbDatabase}`;
-  }
+  mongoURL = `mongodb://${mongodbUser}:${mongodbPassword}@${mongodbHost}:${mongodbPort}/${mongodbDatabase}`;
 } else {
-  if (isLocal) {
-    mongoURL = `mongodb://${mongodbHost}:${mongodbPort}/${mongodbDatabase}`;
-  } else {
-    mongoURL = `mongodb://${mongodbHost}:${mongodbPort}/${mongodbDatabase}`;
-  }
+  mongoURL = `mongodb://${mongodbHost}:${mongodbPort}/${mongodbDatabase}`;
 }
+
+console.log('MONGODB_HOST:', mongodbHost);
+console.log('MONGODB_USER:', process.env.MONGODB_USER);
+console.log('MONGODB_PASSWORD:', process.env.MONGODB_PASSWORD ? 'set' : 'not set');
+console.log('MongoDB Connection URL:', mongoURL);
 
 let connectionAttempts = 0;
 const maxConnectionAttempts = 3; // Adjust this as needed
@@ -35,8 +32,7 @@ const maxConnectionAttempts = 3; // Adjust this as needed
 async function connectToDatabase() {
   try {
     await mongoose.connect(mongoURL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 30000, // Keep this for retry logic
     });
     console.log('Connected to MongoDB');
   } catch (err) {
