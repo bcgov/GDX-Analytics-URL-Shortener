@@ -87,7 +87,7 @@ const isSubmitting = ref(false);
 const formSubmitted = ref(false);
 const copiedMessage = ref('');
 const frontendURL = import.meta.env.VITE_FRONTEND_BASE_URL || window.location.origin;
-const backendURL = import.meta.env.VITE_BACKEND_BASE_URL || 'some_backend_url'; 
+const backendURL = import.meta.env.VITE_BACKEND_BASE_URL || 'https://gdx-analytics-url-shortener-backend-c6d33e-dev.apps.silver.devops.gov.bc.ca/'; 
 console.log('backendURL:', backendURL);
 console.log('mode:', import.meta.env.MODE);
 const internalLink = computed(() => `${frontendURL}/url-summary/${customId.value}`);
@@ -99,17 +99,23 @@ const submitForm = async () => {
   try {
     const currentTime = new Date();
     const localTime = new Date(currentTime.toLocaleString('en-US', { timeZone: 'America/Vancouver' }));
-    const response = await axios.post('http://localhost:3000/shorten', {
+
+    // Determine backend URL based on environment mode
+    const baseUrl = import.meta.env.MODE === 'production'
+      ? 'https://gdx-analytics-url-shortener-backend-c6d33e-dev.apps.silver.devops.gov.bc.ca/'
+      : 'http://localhost:3000/';
+
+    const response = await axios.post(`${baseUrl}shorten`, {
       targetUrl: targetUrl.value,
       description: description.value,
       expiryDate: expiryDate.value,
-      createdTime: localTime.toISOString(), // Ensure createdTime is in ISO string format
+      createdTime: localTime.toISOString(),
     });
 
     shortenedUrl.value = response.data.shortenedUrl;
     customId.value = response.data.customId;
     error.value = '';
-    createdTime.value = localTime.toISOString(); // Convert localTime to ISO string
+    createdTime.value = localTime.toISOString();
     formattedTime.value = formatTime(localTime);
     formSubmitted.value = true;
   } catch (err: any) {
