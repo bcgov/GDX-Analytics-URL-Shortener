@@ -26,19 +26,20 @@ const shortenedUrlString = ref('');
 const targetUrl = ref('');
 const description = ref('');
 const expiryDate = ref('');
-//const tags = ref('');
+// const tags = ref('');
 const createdBy = ref('');
 const createdTime = ref('');
-const frontendURL = import.meta.env.VITE_FRONTEND_BASE_URL || window.location.origin;
-const backendURL = import.meta.env.VITE_BACKEND_BASE_URL || 'some_backend_url'; 
+const backendURL = import.meta.env.MODE === 'production'
+  ? 'https://gdx-analytics-url-shortener-backend-c6d33e-dev.apps.silver.devops.gov.bc.ca/'
+  : 'http://localhost:3000/';
+
 onMounted(async () => {
   // Assign the customId value from the route parameters using useRoute
   customId.value = route.params.customId;
 
   try {
     // Retrieve data from the backend using customId
-
-    const response = await axios.get(`${backendURL}/url-summary/${customId.value}`);
+    const response = await axios.get(`${backendURL}url-summary/${customId.value}`);
 
     const data = response.data;
 
@@ -49,9 +50,9 @@ onMounted(async () => {
     expiryDate.value = data.expiryDate;
 
     // Check if these properties exist in the response before updating
-    //if ('tags' in data) {
-    //  tags.value = data.tags;
-    //}
+    // if ('tags' in data) {
+    //   tags.value = data.tags;
+    // }
 
     if ('createdBy' in data) {
       createdBy.value = data.createdBy;

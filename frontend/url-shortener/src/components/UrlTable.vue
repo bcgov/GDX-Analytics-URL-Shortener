@@ -94,12 +94,10 @@
   </div>
 </template>
 
-<!-- ... rest of the code ... -->
-
-
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
+
 const filterText = ref('');
 const urlTable = ref([]);
 const itemsPerPage = 10;
@@ -109,9 +107,10 @@ const sortField = ref('createdTime');
 const sortOrder = ref('desc');
 const selectedSearchField = ref('customId');
 const copiedMessage = ref('');
-const frontendURL = import.meta.env.VITE_FRONTEND_BASE_URL || window.location.origin;
-const backendURL = import.meta.env.VITE_BACKEND_BASE_URL || 'some_backend_url'; 
 
+const backendURL = import.meta.env.MODE === 'production'
+  ? 'https://gdx-analytics-url-shortener-backend-c6d33e-dev.apps.silver.devops.gov.bc.ca/'
+  : 'http://localhost:3000/';
 
 onMounted(async () => {
   try {
