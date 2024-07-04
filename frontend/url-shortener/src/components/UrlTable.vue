@@ -109,8 +109,8 @@ const selectedSearchField = ref('customId');
 const copiedMessage = ref('');
 
 const backendURL = import.meta.env.MODE === 'production'
-  ? 'https://gdx-analytics-url-shortener-backend-c6d33e-dev.apps.silver.devops.gov.bc.ca/'
-  : 'http://localhost:3000/';
+  ? 'https://gdx-analytics-url-shortener-backend-c6d33e-dev.apps.silver.devops.gov.bc.ca'
+  : 'http://localhost:3000';
 
 onMounted(async () => {
   try {
