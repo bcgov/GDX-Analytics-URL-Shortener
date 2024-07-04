@@ -9,6 +9,10 @@ import cors from 'cors';
 // Load environment variables from .env file
 dotenv.config();
 
+const backendURL = process.env.NODE_ENV === 'production'
+  ? 'https://gdx-analytics-url-shortener-backend-c6d33e-dev.apps.silver.devops.gov.bc.ca/'
+  : 'http://localhost:3000/';
+
 const store = new session.MemoryStore();
 
 const app = express();
@@ -42,7 +46,7 @@ const keycloakIssuer = await Issuer.discover(
 const keycloakClient = new keycloakIssuer.Client({
   client_id: process.env.SSO_CLIENT_ID,
   client_secret: process.env.SSO_CLIENT_SECRET,
-  redirect_uris: ['http://localhost:3000/auth/callback'],
+  redirect_uris: [`${backendURL}auth/callback`],  // Using backendURL here
   response_types: ['code'],
 });
 
@@ -68,7 +72,7 @@ passport.deserializeUser((user, done) => {
 });
 
 app.listen(3000, function () {
-  console.log('Listening at http://localhost:3000');
+  console.log(`Listening at ${backendURL}`);
   console.log('NODE_ENV:', process.env.NODE_ENV);
 });
 
