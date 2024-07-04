@@ -3,28 +3,30 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Log the current environment mode
-console.log('NODE_ENV:', process.env.NODE_ENV);
+//console.log('NODE_ENV:', process.env.NODE_ENV);
 
 // Determine if the environment is local or not
 const isLocal = process.env.NODE_ENV === 'development';
-const mongodbHost = isLocal ? 'localhost' : (process.env.MONGODB_HOST || 'mongodb.c6d33e-tools.svc.cluster.local');
-const mongodbDatabase = 'mongodb';  // Your database name
+const mongodbHost = isLocal ? 'localhost' : (process.env.MONGODB_HOST || 'mongodb-dev');
+const mongodbDatabase = isLocal ? 'mongodb' : (process.env.MONGODB_DATABASE || 'mongodb');  // Your database name
 const mongodbPort = '27017';  // Fixed port
 
 let mongoURL;
 //if there is a env variables, then 
-if (process.env.MONGODB_USER && process.env.MONGODB_PASSWORD) {
-  const mongodbUser = process.env.MONGODB_USER;
-  const mongodbPassword = process.env.MONGODB_PASSWORD;
-  mongoURL = `mongodb://${mongodbUser}:${mongodbPassword}@${mongodbHost}:${mongodbPort}/${mongodbDatabase}`;
-} else {
+if (isLocal) {
   mongoURL = `mongodb://${mongodbHost}:${mongodbPort}/${mongodbDatabase}`;
+} else {
+  if (process.env.MONGODB_USER && process.env.MONGODB_PASSWORD) {
+    const mongodbUser = process.env.MONGODB_USER;
+    const mongodbPassword = process.env.MONGODB_PASSWORD;
+    mongoURL = `mongodb://${mongodbUser}:${mongodbPassword}@${mongodbHost}:${mongodbPort}/${mongodbDatabase}`;
+  }
 }
-
-console.log('MONGODB_HOST:', mongodbHost);
-console.log('MONGODB_USER:', process.env.MONGODB_USER);
-console.log('MONGODB_PASSWORD:', process.env.MONGODB_PASSWORD ? 'set' : 'not set');
-console.log('MongoDB Connection URL:', mongoURL);
+//console logging statments for debugging the connection
+//console.log('MONGODB_HOST:', mongodbHost);
+//console.log('MONGODB_USER:', process.env.MONGODB_USER);
+//console.log('MONGODB_PASSWORD:', process.env.MONGODB_PASSWORD ? 'set' : 'not set');
+//console.log('MongoDB Connection URL:', mongoURL);
 
 let connectionAttempts = 0;
 const maxConnectionAttempts = 3; // Adjust this as needed
