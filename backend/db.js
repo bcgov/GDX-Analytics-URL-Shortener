@@ -22,7 +22,8 @@ if (isLocal) {
     mongoURL = `mongodb://${mongodbUser}:${mongodbPassword}@${mongodbHost}:${mongodbPort}/${mongodbDatabase}`;
   }
 }
-//console logging statments for debugging the connection
+
+//console logging statements for debugging the connection
 //console.log('MONGODB_HOST:', mongodbHost);
 //console.log('MONGODB_USER:', process.env.MONGODB_USER);
 //console.log('MONGODB_PASSWORD:', process.env.MONGODB_PASSWORD ? 'set' : 'not set');
