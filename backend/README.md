@@ -21,11 +21,11 @@ Instructions for configuring and starting the URL-S backend apps: Node.js Expres
 
 **`Step 8`**. Complete the the Frontend installation steps in the /frontend folder README.
 
-## Openshift dev Setup
+## OpenShift dev pod Setup
 
-**`Step 1`**. Move all sso related environment variables from .env file to openshift secrets. Use env.template file for example entries. Make sure to also add NODE_ENV=production in the secrets as well
-**`Step 2`**. Install a new mongodb service in Openshift within the dev project using the MongoDB (Ephemeral) template already provided by openshift, as a part of this setup, you will be setting up the credentials for mongodb to later use in the application.
-**`Step 3`**. Setup the app using "Import from Git" strategy and pull the https://github.com/bcgov/GDX-Analytics-URL-Shortener/tree/gdxdsd-6863-move-local-to-openshift/backend code.
+**`Step 1`**. Move all sso related environment variables from .env file to OpenShift secrets. Use env.template file for example entries. Make sure to also add NODE_ENV=production in the secrets as well
+**`Step 2`**. Install a new mongodb service in OpenShift within the dev project using the MongoDB (Ephemeral) template already provided by OpenShift, as a part of this setup, you will be setting up the credentials for mongodb to later use in the application.
+**`Step 3`**. Setup the app using "Import from Git" strategy and pull the https://github.com/bcgov/GDX-Analytics-URL-Shortener/tree/gdxdsd-6863-move-local-to-OpenShift/backend code.
 A port forwading in the backend service is required to forward the traffic from 8080 to 3000. So yaml file of backend service sshould have these values
 spec:
   ports:
@@ -33,7 +33,7 @@ spec:
       protocol: TCP
       port: 8080
       targetPort: 3000
-**`Step 4`**. A docker file at backend/Dockerfile is provided as part of this folder which is enough to provide insutructions to openshift and to start the backend server. This should create a pod and route in dev project where backend will accessible and connected to the database.
+**`Step 4`**. A docker file at backend/Dockerfile is provided as part of this folder which is enough to provide insutructions to OpenShift and to start the backend server. This should create a pod and route in dev project where backend will accessible and connected to the database.
 
 
 ## Details
