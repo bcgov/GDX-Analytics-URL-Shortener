@@ -8,7 +8,7 @@ dotenv.config();
 // Determine MongoDB connection details based on environment
 
 // Check if the environment is local development
-const isLocal = process.env.NODE_ENV === 'development';
+const isLocal = process.env.NODE_ENV === 'local';
 
 // Set MongoDB host based on environment variables or default to 'mongodb-dev' for non-local
 const mongodbHost = isLocal ? 'localhost' : (process.env.MONGODB_HOST || 'mongodb-dev');
