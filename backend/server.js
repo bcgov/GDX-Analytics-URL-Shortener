@@ -9,9 +9,7 @@ import cors from 'cors';
 // Load environment variables from .env file
 dotenv.config();
 
-const backendURL = process.env.NODE_ENV === 'production'
-  ? 'https://gdx-analytics-url-shortener-backend-c6d33e-dev.apps.silver.devops.gov.bc.ca/'
-  : 'http://localhost:3000/';
+const backendURL = process.env.SSO_LOGOUT_REDIRECT_URI;
 
 const store = new session.MemoryStore();
 
