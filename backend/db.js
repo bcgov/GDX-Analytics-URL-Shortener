@@ -34,10 +34,10 @@ if (isLocal) {
 }
 
 // Debugging console logs for connection details
-//console.log('MONGODB_HOST:', mongodbHost);
-//console.log('MONGODB_USER:', process.env.MONGODB_USER);
-//console.log('MONGODB_PASSWORD:', process.env.MONGODB_PASSWORD ? 'set' : 'not set');
-//console.log('MongoDB Connection URL:', mongoURL);
+console.log('MONGODB_HOST:', mongodbHost);
+console.log('MONGODB_USER:', process.env.MONGODB_USER);
+console.log('MONGODB_PASSWORD:', process.env.MONGODB_PASSWORD ? 'set' : 'not set');
+console.log('MongoDB Connection URL:', mongoURL);
 
 let connectionAttempts = 0;
 const maxConnectionAttempts = 3; // Adjust as needed
