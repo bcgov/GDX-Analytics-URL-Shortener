@@ -11,18 +11,18 @@ dotenv.config();
 
 
 // Set MongoDB host based on environment variables or default to 'mongodb-dev' for non-local
-const mongodbHost = mongodb-tools;
+const mongodbHost = 'mongodb-tools';
 
 // Set MongoDB database name based on environment variables or default to 'mongodb' for non-local
-const mongodbDatabase = mongo-urls-db;
+const mongodbDatabase = 'mongo-urls-db';
 
 // MongoDB port number (default is 27017)
 const mongodbPort = '27017';  // MongoDB port
 
 let mongoURL;
 
-const mongodbUser = dbuser;
-const mongodbPassword = dbpass;
+const mongodbUser = 'dbuser';
+const mongodbPassword = 'dbpass';
 mongoURL = `mongodb://${mongodbUser}:${mongodbPassword}@${mongodbHost}:${mongodbPort}/${mongodbDatabase}`;
 
 // Debugging console logs for connection details
