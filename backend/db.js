@@ -21,8 +21,8 @@ const mongodbPort = '27017';  // MongoDB port
 
 let mongoURL;
 
-const mongodbUser = 'dbuser';
-const mongodbPassword = 'dbpass';
+const mongodbUser = 'dbuser123';
+const mongodbPassword = 'dbpass123';
 mongoURL = `mongodb://${mongodbUser}:${mongodbPassword}@${mongodbHost}:${mongodbPort}/${mongodbDatabase}`;
 
 // Debugging console logs for connection details
