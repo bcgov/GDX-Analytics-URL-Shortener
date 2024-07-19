@@ -8,28 +8,36 @@ dotenv.config();
 // Determine MongoDB connection details based on environment
 
 // Check if the environment is local
-
+const isLocal = process.env.NODE_ENV === 'local';
 
 // Set MongoDB host based on environment variables or default to 'mongodb-dev' for non-local
-const mongodbHost = 'mongodb-tools';
+const mongodbHost = isLocal ? 'localhost' : (process.env.MONGODB_HOST || 'mongodb-dev');
 
 // Set MongoDB database name based on environment variables or default to 'mongodb' for non-local
-const mongodbDatabase = 'mongo-urls-db';
+const mongodbDatabase = isLocal ? 'mongodb' : (process.env.MONGODB_DATABASE || 'mongodb');
 
 // MongoDB port number (default is 27017)
 const mongodbPort = '27017';  // MongoDB port
 
 let mongoURL;
 
-const mongodbUser = 'dbuser123';
-const mongodbPassword = 'dbpass123';
-mongoURL = `mongodb://${mongodbUser}:${mongodbPassword}@${mongodbHost}:${mongodbPort}/${mongodbDatabase}`;
+// Construct MongoDB connection URL
+if (isLocal) {
+  mongoURL = `mongodb://${mongodbHost}:${mongodbPort}/${mongodbDatabase}`;
+} else {
+  // Use credentials if provided for non-local environments
+  if (process.env.MONGODB_USER && process.env.MONGODB_PASSWORD) {
+    const mongodbUser = process.env.MONGODB_USER;
+    const mongodbPassword = process.env.MONGODB_PASSWORD;
+    mongoURL = `mongodb://${mongodbUser}:${mongodbPassword}@${mongodbHost}:${mongodbPort}/${mongodbDatabase}`;
+  }
+}
 
 // Debugging console logs for connection details
-console.log('MONGODB_HOST:', mongodbHost);
-console.log('MONGODB_USER:', mongodbUser);
-console.log('MONGODB_PASSWORD:', mongodbPassword ? 'set' : 'not set');
-console.log('MongoDB Connection URL:', mongoURL);
+//console.log('MONGODB_HOST:', mongodbHost);
+//console.log('MONGODB_USER:', process.env.MONGODB_USER);
+//console.log('MONGODB_PASSWORD:', process.env.MONGODB_PASSWORD ? 'set' : 'not set');
+//console.log('MongoDB Connection URL:', mongoURL);
 
 let connectionAttempts = 0;
 const maxConnectionAttempts = 3; // Adjust as needed

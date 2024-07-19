@@ -29,9 +29,15 @@ const expiryDate = ref('');
 // const tags = ref('');
 const createdBy = ref('');
 const createdTime = ref('');
-const backendURL = import.meta.env.MODE === 'production'
-  ? 'https://gdx-analytics-url-shortener-backend-c6d33e-dev.apps.silver.devops.gov.bc.ca/'
-  : 'http://localhost:3000/';
+const frontend = window.location.origin;
+let backendURL = 'http://localhost:3000/';
+
+if (frontend === 'https://gdx-analytics-url-shortener-c6d33e-dev.apps.silver.devops.gov.bc.ca') {
+  backendURL = 'https://gdx-analytics-url-shortener-backend-c6d33e-dev.apps.silver.devops.gov.bc.ca/';
+} else if (frontend === 'https://gdx-analytics-url-shortener-frontend-c6d33e-tools.apps.silver.devops.gov.bc.ca') {
+  backendURL = 'https://gdx-analytics-url-shortener-backend-c6d33e-tools.apps.silver.devops.gov.bc.ca/';
+}
+
 
 onMounted(async () => {
   // Assign the customId value from the route parameters using useRoute
