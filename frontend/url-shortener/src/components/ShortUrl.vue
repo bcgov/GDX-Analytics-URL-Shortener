@@ -86,8 +86,15 @@ const formattedTime = ref('');
 const isSubmitting = ref(false);
 const formSubmitted = ref(false);
 const copiedMessage = ref('');
-const frontendURL = import.meta.env.VITE_FRONTEND_BASE_URL || window.location.origin;
-const backendURL = import.meta.env.VITE_BACKEND_BASE_URL || 'https://gdx-analytics-url-shortener-backend-c6d33e-dev.apps.silver.devops.gov.bc.ca/'; 
+const frontendURL = window.location.origin;
+let backendURL = 'http://localhost:3000';
+
+if (frontendURL === 'https://gdx-analytics-url-shortener-c6d33e-dev.apps.silver.devops.gov.bc.ca') {
+  backendURL = 'https://gdx-analytics-url-shortener-backend-c6d33e-dev.apps.silver.devops.gov.bc.ca';
+} else if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-tools.apps.silver.devops.gov.bc.ca') {
+  backendURL = 'https://gdx-analytics-url-shortener-backend-c6d33e-tools.apps.silver.devops.gov.bc.ca';
+}
+console.log('frontend:', window.location.origin);
 console.log('backendURL:', backendURL);
 console.log('mode:', import.meta.env.MODE);
 const internalLink = computed(() => `${frontendURL}/url-summary/${customId.value}`);
@@ -101,9 +108,13 @@ const submitForm = async () => {
     const localTime = new Date(currentTime.toLocaleString('en-US', { timeZone: 'America/Vancouver' }));
 
     // Determine backend URL based on environment mode
-    const baseUrl = import.meta.env.MODE === 'production'
-      ? 'https://gdx-analytics-url-shortener-backend-c6d33e-dev.apps.silver.devops.gov.bc.ca/'
-      : 'http://localhost:3000/';
+    let baseUrl = 'http://localhost:3000/';
+
+    if (frontendURL === 'https://gdx-analytics-url-shortener-c6d33e-dev.apps.silver.devops.gov.bc.ca') {
+      baseUrl = 'https://gdx-analytics-url-shortener-backend-c6d33e-dev.apps.silver.devops.gov.bc.ca/';
+    } else if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-tools.apps.silver.devops.gov.bc.ca') {
+      baseUrl = 'https://gdx-analytics-url-shortener-backend-c6d33e-tools.apps.silver.devops.gov.bc.ca/';
+    }
 
     const response = await axios.post(`${baseUrl}shorten`, {
       targetUrl: targetUrl.value,
