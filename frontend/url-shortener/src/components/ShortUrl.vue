@@ -99,6 +99,14 @@ if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-dev.app
 console.log('frontend:', window.location.origin);
 console.log('backendURL:', backendURL);
 console.log('mode:', import.meta.env.MODE);
+if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-dev.apps.silver.devops.gov.bc.ca') {
+  console.log('URLs match!');
+  backendURL = 'https://gdx-analytics-url-shortener-backend-c6d33e-dev.apps.silver.devops.gov.bc.ca';
+} else {
+  console.log('URLs do not match');
+  console.log('Expected:', 'https://gdx-analytics-url-shortener-frontend-c6d33e-dev.apps.silver.devops.gov.bc.ca');
+  console.log('Actual:', frontendURL);
+}
 const internalLink = computed(() => `${frontendURL}/url-summary/${customId.value}`);
 const router = useRouter();
 
