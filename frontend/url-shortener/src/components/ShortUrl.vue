@@ -112,8 +112,10 @@ const submitForm = async () => {
     // Determine backend URL based on environment mode
     let baseUrl = 'http://localhost:3000/';
 
-    if (frontendURL === 'https://gdx-analytics-url-shortener-c6d33e-dev.apps.silver.devops.gov.bc.ca') {
+    if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-dev.apps.silver.devops.gov.bc.ca') {
       baseUrl = 'https://gdx-analytics-url-shortener-backend-c6d33e-dev.apps.silver.devops.gov.bc.ca/';
+    } else if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-test.apps.silver.devops.gov.bc.ca') {
+      baseUrl = 'https://gdx-analytics-url-shortener-backend-c6d33e-test.apps.silver.devops.gov.bc.ca/';
     } else if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-tools.apps.silver.devops.gov.bc.ca') {
       baseUrl = 'https://gdx-analytics-url-shortener-backend-c6d33e-tools.apps.silver.devops.gov.bc.ca/';
     }
