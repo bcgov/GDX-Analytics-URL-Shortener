@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Load environment variables
-//console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('NODE_ENV:', process.env.NODE_ENV);
 
 // Determine MongoDB connection details based on environment
 
@@ -34,10 +34,10 @@ if (isLocal) {
 }
 
 // Debugging console logs for connection details
-//console.log('MONGODB_HOST:', mongodbHost);
-//console.log('MONGODB_USER:', process.env.MONGODB_USER);
-//console.log('MONGODB_PASSWORD:', process.env.MONGODB_PASSWORD ? 'set' : 'not set');
-//console.log('MongoDB Connection URL:', mongoURL);
+console.log('MONGODB_HOST:', mongodbHost);
+console.log('MONGODB_USER:', process.env.MONGODB_USER);
+console.log('MONGODB_PASSWORD:', process.env.MONGODB_PASSWORD ? 'set' : 'not set');
+console.log('MongoDB Connection URL:', mongoURL);
 
 let connectionAttempts = 0;
 const maxConnectionAttempts = 3; // Adjust as needed
