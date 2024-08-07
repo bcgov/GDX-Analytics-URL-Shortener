@@ -29,12 +29,14 @@ const expiryDate = ref('');
 // const tags = ref('');
 const createdBy = ref('');
 const createdTime = ref('');
-const frontend = window.location.origin;
-let backendURL = 'http://localhost:3000/';
+const frontendURL = window.location.origin;
+let backendURL = 'http://localhost:3000';
 
-if (frontend === 'https://gdx-analytics-url-shortener-c6d33e-dev.apps.silver.devops.gov.bc.ca') {
+if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-dev.apps.silver.devops.gov.bc.ca') {
   backendURL = 'https://gdx-analytics-url-shortener-backend-c6d33e-dev.apps.silver.devops.gov.bc.ca/';
-} else if (frontend === 'https://gdx-analytics-url-shortener-frontend-c6d33e-tools.apps.silver.devops.gov.bc.ca') {
+} else if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-test.apps.silver.devops.gov.bc.ca') {
+  backendURL = 'https://gdx-analytics-url-shortener-backend-c6d33e-test.apps.silver.devops.gov.bc.ca/';
+} else if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-tools.apps.silver.devops.gov.bc.ca') {
   backendURL = 'https://gdx-analytics-url-shortener-backend-c6d33e-tools.apps.silver.devops.gov.bc.ca/';
 }
 
