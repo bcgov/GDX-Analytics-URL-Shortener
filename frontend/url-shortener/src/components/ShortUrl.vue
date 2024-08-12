@@ -127,7 +127,7 @@ const submitForm = async () => {
       baseUrl = 'https://gdx-analytics-url-shortener-backend-c6d33e-tools.apps.silver.devops.gov.bc.ca/';
     }
 */
-    const response = await axios.post(`${backendURL}shorten`, {
+    const response = await axios.post(`${backendURL}/shorten`, {
       targetUrl: targetUrl.value,
       description: description.value,
       expiryDate: expiryDate.value,
