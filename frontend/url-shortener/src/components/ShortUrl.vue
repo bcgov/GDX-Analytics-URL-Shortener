@@ -87,6 +87,14 @@ const isSubmitting = ref(false);
 const formSubmitted = ref(false);
 const copiedMessage = ref('');
 const frontendURL = window.location.origin;
+
+const front = import.meta.env.VITE_FRONT;
+const back = import.meta.env.VITE_BACK;
+
+console.log(front);
+console.log(back);
+
+
 let backendURL = 'http://localhost:3000';
 
 if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-dev.apps.silver.devops.gov.bc.ca') {
