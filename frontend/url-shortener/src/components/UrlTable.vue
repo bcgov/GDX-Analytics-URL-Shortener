@@ -107,23 +107,23 @@ const sortField = ref('createdTime');
 const sortOrder = ref('desc');
 const selectedSearchField = ref('customId');
 const copiedMessage = ref('');
-const frontendURL = window.location.origin;
-let backendURL = 'http://localhost:3000';
-
+const frontendURL = import.meta.env.VITE_FRONTEND_URL;
+const backendURL = import.meta.env.VITE_BACKEND_URL;
+/*
 if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-dev.apps.silver.devops.gov.bc.ca') {
   backendURL = 'https://gdx-analytics-url-shortener-backend-c6d33e-dev.apps.silver.devops.gov.bc.ca';
 } else if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-test.apps.silver.devops.gov.bc.ca') {
   backendURL = 'https://gdx-analytics-url-shortener-backend-c6d33e-test.apps.silver.devops.gov.bc.ca';
 } else if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-tools.apps.silver.devops.gov.bc.ca') {
   backendURL = 'https://gdx-analytics-url-shortener-backend-c6d33e-tools.apps.silver.devops.gov.bc.ca';
-}
+}*/
 
 console.log(backendURL); // Check the backendURL value
 
 
 
 
-console.log('frontendURL:', window.location.origin);
+console.log(frontendURL);
 
 onMounted(async () => {
   try {
