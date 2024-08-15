@@ -86,25 +86,9 @@ const formattedTime = ref('');
 const isSubmitting = ref(false);
 const formSubmitted = ref(false);
 const copiedMessage = ref('');
-//const frontendURL = window.location.origin;
 
 const frontendURL = import.meta.env.VITE_FRONTEND_URL;
 const backendURL = import.meta.env.VITE_BACKEND_URL;
-
-
-
-/*
-
-if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-dev.apps.silver.devops.gov.bc.ca') {
-  backendURL = 'https://gdx-analytics-url-shortener-backend-c6d33e-dev.apps.silver.devops.gov.bc.ca';
-} else if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-test.apps.silver.devops.gov.bc.ca') {
-  backendURL = 'https://gdx-analytics-url-shortener-backend-c6d33e-test.apps.silver.devops.gov.bc.ca';
-} else if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-tools.apps.silver.devops.gov.bc.ca') {
-  backendURL = 'https://gdx-analytics-url-shortener-backend-c6d33e-tools.apps.silver.devops.gov.bc.ca';
-}*/
-console.log('frontendURL:', frontendURL);
-console.log('backendURL:', backendURL);
-console.log('mode:', import.meta.env.MODE);
 
 
 const internalLink = computed(() => `${frontendURL}/url-summary/${customId.value}`);
@@ -117,17 +101,6 @@ const submitForm = async () => {
     const currentTime = new Date();
     const localTime = new Date(currentTime.toLocaleString('en-US', { timeZone: 'America/Vancouver' }));
 
-    // Determine backend URL based on environment mode
-    /* baseUrl = 'http://localhost:3000/';
-
-    if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-dev.apps.silver.devops.gov.bc.ca') {
-      baseUrl = 'https://gdx-analytics-url-shortener-backend-c6d33e-dev.apps.silver.devops.gov.bc.ca/';
-    } else if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-test.apps.silver.devops.gov.bc.ca') {
-      baseUrl = 'https://gdx-analytics-url-shortener-backend-c6d33e-test.apps.silver.devops.gov.bc.ca/';
-    } else if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-tools.apps.silver.devops.gov.bc.ca') {
-      baseUrl = 'https://gdx-analytics-url-shortener-backend-c6d33e-tools.apps.silver.devops.gov.bc.ca/';
-    }
-*/
     const response = await axios.post(`${backendURL}/shorten`, {
       targetUrl: targetUrl.value,
       description: description.value,
