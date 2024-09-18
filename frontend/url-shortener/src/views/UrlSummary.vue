@@ -29,16 +29,8 @@ const expiryDate = ref('');
 // const tags = ref('');
 const createdBy = ref('');
 const createdTime = ref('');
-const frontendURL = window.location.origin;
-let backendURL = 'http://localhost:3000';
-
-if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-dev.apps.silver.devops.gov.bc.ca') {
-  backendURL = 'https://gdx-analytics-url-shortener-backend-c6d33e-dev.apps.silver.devops.gov.bc.ca/';
-} else if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-test.apps.silver.devops.gov.bc.ca') {
-  backendURL = 'https://gdx-analytics-url-shortener-backend-c6d33e-test.apps.silver.devops.gov.bc.ca/';
-} else if (frontendURL === 'https://gdx-analytics-url-shortener-frontend-c6d33e-tools.apps.silver.devops.gov.bc.ca') {
-  backendURL = 'https://gdx-analytics-url-shortener-backend-c6d33e-tools.apps.silver.devops.gov.bc.ca/';
-}
+const frontendURL = import.meta.env.VITE_FRONTEND_URL;
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 
 onMounted(async () => {
@@ -47,7 +39,7 @@ onMounted(async () => {
 
   try {
     // Retrieve data from the backend using customId
-    const response = await axios.get(`${backendURL}url-summary/${customId.value}`);
+    const response = await axios.get(`${backendURL}/url-summary/${customId.value}`);
 
     const data = response.data;
 
