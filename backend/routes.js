@@ -24,8 +24,13 @@ export const setRoutes = (router) => {
   router.get('/logout', handleUserLogout);
   // Route to shorten a URL
   router.post('/shorten', shortenUrl);
+  // Rate limiter: maximum of 100 requests per 15 minutes
+  const limiter = RateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // max 100 requests per windowMs
+  });
   // Route to retrieve URL details based on custom ID
-  router.get('/url-summary/:customId', getUrlSummary);
+  router.get('/url-summary/:customId', limiter, getUrlSummary);
   // Route to retrieve the table of URLs
   router.get('/urls', getUrlTable);
 
