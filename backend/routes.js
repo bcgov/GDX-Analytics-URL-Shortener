@@ -5,8 +5,10 @@ import { getUrlSummary } from './urlSummary.js';
 import { getUrlTable } from './urlTable.js';
 import RateLimit from 'express-rate-limit';
 
-
-
+const authLimiter = RateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // max 100 requests per windowMs
+});
 export const setRoutes = (router) => {
   // Set up rate limiter: maximum of 100 requests per 15 minutes
   const authRateLimiter = RateLimit({
@@ -17,7 +19,7 @@ export const setRoutes = (router) => {
   // Add routes related to authentication using the exported functions
   router.get('/auth/callback', authRateLimiter, handleAuthCallback);
   router.get('/', renderHomePage);
-  router.get('/auth', initiateAuth);
+  router.get('/auth', authLimiter, initiateAuth);
   router.get('/home', checkAuthenticated, renderHomePageAfterAuth);
   router.get('/logout', handleUserLogout);
   // Route to shorten a URL
