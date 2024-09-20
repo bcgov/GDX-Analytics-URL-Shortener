@@ -26,6 +26,10 @@ app.use(
     resave: false,
     saveUninitialized: true,
     store,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production', // Ensure secure cookies in production
+      httpOnly: true, // Prevent client-side access to the cookie
+    },
   }),
 );
 
