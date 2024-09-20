@@ -32,4 +32,5 @@ COPY --from=builder /app/dist ./dist
 EXPOSE 8080
 
 # Command to run http-server to serve the built files
-CMD ["http-server", "dist", "-p", "8080"]
+CMD ["http-server", "dist", "-p", "8080", "--history-api-fallback"]
+
