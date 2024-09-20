@@ -23,7 +23,7 @@ export const setRoutes = (router) => {
   router.get('/home', checkAuthenticated, renderHomePageAfterAuth);
   router.get('/logout', handleUserLogout);
   // Route to shorten a URL
-  router.post('/shorten', shortenUrl);
+  router.post('/shorten', limiter, shortenUrl);
   // Rate limiter: maximum of 100 requests per 15 minutes
   const limiter = RateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
