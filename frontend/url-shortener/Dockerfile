@@ -28,8 +28,12 @@ WORKDIR /app
 # Copy the built files from the previous stage
 COPY --from=builder /app/dist ./dist
 
+# Copy index.html to 404 to fix client side routing
+COPY --from=builder /app/dist/index.html ./dist/404.html
+
 # Expose port 8080 to the outside world
 EXPOSE 8080
 
 # Command to run http-server to serve the built files
-CMD ["http-server", "dist", "-p", "8080"]
+CMD ["http-server", "dist", "-p", "8080", "--history-api-fallback"]
+
