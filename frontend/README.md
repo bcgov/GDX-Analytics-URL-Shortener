@@ -8,8 +8,8 @@ Before doing the the frontend install and start, the Backend application must be
 
 **`Step 1`**. - Create a .env file in frontend/url-shortener with these values
 
-VITE_FRONTEND_BASE_URL=http://localhost:5173
-VITE_BACKEND_BASE_URL=http://localhost:3000
+VITE_FRONTEND_URL=http://localhost:5173
+VITE_BACKEND_URL=http://localhost:3000
 
 
 **`Step 2`**. Open a new terminal (option to do this in MS Code). Do not use the terminal that is running the backend code. Change directory to the frontend/url-shortener folder.
