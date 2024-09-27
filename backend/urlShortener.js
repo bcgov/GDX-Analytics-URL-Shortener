@@ -38,7 +38,7 @@ export const shortenUrl = async (req, res, next) => {
     await urlDocument.save();
 
     // Construct the complete shortened URL
-    const shortenedUrl = `https://link.gov.bc.ca/${shortenedUrlString}`;
+    const shortenedUrl = `${process.env.CUSTOM_DOMAIN}/${shortenedUrlString}`;
 
     // Respond with the shortened URL and custom ID
     res.json({ shortenedUrl, customId: nextId });
