@@ -5,11 +5,12 @@ export const getUrlTable = async (req, res, next) => {
     // Retrieve the list of URLs from the database and sort by 'createdTime'
     let urlTable = await UrlModel.find().sort({ createdTime:-1 }); // 1 for ascending, -1 for descending
     
-    // Update shortenedUrlString with the short URL domain
+    // Update shortenedUrlString with the short URL domain from environment variable
     urlTable = urlTable.map((url) => {
-      url.shortenedUrlString = `https://link.gov.bc.ca/${url.shortenedUrlString}`;
+      url.shortenedUrlString = `https://${process.env.CUSTOM_DOMAIN}/${url.shortenedUrlString}`;
       return url;
     });
+
 
     res.json(urlTable);
   } catch (error) {

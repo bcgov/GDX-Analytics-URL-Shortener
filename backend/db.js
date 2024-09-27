@@ -8,14 +8,14 @@ dotenv.config();
 // Check if the environment is local
 const isLocal = process.env.NODE_ENV === 'local';
 
-// Set MongoDB host based on environment variables or default to 'mongodb-dev' for non-local
-const mongodbHost = isLocal ? 'localhost' : (process.env.MONGODB_HOST || 'mongodb-dev');
+// Set MongoDB host based on environment variables
+const mongodbHost = process.env.MONGODB_HOST ;
 
-// Set MongoDB database name based on environment variables or default to 'mongodb' for non-local
-const mongodbDatabase = isLocal ? 'mongodb' : (process.env.MONGODB_DATABASE || 'mongodb');
+// Set MongoDB database name based on environment variables
+const mongodbDatabase = process.env.MONGODB_DATABASE ;
 
-// MongoDB port number (default is 27017)
-const mongodbPort = '27017';  // MongoDB port
+// MongoDB port number
+const mongodbPort = process.env.MONGODB_PORT;
 
 let mongoURL;
 
@@ -30,7 +30,6 @@ if (isLocal) {
     mongoURL = `mongodb://${mongodbUser}:${mongodbPassword}@${mongodbHost}:${mongodbPort}/${mongodbDatabase}`;
   }
 }
-
 
 
 let connectionAttempts = 0;
