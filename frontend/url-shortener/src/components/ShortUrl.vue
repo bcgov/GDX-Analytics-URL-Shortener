@@ -58,7 +58,8 @@
         <p><strong>Internal Link:</strong>
           <a :href="internalLink">{{ internalLink }}</a>
         </p>
-        <p><strong>Expiry Date:</strong> {{ expiryDate }}</p>
+        <p><strong>Expiry Date:</strong> {{ formatExpiryDate(expiryDate) }}</p>
+
         <p><strong>Created On:</strong> {{ formattedTime }}</p>
         <p><strong>Notes:</strong> {{ description }}</p>
       </div>
@@ -134,6 +135,21 @@ const formatTime = (time: Date) => {
   const second = String(time.getSeconds()).padStart(2, '0');
   return `${year}-${month}-${day}, ${hour}:${minute}:${second}`;
 };
+
+/**
+ * Formats the given date string to display only the date in 'YYYY-MM-DD UTC' format.
+ * If no date is provided, it returns a default message.
+ * 
+ * @param dateString - The date string to format (should be in ISO format)
+ * @returns A formatted date string in 'YYYY-MM-DD UTC' format or a default message if no date is provided
+ */
+const formatExpiryDate = (dateString: string) => {
+  if (!dateString) return 'No expiry date';
+
+  const date = new Date(dateString);
+  return date.toISOString().split('T')[0] + ' UTC';
+};
+
 
 const reloadPage = () => {
   location.reload();
