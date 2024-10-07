@@ -65,7 +65,12 @@
           <td>{{ formatExpiryDate(url.expiryDate) }}</td>
           
           <td>{{ url.createdBy }}</td>
-          <td>{{ url.createdTime }}</td>
+          <!-- Display local time by calling the convertToLocalTime function
+          The function takes the 'createdTime' property from the 'url' object (which is in UTC format)
+          and converts it to the user's local time, adjusting for time zone and daylight savings -->
+
+          <td>{{ convertToLocalTime(url.createdTime) }}</td>
+
           <!--<td>{{ url.tags }}</td>-->
           <td class="description-cell" :class="{ expanded: url.expanded }" @click="toggleExpand(url)">{{ url.description }}
           </td>
@@ -109,6 +114,22 @@ const selectedSearchField = ref('customId');
 const copiedMessage = ref('');
 const frontendURL = import.meta.env.VITE_FRONTEND_URL;
 const backendURL = import.meta.env.VITE_BACKEND_URL;
+// Import the dayjs library for date manipulation.
+// Day.js is a minimalist JavaScript library that parses, validates, manipulates, and displays dates and times for modern browsers. Source - https://day.js.org/
+import dayjs from 'dayjs';
+
+// Import the UTC plugin to handle UTC times
+import utc from 'dayjs/plugin/utc';
+
+// Import the timezone plugin to handle timezone conversions
+import timezone from 'dayjs/plugin/timezone';
+
+// Extend dayjs with the UTC plugin for working with UTC dates
+dayjs.extend(utc);
+
+// Extend dayjs with the timezone plugin to allow timezone conversions
+dayjs.extend(timezone);
+
 
 onMounted(async () => {
   try {
@@ -224,6 +245,23 @@ const copyToClipboard = async (text) => {
 function toggleExpand(url) {
   url.expanded = !url.expanded;
 }
+
+
+// Define a function that converts a given UTC date/time to local time
+// This conversion is aware of the user's local timezone and considers Daylight Savings Time (DST)
+// The function uses the 'dayjs' library along with the 'timezone' plugin
+
+const convertToLocalTime = (utcDate) => {
+  
+  // The 'tz.guess()' function automatically detects the user's current timezone
+  // The 'tz()' method then converts the given UTC date/time to the detected timezone
+  // The 'format()' method ensures the date is returned in a readable format: 'YYYY-MM-DD HH:mm:ss'
+  
+  return dayjs(utcDate)  // Takes the UTC date/time passed to the function
+    .tz(dayjs.tz.guess())  // Converts it to the user's local timezone (with DST adjustments)
+    .format('YYYY-MM-DD HH:mm:ss');  // Formats the result in 'YYYY-MM-DD HH:mm:ss' format
+};
+
 
 </script>
 
