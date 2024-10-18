@@ -1,5 +1,4 @@
 import { UrlModel } from './db.js';
-import { checkAuthenticated, handleAuthCallback, renderHomePage, initiateAuth, renderHomePageAfterAuth, handleUserLogout } from './auth.js';
 import { shortenUrl } from './urlShortener.js';
 import { getUrlSummary } from './urlSummary.js';
 import { getUrlTable } from './urlTable.js';
@@ -21,12 +20,6 @@ export const setRoutes = (router) => {
     max: 100, // max 100 requests per windowMs
   });
 
-  // Add routes related to authentication using the exported functions
-  router.get('/auth/callback', authRateLimiter, handleAuthCallback);
-  router.get('/', renderHomePage);
-  router.get('/auth', authLimiter, initiateAuth);
-  router.get('/home', checkAuthenticated, renderHomePageAfterAuth);
-  router.get('/logout', handleUserLogout);
   // Route to shorten a URL
   router.post('/shorten', limiter, shortenUrl);
   // Route to retrieve URL details based on custom ID

@@ -1,41 +1,57 @@
-import Keycloak from 'keycloak-js'
+import Keycloak from 'keycloak-js';
 
-const loginOptions = {
-  redirectUri: import.meta.env.VITE_SSO_REDIRECT_URI,
-  idpHint: '',
-}
+let isKeycloakInitialized = false; // Flag to check if Keycloak has been initialized
 
-const _kc = new Keycloak({
-  url: `${import.meta.env.VITE_SSO_AUTH_SERVER_URL}`,
-  realm: `${import.meta.env.VITE_SSO_REALM}`,
-  clientId: `${import.meta.env.VITE_SSO_CLIENT_ID}`,
-})
+export const initializeKeycloak = async (userStore) => {
+  if (isKeycloakInitialized) {
+    return; // Prevent re-initialization
+  }
 
-export const initializeKeycloak = async () => {
+  const loginOptions = {
+    redirectUri: import.meta.env.VITE_SSO_REDIRECT_URI,
+    idpHint: '',
+  };
+
+  const _kc = new Keycloak({
+    url: `${import.meta.env.VITE_SSO_AUTH_SERVER_URL}`,
+    realm: `${import.meta.env.VITE_SSO_REALM}`,
+    clientId: `${import.meta.env.VITE_SSO_CLIENT_ID}`,
+  });
+
   try {
-    _kc.onTokenExpired = () => {
-      _kc.updateToken()
-    }
+    userStore.initStore(); // Initialize store with values from localStorage
+    isKeycloakInitialized = true; // Set the flag to true
+
+    _kc.onTokenExpired = async () => {
+      try {
+        await _kc.updateToken(30);
+        userStore.setToken(_kc.token); // Store the new token
+        console.log('Token updated:', userStore.token);
+      } catch (error) {
+        console.error('Failed to refresh token', error);
+      }
+    };
 
     const auth = await _kc.init({
       pkceMethod: 'S256',
       checkLoginIframe: false,
       onLoad: 'check-sso',
-    })
+    });
 
     if (auth) {
-      return _kc
+      userStore.setToken(_kc.token); // Store the initial token
+      userStore.setUser(_kc.tokenParsed); // Assuming tokenParsed contains user info
+      console.log('Keycloak initialized, token:', userStore.token);
+      return _kc;
     } else {
-      _kc.login(loginOptions)
+      _kc.login(loginOptions); // Attempt login if not authenticated
     }
   } catch (err) {
-    console.log(err)
+    console.error('Error during Keycloak initialization:', err);
   }
-}
+};
 
-// since we have to perform logout at siteminder, we cannot use keycloak-js logout method so manually triggering logout through a function
-// if using post_logout_redirect_uri, then either client_id or id_token_hint has to be included and post_logout_redirect_uri need to match
-// one of valid post logout redirect uris in the client configuration
+// Logout function remains unchanged
 export const logout = () => {
   window.location.href = `https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=${encodeURIComponent(
     `${import.meta.env.VITE_SSO_AUTH_SERVER_URL}/realms/${
@@ -44,5 +60,5 @@ export const logout = () => {
       import.meta.env.VITE_SSO_REDIRECT_URI +
       '&client_id=' +
       import.meta.env.VITE_SSO_CLIENT_ID
-  )}`
-}
+  )}`;
+};
