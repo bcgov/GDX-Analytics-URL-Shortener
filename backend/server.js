@@ -1,81 +1,52 @@
 import dotenv from 'dotenv'; // Import dotenv for environment variables
 import express from 'express';
-import session from 'express-session';
-import passport from 'passport';
-import { Issuer, Strategy } from 'openid-client';
-import { setRoutes } from './routes.js';
 import cors from 'cors';
+import { setRoutes } from './routes.js';
+import { authenticate } from './auth.js'; // Import the authenticate function
 
 // Load environment variables from .env file
 dotenv.config();
 
-const backendURL = process.env.SSO_LOGOUT_REDIRECT_URI;
-
-const store = new session.MemoryStore();
+const backendURL = process.env.BACKEND_URL;
 
 const app = express();
 // Use CORS middleware
 app.use(cors());
 
-app.set('view engine', 'ejs');
-
 app.use(express.json());
-app.use(
-  session({
-    secret: process.env.SSO_SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    store,
-    cookie: {
-      secure: process.env.NODE_ENV === 'production', // Ensure secure cookies in production
-      httpOnly: true, // Prevent client-side access to the cookie
-    },
-  }),
-);
-
 app.use(express.urlencoded({ extended: false }));
+
+// Health check route to ensure the backend is running
+app.get('/', (req, res) => {
+  res.json({ message: 'Backend is running' });
+});
+
+// Authentication middleware
+const authMiddleware = async (req, res, next) => {
+  const currentUser = await authenticate(req.headers); // Validate the token
+
+  if (!currentUser) {
+    // Send 401 Unauthorized if authentication fails
+    return res.status(401).json({ message: 'Unauthorized: Invalid or missing token' });
+  }
+
+  // Attach the user info to req object for use in routes
+  req.user = currentUser;
+
+  // Proceed to the next middleware/route handler
+  next();
+};
 
 const router = express.Router();
 
+// Apply the middleware to the routes you want to protect
+app.use(authMiddleware, router); // Secure all routes with the auth middleware
+
+// Set up your routes
 setRoutes(router);
 
-app.use('/', router);
-
-const keycloakIssuer = await Issuer.discover(
-  `${process.env.SSO_AUTH_SERVER_URL}/realms/${process.env.SSO_REALM}/.well-known/openid-configuration`,
-);
-
-const keycloakClient = new keycloakIssuer.Client({
-  client_id: process.env.SSO_CLIENT_ID,
-  client_secret: process.env.SSO_CLIENT_SECRET,
-  redirect_uris: [`${backendURL}auth/callback`],  // Using backendURL here
-  response_types: ['code'],
-});
-
-// Passport Middlewares
-app.use(passport.initialize());
-app.use(passport.session());
-
-let tokenset = {};
-
-passport.use(
-  'oidc',
-  new Strategy({ client: keycloakClient }, (tokenSet, userinfo, done) => {
-    tokenset = tokenSet;
-    return done(null, tokenSet.claims());
-  }),
-);
-
-passport.serializeUser((user, done) => {
-  done(null, user);
-});
-passport.deserializeUser((user, done) => {
-  done(null, user);
-});
-
+// Start the server
 app.listen(3000, function () {
   console.log(`Listening at ${backendURL}`);
   console.log('NODE_ENV:', process.env.NODE_ENV);
 });
-
-export { passport, keycloakClient, tokenset };

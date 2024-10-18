@@ -75,6 +75,7 @@
 import { ref, computed } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/userStore';
 
 const targetUrl = ref('');
 const description = ref('');
@@ -91,7 +92,7 @@ const copiedMessage = ref('');
 const frontendURL = import.meta.env.VITE_FRONTEND_URL;
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
-
+const userStore = useUserStore();
 const internalLink = computed(() => `${frontendURL}/url-summary/${customId.value}`);
 const router = useRouter();
 
@@ -107,7 +108,12 @@ const submitForm = async () => {
       description: description.value,
       expiryDate: expiryDate.value,
       createdTime: localTime.toISOString(),
+    }, {
+      headers: {
+        Authorization: `Bearer ${userStore.token}` // Pass the token here
+      }
     });
+    console.log('Current token:', userStore.token); // Print the token in the frontend console
 
     shortenedUrl.value = response.data.shortenedUrl;
     customId.value = response.data.customId;
