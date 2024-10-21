@@ -42,8 +42,21 @@ export const initializeKeycloak = async (userStore) => {
       userStore.setToken(_kc.token); // Store the initial token
       userStore.setUser(_kc.tokenParsed); // Assuming tokenParsed contains user info
       console.log('Keycloak initialized, token:', userStore.token);
+
+      // Clean up the URL after successful login
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      // Redirect to the original URL if available
+      const originalUrl = localStorage.getItem('originalUrl');
+      if (originalUrl && originalUrl !== window.location.href) {
+        localStorage.removeItem('originalUrl'); // Clear stored URL to prevent repeated redirects
+        window.location.href = originalUrl; // Redirect to the stored URL
+      }
+
       return _kc;
     } else {
+      // Store the current URL before login
+      localStorage.setItem('originalUrl', window.location.href);
       _kc.login(loginOptions); // Attempt login if not authenticated
     }
   } catch (err) {

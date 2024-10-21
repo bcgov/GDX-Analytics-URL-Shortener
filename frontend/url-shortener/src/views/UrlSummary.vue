@@ -19,6 +19,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router'; // Import useRoute
 import axios from 'axios';
+import { useUserStore } from '@/stores/userStore'; // Import the user store
 
 const route = useRoute(); // Use useRoute to get access to $route
 const customId = ref('');
@@ -51,11 +52,15 @@ dayjs.extend(timezone);
 onMounted(async () => {
   // Assign the customId value from the route parameters using useRoute
   customId.value = route.params.customId;
+  const userStore = useUserStore(); // Use the userStore to get the token
 
   try {
     // Retrieve data from the backend using customId
-    const response = await axios.get(`${backendURL}/url-summary/${customId.value}`);
-
+    const response = await axios.get(`${backendURL}/url-summary/${customId.value}`, {
+      headers: {
+        Authorization: `Bearer ${userStore.token}` // Add the authorization header here
+      }
+    });
     const data = response.data;
 
     // Update data properties based on the retrieved data
