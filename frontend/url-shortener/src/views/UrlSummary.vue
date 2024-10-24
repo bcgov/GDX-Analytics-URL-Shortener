@@ -3,7 +3,7 @@
     <div class="url-details">
       <h2>
         <strong>Short URL:</strong>
-        <a :href="shortenedUrl" target="_blank" class="short-url">{{ shortenedUrl.replace('https://', '') }}</a>
+        <a :href="shortenedUrl" target="_blank" class="short-url">{{ shortenedUrl }}</a>
         <button class="copy-btn" @click="copyToClipboard(shortenedUrl)">
           <img src="../assets/copy.svg" alt="Copy icon">
         </button>
