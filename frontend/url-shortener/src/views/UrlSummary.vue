@@ -12,6 +12,7 @@
       <h3 style="font-weight: bold;">Details</h3>
       <br>
       <p>
+        <!-- This is full short url which means it will contails https:// in it -->
         <strong>Full Short URL:</strong>
         <a :href="shortenedUrl" target="_blank" class="short-url">{{ shortenedUrl }}</a>
         <button class="copy-btn" @click="copyToClipboard(shortenedUrl)">
@@ -19,6 +20,7 @@
         </button>
       </p>
       <p>
+        <!-- This is target url which means when public click on the short url, they will go to this url -->
         <strong>Target URL:</strong>
         <a :href="targetUrl" target="_blank" class="short-url">{{ targetUrl }}</a>
         <button class="copy-btn" @click="copyToClipboard(targetUrl)">
@@ -26,6 +28,7 @@
         </button>
       </p>
       <p>
+        <!-- This is internal url which means when app users click on the url, they will go to summary page which list all details about this url -->
         <strong>Internal Link:</strong>
         <a :href="`${frontendURL}/url-summary/${customId}`" target="_blank">{{ `${frontendURL}/url-summary/${customId}` }}</a>
         <button class="copy-btn" @click="copyToClipboard(`${frontendURL}/url-summary/${customId}`)">
@@ -33,9 +36,12 @@
         </button>
       </p>
       <br>
+            <!-- Expiry date is in UTC for now -->
       <p><strong>Expiry Date:</strong> {{ formatExpiryDate(expiryDate) }}</p>
       <br>
+      <!-- created by does not have a value for now-->
       <p><strong>Created By:</strong> {{ createdBy }}</p>
+      <!-- created date/time is in users timezone-->
       <p><strong>Created Date/Time:</strong> {{ createdTime }}</p>
       <p><strong>Edited Date/Time:</strong></p>
       <br>
@@ -94,11 +100,11 @@ onMounted(async () => {
   }
 });
 /**
- * Formats the given date string to display only the date in 'YYYY-MM-DD UTC' format.
+ * Formats the given date string to display only the date in 'YYYY-MM-DD' format.
  * If no date is provided, it returns a default message.
  * 
  * @param dateString - The date string to format (should be in ISO format)
- * @returns A formatted date string in 'YYYY-MM-DD UTC' format or a default message if no date is provided
+ * @returns A formatted date string in 'YYYY-MM-DD' format or a default message if no date is provided
  */
  const formatExpiryDate = (dateString) => {
   if (!dateString) return 'No expiry date';
