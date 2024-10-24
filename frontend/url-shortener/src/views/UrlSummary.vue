@@ -3,49 +3,43 @@
     <div class="url-details">
       <h2>
         <strong>Short URL:</strong>
-        <a :href="shortenedUrl" target="_blank" class="short-url">{{ shortenedUrl }}</a>
-        <button class="copy-btn" @click="copyToClipboard(shortenedUrl)">
+        <a :href="shortenedUrl || '#'" target="_blank" class="short-url">{{ shortenedUrl || 'N/A' }}</a>
+        <button class="copy-btn" @click="copyToClipboard(shortenedUrl || '')">
           <img src="../assets/copy.svg" alt="Copy icon">
         </button>
       </h2>
       <br>
       <h3 style="font-weight: bold;">Details</h3>
       <br>
-      <p>
-        <!-- This is full short url which means it will contails https:// in it -->
+      <p v-if="shortenedUrl">
         <strong>Full Short URL:</strong>
-        <a :href="shortenedUrl" target="_blank" class="short-url">{{ shortenedUrl }}</a>
-        <button class="copy-btn" @click="copyToClipboard(shortenedUrl)">
+        <a :href="shortenedUrl || '#'" target="_blank" class="short-url">{{ shortenedUrl || 'N/A' }}</a>
+        <button class="copy-btn" @click="copyToClipboard(shortenedUrl || '')">
           <img src="../assets/copy.svg" alt="Copy icon">
         </button>
       </p>
-      <p>
-        <!-- This is target url which means when public click on the short url, they will go to this url -->
+      <p v-if="targetUrl">
         <strong>Target URL:</strong>
-        <a :href="targetUrl" target="_blank" class="short-url">{{ targetUrl }}</a>
-        <button class="copy-btn" @click="copyToClipboard(targetUrl)">
+        <a :href="targetUrl || '#'" target="_blank" class="short-url">{{ targetUrl || 'N/A' }}</a>
+        <button class="copy-btn" @click="copyToClipboard(targetUrl || '')">
           <img src="../assets/copy.svg" alt="Copy icon">
         </button>
       </p>
-      <p>
-        <!-- This is internal url which means when app users click on the url, they will go to summary page which list all details about this url -->
+      <p v-if="customId">
         <strong>Internal Link:</strong>
-        <a :href="`${frontendURL}/url-summary/${customId}`" target="_blank">{{ `${frontendURL}/url-summary/${customId}` }}</a>
+        <a :href="`${frontendURL}/url-summary/${customId}`" target="_blank">{{ `${frontendURL}/url-summary/${customId}` || 'N/A' }}</a>
         <button class="copy-btn" @click="copyToClipboard(`${frontendURL}/url-summary/${customId}`)">
           <img src="../assets/copy.svg" alt="Copy icon">
         </button>
       </p>
       <br>
-            <!-- Expiry date is in UTC for now -->
-      <p><strong>Expiry Date:</strong> {{ formatExpiryDate(expiryDate) }}</p>
+      <p><strong>Expiry Date:</strong> {{ formatExpiryDate(expiryDate) || 'No expiry date' }}</p>
       <br>
-      <!-- created by does not have a value for now-->
-      <p><strong>Created By:</strong> {{ createdBy }}</p>
-      <!-- created date/time is in users timezone-->
-      <p><strong>Created Date/Time:</strong> {{ createdTime }}</p>
+      <p><strong>Created By:</strong> {{ createdBy || 'Unknown' }}</p>
+      <p><strong>Created Date/Time:</strong> {{ createdTime || 'N/A' }}</p>
       <p><strong>Edited Date/Time:</strong></p>
       <br>
-      <p><strong>Notes:</strong> {{ description }}</p>
+      <p><strong>Notes:</strong> {{ description || 'No description provided' }}</p>
       <p style="color: green;">{{ copiedMessage }}</p>
     </div>
 
@@ -67,7 +61,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const route = useRoute();
-const customId = ref('');
+const customId = ref(route.params.customId || '');  // Use fallback
 const shortenedUrl = ref('');
 const targetUrl = ref('');
 const description = ref('');
@@ -79,17 +73,19 @@ const frontendURL = import.meta.env.VITE_FRONTEND_URL;
 const copiedMessage = ref('');
 
 onMounted(async () => {
-  customId.value = route.params.customId;
-
   try {
     const response = await axios.get(`${backendURL}/url-summary/${customId.value}`);
     const data = response.data;
 
-    shortenedUrl.value = data.shortenedUrl;
-    targetUrl.value = data.targetUrl;
-    description.value = data.description;
-    expiryDate.value = data.expiryDate;
-    customId.value = data.customId;
+    shortenedUrl.value = data.shortenedUrl || 'N/A';
+    targetUrl.value = data.targetUrl || 'N/A';
+    description.value = data.description || 'No description provided';
+    expiryDate.value = data.expiryDate || '';
+    
+    // Only reassign customId if it exists in the response
+    if (data.customId) {
+      customId.value = data.customId;
+    }
 
     if ('createdTime' in data) {
       createdTime.value = convertToLocalTime(data.createdTime);
@@ -99,14 +95,8 @@ onMounted(async () => {
     console.error('Error retrieving URL details:', error);
   }
 });
-/**
- * Formats the given date string to display only the date in 'YYYY-MM-DD' format.
- * If no date is provided, it returns a default message.
- * 
- * @param dateString - The date string to format (should be in ISO format)
- * @returns A formatted date string in 'YYYY-MM-DD' format or a default message if no date is provided
- */
- const formatExpiryDate = (dateString) => {
+
+const formatExpiryDate = (dateString) => {
   if (!dateString) return 'No expiry date';
 
   const date = new Date(dateString);
@@ -129,7 +119,7 @@ const copyToClipboard = (text) => {
   copiedMessage.value = 'URL copied!';
   setTimeout(() => {
     copiedMessage.value = '';
-  }, 5000); // Hide the message after 5 seconds
+  }, 5000);
 };
 </script>
 
@@ -143,7 +133,6 @@ const copyToClipboard = (text) => {
   margin: 5px 0;
 }
 
-/* Ensure copy button stays next to the text without overlap */
 .copy-btn {
   display: inline-block;
   width: 18px;
@@ -163,10 +152,6 @@ const copyToClipboard = (text) => {
   display: block;
 }
 
-.copy-btn:hover {
-  background-color: transparent;
-}
-
 .target-url-container {
   word-break: break-word;
   overflow-wrap: break-word;
@@ -174,7 +159,6 @@ const copyToClipboard = (text) => {
 
 .action-container {
   margin-top: 20px;
-  
 }
 
 a:hover {
@@ -182,7 +166,7 @@ a:hover {
 }
 
 a {
-  color: rgb(0, 0, 0); /* Set all links to black */
+  color: rgb(0, 0, 0);
   text-decoration: underline;
 }
 </style>
