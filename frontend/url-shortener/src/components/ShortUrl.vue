@@ -31,7 +31,6 @@
       <br />
 
       <div v-if="formSubmitted">
-        <div style="text-align:center;">
           <strong style="font-size: 1.5em;">Short URL: </strong>
           <a :href="shortenedUrl" class="short-url" style="font-size: 1.5em;">{{ shortenedUrl.replace('https://', '') }}</a>
           <a href="#" class="copy-btn" @click="copyToClipboard(shortenedUrl.replace('https://', ''))">
@@ -39,13 +38,15 @@
           </a>
           <p style="color: green;">{{ copiedMessage }}</p>
         </div>
-      </div>
+      
 
-      <br />
-      <br />
+      <br>
+      <br>
 
       <div v-if="shortenedUrl" class="url-details">
-        <p><strong style="color: black;">Additional details:</strong></p>
+       
+      <h3 style="font-weight: bold;">Details</h3>
+      <br>
         <p><strong>Full Short URL:</strong>
           <a :href="shortenedUrl" class="full-short-url">{{ shortenedUrl }}</a>
           <a href="#" class="copy-btn" @click="copyToClipboard(shortenedUrl)">
@@ -53,14 +54,27 @@
           </a>
         </p>
         <div class="target-url-container">
-          <p><strong>Target URL:</strong><a :href="targetUrl" class="target-url">{{ targetUrl }}</a></p>
+          <p><strong>Target URL:</strong><a :href="targetUrl" class="target-url">{{ targetUrl }}</a>
+            <a href="#" class="copy-btn" @click="copyToClipboard(targetUrl )">
+            <img src="../assets/copy.svg" alt="Copy icon">
+          </a>
+          
+          
+          </p>
         </div>
+        
         <p><strong>Internal Link:</strong>
           <a :href="internalLink">{{ internalLink }}</a>
+          <a href="#" class="copy-btn" @click="copyToClipboard(internalLink)">
+            <img src="../assets/copy.svg" alt="Copy icon">
+          </a>
         </p>
+        <br>
         <p><strong>Expiry Date:</strong> {{ formatExpiryDate(expiryDate) }}</p>
-
-        <p><strong>Created On:</strong> {{ formattedTime }}</p>
+        <br>
+        <p><strong>Created By:</strong> </p>
+        <p><strong>Created Date/Time:</strong> {{ formattedTime }}</p>
+        <br>
         <p><strong>Notes:</strong> {{ description }}</p>
       </div>
 
@@ -147,7 +161,7 @@ const formatExpiryDate = (dateString: string) => {
   if (!dateString) return 'No expiry date';
 
   const date = new Date(dateString);
-  return date.toISOString().split('T')[0] + ' UTC';
+  return date.toISOString().split('T')[0];
 };
 
 
@@ -217,11 +231,6 @@ button:disabled {
   cursor: not-allowed;
 }
 
-.short-url {
-  color: blue;
-  font-weight: bold;
-}
-
 .copy-btn {
   display: inline-block;
   width: 18px;
@@ -233,9 +242,6 @@ button:disabled {
   margin-left: 10px;
 }
 
-.copy-btn:hover {
-  background-color: #0056b3;
-}
 
 .target-url-container {
   max-width: 80%;
@@ -246,6 +252,14 @@ button:disabled {
   max-width: 100%;
   word-wrap: break-word;
   overflow-wrap: break-word;
+}
+a:hover {
+  color: #003f88;
+}
+
+a {
+  color: rgb(0, 0, 0); /* Set all links to black */
+  text-decoration: underline;
 }
 
 </style>
