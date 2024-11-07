@@ -56,6 +56,7 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import { useUserStore } from '@/stores/userStore'; // Import the user store
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -73,8 +74,17 @@ const frontendURL = import.meta.env.VITE_FRONTEND_URL;
 const copiedMessage = ref('');
 
 onMounted(async () => {
+  // Assign the customId value from the route parameters using useRoute
+  customId.value = route.params.customId;
+  const userStore = useUserStore(); // Use the userStore to get the token
+
   try {
-    const response = await axios.get(`${backendURL}/url-summary/${customId.value}`);
+    // Retrieve data from the backend using customId
+    const response = await axios.get(`${backendURL}/url-summary/${customId.value}`, {
+      headers: {
+        Authorization: `Bearer ${userStore.token}` // Add the authorization header here
+      }
+    });
     const data = response.data;
 
     shortenedUrl.value = data.shortenedUrl || 'N/A';
