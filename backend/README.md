@@ -11,7 +11,7 @@ Instructions for configuring and starting the URL-S backend apps: Node.js Expres
  
  **`Step 4`**. In the /backend folder, copy '.env.template' to a new file '.env'. This .env file is used to store the BC Government Single Sign-on (SSO) secret and to manage other settings.  All explanation/uses for env variables are given in comments in the .env.template file.
   
-  Download the secret from https://bcgov.github.io/sso-requests; click Login; select the URL Shortener project; click Download in INTEGRATION DETAILS; Open the downloaded .json file in a text editor. Copy the secret value in "credentials": {"secret": "SSO_CLIENT_SECRET"} and paste it as the value to SSO_CLIENT_SECRET in your '.env' file. Make sure not to include any quotations around SSO_CLIENT_SECRET. 
+  Check more details at https://bcgov.github.io/sso-requests; click Login; select the Request ID - 00005780	Project Name - URL-SHORTENER-FRONTEND;
   
   Note that .gitignore lists .env - it will not be added to the repository. 
  
@@ -19,13 +19,11 @@ Instructions for configuring and starting the URL-S backend apps: Node.js Expres
  
  **`Step 6`**. From the /backend folder, run `npm run start` in the terminal to start the backend app.
 
-**`Step 7`**. Open a browser and visit http://localhost:3000/. Click 'Proceed to login...' to enter your IDIR credentials
-
-**`Step 8`**. Complete the the Frontend installation steps in the /frontend folder README.
+ **`Step 7`**. Complete the the Frontend installation steps in the /frontend folder README.
 
 ## Details
 
 ## Single Sign-on Pre-requisite
 
-- We needed a BC Government Single Sign-on integration with client type `confidential` before we could start using SSO in the URL-S app
+- We needed a BC Government Single Sign-on integration with client type `public` before we could start using SSO in the URL-S app
 - We went to [SSO Onboarding](https://github.com/bcgov/sso-keycloak/wiki/SSO-Onboarding) to learn about and request this integration.
