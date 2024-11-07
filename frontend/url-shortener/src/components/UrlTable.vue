@@ -114,6 +114,8 @@ const selectedSearchField = ref('customId');
 const copiedMessage = ref('');
 const frontendURL = import.meta.env.VITE_FRONTEND_URL;
 const backendURL = import.meta.env.VITE_BACKEND_URL;
+import { useUserStore } from '@/stores/userStore';
+
 // Import the dayjs library for date manipulation.
 // Day.js is a minimalist JavaScript library that parses, validates, manipulates, and displays dates and times for modern browsers. Source - https://day.js.org/
 import dayjs from 'dayjs';
@@ -132,9 +134,15 @@ dayjs.extend(timezone);
 
 
 onMounted(async () => {
+  const userStore = useUserStore();
   try {
+    
     // Retrieve the list of URLs from the backend using the new endpoint name
-    const response = await axios.get(`${backendURL}/urls`);
+    const response = await axios.get(`${backendURL}/urls`, {
+      headers: {
+        Authorization: `Bearer ${userStore.token}` // Auth token here
+      }
+    });
     urlTable.value = response.data || [];
 
     // Recalculate totalPages after fetching data
