@@ -11,7 +11,7 @@ Instructions for configuring and starting the URL-S backend apps: Node.js Expres
  
  **`Step 4`**. In the /backend folder, copy '.env.template' to a new file '.env'. This .env file is used to store the BC Government Single Sign-on (SSO) secret and to manage other settings.  All explanation/uses for env variables are given in comments in the .env.template file.
   
-  Check more details at https://bcgov.github.io/sso-requests; click Login; select the Request ID - 00005780	Project Name - URL-SHORTENER-FRONTEND;
+To verify your SSO_CLIENT_ID, visit https://bcgov.github.io/sso-requests, log in with your IDIR, and select the relevant Frontend project. You can download the integration details as a JSON file.
   
   Note that .gitignore lists .env - it will not be added to the repository. 
  
