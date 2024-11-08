@@ -1,38 +1,36 @@
-import { UrlModel } from './db.js';
-import { checkAuthenticated, handleAuthCallback, renderHomePage, initiateAuth, renderHomePageAfterAuth, handleUserLogout } from './auth.js';
+// Import necessary functions for URL shortening, summary retrieval, and URL table management.
 import { shortenUrl } from './urlShortener.js';
 import { getUrlSummary } from './urlSummary.js';
 import { getUrlTable } from './urlTable.js';
-import RateLimit from 'express-rate-limit';
+import RateLimit from 'express-rate-limit'; // Import the rate-limiting middleware for Express.
 
 const authLimiter = RateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // max 100 requests per windowMs
+  windowMs: 15 * 60 * 1000, // 15 minutes duration for the rate limit.
+  max: 100, // Allow a maximum of 100 requests within the 15-minute window.
 });
-// Rate limiter: maximum of 100 requests per 15 minutes
+
+// Rate limiter for general requests: maximum of 100 requests per 15 minutes
 const limiter = RateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // max 100 requests per windowMs
+  windowMs: 15 * 60 * 1000, // 15 minutes duration for the rate limit.
+  max: 100, // Allow a maximum of 100 requests within the 15-minute window.
 });
+
+// Function to set up routes for the application
 export const setRoutes = (router) => {
-  // Set up rate limiter: maximum of 100 requests per 15 minutes
+  // Set up rate limiter for authentication-related routes
   const authRateLimiter = RateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // max 100 requests per windowMs
+    windowMs: 15 * 60 * 1000, // 15 minutes duration for the rate limit.
+    max: 100, // Allow a maximum of 100 requests within the 15-minute window.
   });
 
-  // Add routes related to authentication using the exported functions
-  router.get('/auth/callback', authRateLimiter, handleAuthCallback);
-  router.get('/', renderHomePage);
-  router.get('/auth', authLimiter, initiateAuth);
-  router.get('/home', checkAuthenticated, renderHomePageAfterAuth);
-  router.get('/logout', handleUserLogout);
   // Route to shorten a URL
-  router.post('/shorten', limiter, shortenUrl);
-  // Route to retrieve URL details based on custom ID
-  router.get('/url-summary/:customId', limiter, getUrlSummary);
-  // Route to retrieve the table of URLs
-  router.get('/urls', limiter, getUrlTable);
+  router.post('/shorten', limiter, shortenUrl); // Apply rate limiter to the URL shortening route.
 
-// ... (other routes)
+  // Route to retrieve URL details based on custom ID
+  router.get('/url-summary/:customId', limiter, getUrlSummary); // Apply rate limiter to the URL summary retrieval route.
+
+  // Route to retrieve the table of URLs
+  router.get('/urls', limiter, getUrlTable); // Apply rate limiter to the URL table retrieval route.
+
+  // ... (additional routes can be defined here)
 };
