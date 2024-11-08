@@ -65,12 +65,14 @@ export const initializeKeycloak = async (userStore) => {
         window.location.href = originalUrl; // Redirect to the original URL
       }
 
-      return _kc; // Return the Keycloak instance for further use
     } else {
       // If not authenticated, store the current URL before login
       localStorage.setItem('originalUrl', window.location.href);
       _kc.login(loginOptions); // Attempt login if user is not authenticated
     }
+
+    return _kc; // Return the Keycloak instance for further use
+    
   } catch (err) {
     // Log any error that occurs during Keycloak initialization
     console.error('Error during Keycloak initialization:', err);
