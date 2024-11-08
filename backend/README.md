@@ -25,5 +25,5 @@ To verify your SSO_CLIENT_ID, visit https://bcgov.github.io/sso-requests, log in
 
 ## Single Sign-on Pre-requisite
 
-- We needed a BC Government Single Sign-on integration with client type `public` before we could start using SSO in the URL-S app
+- A BC Government Single Sign-on integration with a client type of `public` is required to use SSO in the URL-S app.
 - We went to [SSO Onboarding](https://github.com/bcgov/sso-keycloak/wiki/SSO-Onboarding) to learn about and request this integration.
