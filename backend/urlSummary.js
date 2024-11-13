@@ -11,7 +11,10 @@ export const getUrlSummary = async (req, res) => {
       return res.status(404).json({ error: 'URL not found' });
     }
 
-    // Send the URL details as a JSON response
+    // Construct the complete shortened URL
+    const shortenedUrl = `${process.env.CUSTOM_DOMAIN}/${urlDetails.shortenedUrlString}`;
+
+    // Send the URL details and shortened URL as a JSON response
     res.json({
       targetUrl: urlDetails.targetUrl,
       description: urlDetails.description,
@@ -19,7 +22,9 @@ export const getUrlSummary = async (req, res) => {
       shortenedUrlString: urlDetails.shortenedUrlString,
       customId: urlDetails.customId,
       createdTime: urlDetails.createdTime,
+      shortenedUrl, // Include the complete shortened URL
     });
+  
   } catch (error) {
     console.error('Error retrieving URL details:', error);
     res.status(500).json({ error: 'Internal Server Error' });
