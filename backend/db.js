@@ -66,8 +66,16 @@ const urlSchema = new mongoose.Schema({
   expiryDate: { type: Date },
   shortenedUrlString: { type: String, unique: true },
   customId: { type: Number, unique: true, required: true, default: 999 },
-  createdTime: { type: Date },
+  createdTime: { type: Date, default: Date.now },
+  versions: [
+    {
+      targetUrl: { type: String },
+      expiryDate: { type: Date },
+      updatedAt: { type: Date, default: Date.now },
+    },
+  ],
 });
+
 
 // Create model based on schema
 export const UrlModel = mongoose.model('Url', urlSchema);
