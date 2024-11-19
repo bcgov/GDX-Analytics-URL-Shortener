@@ -40,11 +40,33 @@
       <p><strong>Edited Date/Time:</strong></p>
       <br>
       <p><strong>Notes:</strong> {{ description || 'No description provided' }}</p>
+      <br>
       <p style="color: green;">{{ copiedMessage }}</p>
+      <button @click="toggleEditMode">{{ isEditing ? 'Cancel' : 'Edit' }}</button>
     </div>
 
     <div class="action-container">
       <router-link :to="{ name: 'url-table' }" class="url-list-link">Check all URLs</router-link>
+    </div>
+    <!-- Edit Form -->
+    <div v-if="isEditing" class="edit-form">
+      <h3>Edit URL Details</h3>
+      <form @submit.prevent="submitEdit">
+        <label for="targetUrl">Target URL:</label>
+        <input
+          id="targetUrl"
+          type="text"
+          v-model="editedTargetUrl"
+          required
+        />
+        <label for="expiryDate">Expiry Date:</label>
+        <input
+          id="expiryDate"
+          type="date"
+          v-model="editedExpiryDate"
+        />
+        <button type="submit">Submit</button>
+      </form>
     </div>
   </div>
 </template>
@@ -72,6 +94,49 @@ const createdBy = ref('');
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 const frontendURL = import.meta.env.VITE_FRONTEND_URL;
 const copiedMessage = ref('');
+
+// Edit Mode State
+const isEditing = ref(false);
+const editedTargetUrl = ref('');
+const editedExpiryDate = ref('');
+
+const toggleEditMode = () => {
+  isEditing.value = !isEditing.value;
+
+  // Populate the editable fields with current values when entering edit mode
+  if (isEditing.value) {
+    editedTargetUrl.value = targetUrl.value || '';
+    editedExpiryDate.value = expiryDate.value
+      ? formatExpiryDate(expiryDate.value)
+      : '';
+  }
+};
+
+
+const submitEdit = async () => {
+  const userStore = useUserStore();
+  try {
+    const payload = {
+      targetUrl: editedTargetUrl.value,
+      expiryDate: editedExpiryDate.value,
+    };
+
+    await axios.put(`${backendURL}/update-url/${customId.value}`, payload, {
+      headers: {
+        Authorization: `Bearer ${userStore.token}`,
+      },
+    });
+
+    // Update displayed values with the edited values
+    targetUrl.value = editedTargetUrl.value;
+    expiryDate.value = editedExpiryDate.value;
+
+    // Exit edit mode
+    isEditing.value = false;
+  } catch (error) {
+    console.error('Error updating URL:', error);
+  }
+};
 
 onMounted(async () => {
   // Assign the customId value from the route parameters using useRoute
@@ -179,4 +244,37 @@ a {
   color: rgb(0, 0, 0);
   text-decoration: underline;
 }
+
+
+.edit-form {
+  margin-top: 20px;
+}
+
+.edit-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.edit-form input {
+  margin-bottom: 15px;
+  padding: 5px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.edit-form button {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.edit-form button:hover {
+  background-color: #0056b3;
+}
+
 </style>
