@@ -2,6 +2,7 @@
 import { shortenUrl } from './urlShortener.js';
 import { getUrlSummary } from './urlSummary.js';
 import { getUrlTable } from './urlTable.js';
+import { updateUrl, getHistory } from './urlShortener.js'; // Import new functions
 import RateLimit from 'express-rate-limit'; // Import the rate-limiting middleware for Express.
 
 const authLimiter = RateLimit({
@@ -17,20 +18,18 @@ const limiter = RateLimit({
 
 // Function to set up routes for the application
 export const setRoutes = (router) => {
-  // Set up rate limiter for authentication-related routes
-  const authRateLimiter = RateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes duration for the rate limit.
-    max: 100, // Allow a maximum of 100 requests within the 15-minute window.
-  });
-
   // Route to shorten a URL
-  router.post('/shorten', limiter, shortenUrl); // Apply rate limiter to the URL shortening route.
+  router.post('/shorten', limiter, shortenUrl);
 
   // Route to retrieve URL details based on custom ID
-  router.get('/url-summary/:customId', limiter, getUrlSummary); // Apply rate limiter to the URL summary retrieval route.
+  router.get('/url-summary/:customId', limiter, getUrlSummary);
 
   // Route to retrieve the table of URLs
-  router.get('/urls', limiter, getUrlTable); // Apply rate limiter to the URL table retrieval route.
+  router.get('/urls', limiter, getUrlTable);
 
-  // ... (additional routes can be defined here)
+  // Route to update a URL based on customId
+  router.put('/update-url/:customId', limiter, updateUrl);
+
+  // Route to fetch the version history of a URL based on customId
+  router.get('/url-history/:customId', limiter, getHistory);
 };
