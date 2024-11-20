@@ -32,7 +32,7 @@
           <!-- Reload Form -->
           <div v-if="formSubmitted">
             <p style="text-align: right">
-              <router-link to="/shorten" @click="reloadPage">Click to create a new Short URL</router-link>
+              <router-link to="/create" @click="reloadPage">Click to create a new Short URL</router-link>
             </p>
           </div>
         </div>
@@ -76,7 +76,7 @@ const submitForm = async () => {
     const localTime = new Date(currentTime.toLocaleString('en-US', { timeZone: 'America/Vancouver' }));
 
     const response = await axios.post(
-      `${backendURL}/shorten`,
+      `${backendURL}/create`,
       {
         targetUrl: targetUrl.value,
         description: description.value,
