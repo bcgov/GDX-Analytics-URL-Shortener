@@ -24,7 +24,7 @@ export const setRoutes = (router) => {
   });
 
   // Route to shorten a URL
-  router.post('/shorten', limiter, shortenUrl); // Apply rate limiter to the URL shortening route.
+  router.post('/create', limiter, shortenUrl); // Apply rate limiter to the URL shortening route.
 
   // Route to retrieve URL details based on custom ID
   router.get('/url-summary/:customId', limiter, getUrlSummary); // Apply rate limiter to the URL summary retrieval route.
