@@ -114,7 +114,7 @@ const submitForm = async () => {
     // Redirect to summary page after a short delay
     setTimeout(() => {
       router.push({ name: 'url-summary', params: { customId: customId.value } }); // Navigate to URL summary page
-    }, 1000); // 1-second delay
+    }, 2000); // 2-second delay
   } catch (err: any) {
     // Handle errors from API call
     error.value = err.response?.data.message || 'Error occurred';
@@ -177,7 +177,7 @@ button:disabled {
 /* Success message styling */
 .success-message {
   margin-top: 20px;
-  color: green;
+  color: rgb(0, 0, 0);
 }
 
 /* Error message block styling */

@@ -44,9 +44,9 @@
     </div>
 
     <div class="action-container">
-      <router-link :to="{ name: 'create' }" class="create-url">Create a new Short URL</router-link>
+      <router-link :to="{ name: 'create' }" class="create-url">Create new Short URL</router-link>
       <br>
-      <router-link :to="{ name: 'url-table' }" class="url-list-link">Check all Existing URLs</router-link>
+      <router-link :to="{ name: 'url-table' }" class="url-list-link">View all Existing URLs</router-link>
     </div>
   </div>
 </template>
