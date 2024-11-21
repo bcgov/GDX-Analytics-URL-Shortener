@@ -1,88 +1,55 @@
 <template>
   <div>
     <div class="url-shortener">
+      <!-- Page Heading -->
       <h1 class="form-heading">Short URL Form</h1>
+      
+      <!-- Form for Shortening URL -->
       <form @submit.prevent="submitForm">
         <div class="input-group">
+          <!-- Target URL Input -->
           <div class="input-container">
             <label for="targetURL">Target URL:</label>
-            <input v-model="targetUrl" placeholder="Enter URL to shorten" :disabled="formSubmitted"/>
-            <span class="error" v-if="!isValidUrl(targetUrl) && targetUrl">Please enter a valid URL (e.g., http://example.com)</span>
+            <!-- Input field for the URL to shorten -->
+            <input v-model="targetUrl" placeholder="Enter URL to shorten" :disabled="formSubmitted" />
+            <!-- Display validation error if the URL is invalid -->
+            <span class="error" v-if="!isValidUrl(targetUrl) && targetUrl">
+              Please enter a valid URL (e.g., http://example.com)
+            </span>
           </div>
+
+          <!-- Expiry Date Input -->
           <div class="input-container">
             <label for="expiryDate">Expiry Date (Optional):</label>
-            <input type="date" v-model="expiryDate" placeholder="Choose Expiry Date" :disabled="formSubmitted"/>
-            <span class="error" v-if="isPastDate(expiryDate) && expiryDate">Please select a future expiry date</span>
+            <!-- Input field for expiry date of the short URL -->
+            <input type="date" v-model="expiryDate" placeholder="Choose Expiry Date" :disabled="formSubmitted" />
+            <!-- Display validation error if the selected date is in the past -->
+            <span class="error" v-if="isPastDate(expiryDate) && expiryDate">
+              Please select a future expiry date
+            </span>
           </div>
+
+          <!-- Notes Input -->
           <div class="input-container">
             <label for="description">Notes (Optional):</label>
+            <!-- Input field for adding additional notes -->
             <textarea v-model="description" placeholder="Enter Notes" :disabled="formSubmitted"></textarea>
           </div>
+
+          <!-- Submit Button -->
           <button type="submit" :disabled="isSubmitting || formSubmitted">
-            {{ isSubmitting || formSubmitted ? 'Form submitted successfully' : 'Shorten URL' }}
+            <!-- Button text changes based on form state -->
+            {{ isSubmitting || formSubmitted ? 'Processing...' : 'Shorten URL' }}
           </button>
-          <div v-if="formSubmitted">
-            <p style="text-align: right"><router-link to="/shorten" @click="reloadPage">Click to create a new Short URL</router-link></p>
-          </div>
         </div>
       </form>
 
-      <br />
-      <br />
-
-      <div v-if="formSubmitted">
-          <strong style="font-size: 1.5em;">Short URL: </strong>
-          <a :href="shortenedUrl" class="short-url" style="font-size: 1.5em;">{{ shortenedUrl.replace('https://', '') }}</a>
-          <a href="#" class="copy-btn" @click="copyToClipboard(shortenedUrl.replace('https://', ''))">
-            <img src="../assets/copy.svg" alt="Copy icon">
-          </a>
-          <p style="color: green;">{{ copiedMessage }}</p>
-        </div>
-      
-
-      <br>
-      <br>
-
-      <div v-if="shortenedUrl" class="url-details">
-       
-      <h3 style="font-weight: bold;">Details</h3>
-      <br>
-      <!-- This is full short url which means it will contails https:// in it -->
-        <p><strong>Full Short URL:</strong>
-          <a :href="shortenedUrl" class="full-short-url">{{ shortenedUrl }}</a>
-          <a href="#" class="copy-btn" @click="copyToClipboard(shortenedUrl)">
-            <img src="../assets/copy.svg" alt="Copy icon">
-          </a>
-        </p>
-        <!-- This is target url which means when public click on the short url, they will go to this url -->
-        <div class="target-url-container">
-          <p><strong>Target URL:</strong><a :href="targetUrl" class="target-url">{{ targetUrl }}</a>
-            <a href="#" class="copy-btn" @click="copyToClipboard(targetUrl )">
-            <img src="../assets/copy.svg" alt="Copy icon">
-          </a>
-          
-          
-          </p>
-        </div>
-        <!-- This is internal url which means when app users click on the url, they will go to summary page which list all details about this url -->
-        <p><strong>Internal Link:</strong>
-          <a :href="internalLink">{{ internalLink }}</a>
-          <a href="#" class="copy-btn" @click="copyToClipboard(internalLink)">
-            <img src="../assets/copy.svg" alt="Copy icon">
-          </a>
-        </p>
-        <br>
-      <!-- Expiry date is in UTC for now -->
-        <p><strong>Expiry Date:</strong> {{ formatExpiryDate(expiryDate) }}</p>
-        <br>
-        <!-- created by does not have a value for now-->
-        <p><strong>Created By:</strong> </p>
-        <!-- created date/time is in users timezone-->
-        <p><strong>Created Date/Time:</strong> {{ formattedTime }}</p>
-        <br>
-        <p><strong>Notes:</strong> {{ description }}</p>
+      <!-- Success Message (shown after form submission) -->
+      <div v-if="formSubmitted && !error">
+        <p class="success-message">Form submitted successfully! Redirecting to the summary page...</p>
       </div>
 
+      <!-- Error Message (shown if an error occurs) -->
       <div v-if="error" class="error-message">
         <p><strong>Error:</strong> {{ error }}</p>
       </div>
@@ -91,186 +58,131 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import axios from 'axios';
-import { useRouter } from 'vue-router';
-import { useUserStore } from '@/stores/userStore';
+import { ref } from 'vue'; // Import reactive refs
+import axios from 'axios'; // For API requests
+import { useRouter } from 'vue-router'; // For navigation
+import { useUserStore } from '@/stores/userStore'; // Access user authentication data
 
-const targetUrl = ref('');
-const description = ref('');
-const expiryDate = ref('');
-const customId = ref('');
-const shortenedUrl = ref('');
-const error = ref('');
-const createdTime = ref<string>('');
-const formattedTime = ref('');
-const isSubmitting = ref(false);
-const formSubmitted = ref(false);
-const copiedMessage = ref('');
+// Reactive variables for form data
+const targetUrl = ref(''); // Holds the target URL
+const description = ref(''); // Holds the notes/description
+const expiryDate = ref(''); // Holds the expiry date (optional)
+const customId = ref(''); // Holds the generated custom ID
+const shortenedUrl = ref(''); // Holds the shortened URL
+const error = ref(''); // Holds any error messages
+const isSubmitting = ref(false); // Indicates if the form is being submitted
+const formSubmitted = ref(false); // Indicates if the form has been successfully submitted
 
-const frontendURL = import.meta.env.VITE_FRONTEND_URL;
-const backendURL = import.meta.env.VITE_BACKEND_URL;
+// Environment variables
+const frontendURL = import.meta.env.VITE_FRONTEND_URL; // Frontend base URL
+const backendURL = import.meta.env.VITE_BACKEND_URL; // Backend API base URL
 
-const userStore = useUserStore();
-const internalLink = computed(() => `${frontendURL}/url-summary/${customId.value}`);
-const router = useRouter();
+const userStore = useUserStore(); // Access the user store
+const router = useRouter(); // Router instance for navigation
 
+// Form submission logic
 const submitForm = async () => {
-  isSubmitting.value = true;
+  isSubmitting.value = true; // Mark form as submitting
 
   try {
+    // Get the current time in local time zone
     const currentTime = new Date();
     const localTime = new Date(currentTime.toLocaleString('en-US', { timeZone: 'America/Vancouver' }));
 
-    const response = await axios.post(`${backendURL}/shorten`, {
-      targetUrl: targetUrl.value,
-      description: description.value,
-      expiryDate: expiryDate.value,
-      createdTime: localTime.toISOString(),
-    }, {
-      headers: {
-        Authorization: `Bearer ${userStore.token}` // Pass the token here
+    // Send form data to the backend API
+    const response = await axios.post(
+      `${backendURL}/create`,
+      {
+        targetUrl: targetUrl.value,
+        description: description.value,
+        expiryDate: expiryDate.value,
+        createdTime: localTime.toISOString(), // Add the current time
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${userStore.token}`, // Include authentication token
+        },
       }
-    });
-    console.log('Current token:', userStore.token); // Print the token in the frontend console
+    );
 
-    shortenedUrl.value = response.data.shortenedUrl;
-    customId.value = response.data.customId;
-    error.value = '';
-    createdTime.value = localTime.toISOString();
-    formattedTime.value = formatTime(localTime);
-    formSubmitted.value = true;
+    // Update form state on success
+    shortenedUrl.value = response.data.shortenedUrl; // Set shortened URL
+    customId.value = response.data.customId; // Set custom ID
+    error.value = ''; // Clear errors
+    formSubmitted.value = true; // Mark form as submitted
+
+    // Redirect to summary page after a short delay
+    setTimeout(() => {
+      router.push({ name: 'url-summary', params: { customId: customId.value } }); // Navigate to URL summary page
+    }, 2000); // 2-second delay
   } catch (err: any) {
-    if (err.response) {
-      error.value = err.response.data.message || 'Error occurred';
-    } else {
-      error.value = 'Error occurred';
-    }
+    // Handle errors from API call
+    error.value = err.response?.data.message || 'Error occurred';
   } finally {
-    isSubmitting.value = false;
+    isSubmitting.value = false; // Reset submitting state
   }
 };
 
-const formatTime = (time: Date) => {
-  const year = time.getFullYear();
-  const month = String(time.getMonth() + 1).padStart(2, '0');
-  const day = String(time.getDate()).padStart(2, '0');
-  const hour = String(time.getHours()).padStart(2, '0');
-  const minute = String(time.getMinutes()).padStart(2, '0');
-  const second = String(time.getSeconds()).padStart(2, '0');
-  return `${year}-${month}-${day}, ${hour}:${minute}:${second}`;
-};
-
-/**
- * Formats the given date string to display only the date in 'YYYY-MM-DD' format.
- * If no date is provided, it returns a default message.
- * 
- * @param dateString - The date string to format (should be in ISO format)
- * @returns A formatted date string in 'YYYY-MM-DD' format or a default message if no date is provided
- */
-const formatExpiryDate = (dateString: string) => {
-  if (!dateString) return 'No expiry date';
-
-  const date = new Date(dateString);
-  return date.toISOString().split('T')[0];
-};
-
-
-const reloadPage = () => {
-  location.reload();
-};
-
+// URL validation function
 const isValidUrl = (url: string) => {
   try {
-    new URL(url);
-    return true;
+    new URL(url); // Attempt to construct a URL object
+    return true; // URL is valid
   } catch {
-    return false;
+    return false; // URL is invalid
   }
 };
 
+// Date validation function
 const isPastDate = (date: string) => {
-  const currentDate = new Date();
-  const selectedDate = new Date(date);
-  return selectedDate < currentDate;
-};
-
-const copyToClipboard = (text: string) => {
-  const input = document.createElement('textarea');
-  input.value = text;
-  document.body.appendChild(input);
-  input.select();
-  document.execCommand('copy');
-  document.body.removeChild(input);
-  copiedMessage.value = 'URL copied!';
-  setTimeout(() => {
-    copiedMessage.value = '';
-  }, 5000); // Hide the message after 5 seconds
+  const currentDate = new Date(); // Get current date
+  const selectedDate = new Date(date); // Convert input to a Date object
+  return selectedDate < currentDate; // Return true if the date is in the past
 };
 </script>
-
 <style scoped>
+/* Style for the URL shortener container */
 .url-shortener {
   margin-top: 20px;
 }
 
+/* Heading style */
 .form-heading {
   margin-bottom: 20px;
 }
 
+/* Input group styling */
 .input-group {
   display: flex;
   flex-direction: column;
 }
 
+/* Input container spacing */
 .input-container {
   margin-bottom: 10px;
 }
 
-.error-message {
-  margin-top: 20px;
-  color: red;
-}
-
+/* Error message styling */
 .error {
   color: red;
 }
 
+/* Disabled button styling */
 button:disabled {
   background-color: lightgray;
   color: gray;
   cursor: not-allowed;
 }
 
-.copy-btn {
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  background-image: url('../assets/copy.svg');
-  background-size: cover;
-  background-repeat: no-repeat;
-  cursor: pointer;
-  margin-left: 10px;
+/* Success message styling */
+.success-message {
+  margin-top: 20px;
+  color: rgb(0, 0, 0);
 }
 
-
-.target-url-container {
-  max-width: 80%;
+/* Error message block styling */
+.error-message {
+  margin-top: 20px;
+  color: red;
 }
-
-.target-url {
-  display: inline-block;
-  max-width: 100%;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
-a:hover {
-  color: #003f88;
-}
-
-a {
-  color: rgb(0, 0, 0); /* Set all links to black */
-  text-decoration: underline;
-}
-
 </style>
