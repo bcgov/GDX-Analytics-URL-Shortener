@@ -10,8 +10,8 @@ import UrlTable from '../components/UrlTable.vue';
 // Define the routes for the application (the paths users can visit)
 const routes = [
   {
-    path: '/shorten', // This is the path the user will visit to shorten URLs
-    name: 'shorten', // A name to identify this route
+    path: '/create', // This is the path the user will visit to create short URLs
+    name: 'create', // A name to identify this route
     component: ShortUrl, // The component (page) to be displayed for this route
     meta: { requiresAuth: true }, // This route requires authentication
   },
@@ -28,13 +28,13 @@ const routes = [
     meta: { requiresAuth: true }, // This route requires the user to be logged in
   },
   {
-    path: '/', // The default route, which will redirect users to the '/shorten' page
-    redirect: '/shorten', // Automatically redirects to the shorten URL page
+    path: '/', // The default route, which will redirect users to the '/create' page
+    redirect: '/create', // Automatically redirects to the create URL page
     meta: { requiresAuth: true }, // Even this default route requires authentication
   },
   {
     path: '/:pathMatch(.*)*', // Catch-all route for any invalid URLs
-    redirect: '/shorten', // Redirect users back to the '/shorten' page
+    redirect: '/create', // Redirect users back to the '/create' page
     meta: { requiresAuth: true }, // This redirect also requires authentication
   },
 ];
