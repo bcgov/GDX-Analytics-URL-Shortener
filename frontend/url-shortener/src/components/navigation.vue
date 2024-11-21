@@ -1,8 +1,8 @@
 <template>
   <nav>
     <div class="nav-left">
-      <!-- Navigation link to the Home (shorten) page -->
-      <router-link to="/shorten">Home</router-link>
+      <!-- Navigation link to the Home (create) page -->
+      <router-link to="/create">Create</router-link>
       <!-- Navigation link to the Existing URLs page -->
       <router-link to="/urls">Existing URLs</router-link>
     </div>
