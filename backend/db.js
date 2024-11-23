@@ -66,8 +66,22 @@ const urlSchema = new mongoose.Schema({
   expiryDate: { type: Date },
   shortenedUrlString: { type: String, unique: true },
   customId: { type: Number, unique: true, required: true, default: 999 },
-  createdTime: { type: Date },
+  createdTime: { type: Date, default: Date.now },
+  createdBy: { type: String }, // User who created the entry
+  updatedAt: { type: Date, default: null }, // Set to null initially
+  editedBy: { type: String, default: "" }, // Set to empty string initially
+  versions: [
+    {
+      targetUrl: { type: String },
+      expiryDate: { type: Date },
+      description: { type: String },
+      updatedAt: { type: Date, default: Date.now }, // Timestamp of the edit
+      editedBy: { type: String }, // User who made the edit
+    },
+  ],
 });
+
+
 
 // Create model based on schema
 export const UrlModel = mongoose.model('Url', urlSchema);
