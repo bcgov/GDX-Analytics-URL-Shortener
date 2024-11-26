@@ -133,35 +133,27 @@ const submitEdit = async () => {
       description: editedDescription.value,
     };
 
-    // Capture the response from the PUT request
     const response = await axios.put(`${backendURL}/update-url/${customId.value}`, payload, {
       headers: {
         Authorization: `Bearer ${userStore.token}`,
       },
     });
-    console.log(response.data); // Check the response structure
 
-    // Update displayed values with the edited values
-    targetUrl.value = editedTargetUrl.value;
-    expiryDate.value = editedExpiryDate.value;
-    description.value = editedDescription.value;
+    const updatedData = response.data.urlDocument;
+    console.log('Updated Data:', updatedData);
 
-    // Check if the response contains an updatedAt field and update it
-    if (response.data.updatedAt) {
-      updatedAt.value = response.data.updatedAt ? convertToLocalTime(response.data.updatedAt) : 'No Edits';
-    }
+    targetUrl.value = updatedData.targetUrl || 'N/A';
+    expiryDate.value = updatedData.expiryDate || '';
+    description.value = updatedData.description || 'No description provided';
+    updatedAt.value = updatedData.updatedAt ? convertToLocalTime(updatedData.updatedAt) : 'No Edits';
+    editedBy.value = updatedData.editedBy || 'No Edits';
 
-    // Update editedBy field from response
-    if (response.data.editedBy) {
-      editedBy.value = response.data.editedBy || 'No one';
-    }
-
-    // Exit edit mode
     isEditing.value = false;
   } catch (error) {
     console.error('Error updating URL:', error);
   }
 };
+
 
 onMounted(async () => {
   customId.value = route.params.customId;
