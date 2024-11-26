@@ -47,7 +47,9 @@
     </div>
 
     <div class="action-container">
-      <router-link :to="{ name: 'url-table' }" class="url-list-link">Check all URLs</router-link>
+      <router-link :to="{ name: 'create' }" class="create-url">Create new Short URL</router-link>
+      <br>
+      <router-link :to="{ name: 'url-table' }" class="url-list-link">View all Existing URLs</router-link>
     </div>
     <!-- Edit Form -->
     <div v-if="isEditing" class="edit-form">
@@ -285,6 +287,20 @@ a {
   text-decoration: underline;
 }
 
+/* Style for the "Create a new Short URL" link */
+.create-url {
+  display: inline-block; /* Makes it a block for better padding */
+  margin-top: 20px; /* Adds spacing from surrounding elements */
+  margin-bottom: 20px; /* Adds spacing from surrounding elements */
+  font-weight: bold; /* Makes the text bold */
+}
+
+
+/* Active state for when the link is clicked */
+.create-url:active {
+  transform: translateY(0); /* Returns to normal position */
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Slightly reduced shadow */
+}
 
 .edit-form {
   margin-top: 20px;
