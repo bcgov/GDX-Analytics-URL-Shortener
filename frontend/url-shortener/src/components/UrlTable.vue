@@ -159,13 +159,28 @@ onMounted(async () => {
 });
 
 // Helper function to format the expiry date as "yyyy-mm-dd"
-const formatExpiryDate = (dateString) => {
-  const date = new Date(dateString);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+const formatExpiryDate = (utcDate) => {
+  if (!utcDate) return 'No expiry date';
+  return dayjs(utcDate)
+    .tz(dayjs.tz.guess()) // Convert UTC date to user's local timezone
+    .format('YYYY-MM-DD'); // Format in 'YYYY-MM-DD'
 };
+
+// Define a function that converts a given UTC date/time to local time
+// This conversion is aware of the user's local timezone and considers Daylight Savings Time (DST)
+// The function uses the 'dayjs' library along with the 'timezone' plugin
+
+const convertToLocalTime = (utcDate) => {
+  
+  // The 'tz.guess()' function automatically detects the user's current timezone
+  // The 'tz()' method then converts the given UTC date/time to the detected timezone
+  // The 'format()' method ensures the date is returned in a readable format: 'YYYY-MM-DD HH:mm:ss'
+  
+  return dayjs(utcDate)  // Takes the UTC date/time passed to the function
+    .tz(dayjs.tz.guess())  // Converts it to the user's local timezone (with DST adjustments)
+    .format('YYYY-MM-DD HH:mm:ss');  // Formats the result in 'YYYY-MM-DD HH:mm:ss' format
+};
+
 
 // Compute the URLs to display on the current page
 const currentPageUrls = ref([]);
@@ -255,20 +270,6 @@ function toggleExpand(url) {
 }
 
 
-// Define a function that converts a given UTC date/time to local time
-// This conversion is aware of the user's local timezone and considers Daylight Savings Time (DST)
-// The function uses the 'dayjs' library along with the 'timezone' plugin
-
-const convertToLocalTime = (utcDate) => {
-  
-  // The 'tz.guess()' function automatically detects the user's current timezone
-  // The 'tz()' method then converts the given UTC date/time to the detected timezone
-  // The 'format()' method ensures the date is returned in a readable format: 'YYYY-MM-DD HH:mm:ss'
-  
-  return dayjs(utcDate)  // Takes the UTC date/time passed to the function
-    .tz(dayjs.tz.guess())  // Converts it to the user's local timezone (with DST adjustments)
-    .format('YYYY-MM-DD HH:mm:ss');  // Formats the result in 'YYYY-MM-DD HH:mm:ss' format
-};
 
 
 </script>
