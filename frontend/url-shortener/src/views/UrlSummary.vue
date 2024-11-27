@@ -67,7 +67,9 @@
           id="expiryDate"
           type="date"
           v-model="editedExpiryDate"
+          :min="getTodayDate()"
         />
+
         <label for="description">Notes:</label>
         <textarea
           id="description"
@@ -129,14 +131,17 @@ const submitEdit = async () => {
   try {
     const payload = {
       targetUrl: editedTargetUrl.value,
-      expiryDate: editedExpiryDate.value,
+      expiryDate: editedExpiryDate.value
+        ? dayjs(editedExpiryDate.value)
+            .endOf('day') // Set time to end of the day in local timezone
+            .utc() // Convert to UTC
+            .toISOString() // Format as ISO string
+        : null,
       description: editedDescription.value,
     };
 
     const response = await axios.put(`${backendURL}/update-url/${customId.value}`, payload, {
-      headers: {
-        Authorization: `Bearer ${userStore.token}`,
-      },
+      headers: { Authorization: `Bearer ${userStore.token}` },
     });
 
     const updatedData = response.data.urlDocument;
@@ -174,7 +179,7 @@ onMounted(async () => {
     shortenedUrl.value = data.shortenedUrl || 'N/A';
     targetUrl.value = data.targetUrl || 'N/A';
     description.value = data.description || 'No description provided';
-    expiryDate.value = data.expiryDate || '';
+    expiryDate.value = data.expiryDate ? formatExpiryDate(data.expiryDate) : 'No expiry date';
 
     // Reassign customId if it's present in the response
     if (data.customId) customId.value = data.customId;
@@ -209,12 +214,16 @@ const convertToLocalTime = (utcDate) => {
     .format('YYYY-MM-DD HH:mm:ss');
 };
 
-const formatExpiryDate = (dateString) => {
-  if (!dateString) return 'No expiry date';
-
-  const date = new Date(dateString);
-  return date.toISOString().split('T')[0];
+const formatExpiryDate = (utcDate) => {
+  if (!utcDate) return 'No expiry date';
+  return dayjs(utcDate)
+    .tz(dayjs.tz.guess()) // Convert UTC to local timezone
+    .format('YYYY-MM-DD'); // Format as YYYY-MM-DD
 };
+const getTodayDate = () => {
+  return dayjs().tz(dayjs.tz.guess()).format('YYYY-MM-DD');
+};
+
 
 
 const copyToClipboard = (text) => {
