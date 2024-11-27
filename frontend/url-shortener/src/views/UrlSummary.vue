@@ -37,16 +37,48 @@
       <br>
       <p><strong>Created By:</strong> {{ createdBy || 'Unknown' }}</p>
       <p><strong>Created Date/Time:</strong> {{ createdTime || 'N/A' }}</p>
-      <p><strong>Edited Date/Time:</strong></p>
+      <p><strong>Edited Date/Time:</strong> {{ updatedAt || 'No edits' }}</p>
+      <p><strong>Edited By:</strong> {{ editedBy || 'No edits' }}</p> <!-- New field for editedBy -->
       <br>
       <p><strong>Notes:</strong> {{ description || 'No description provided' }}</p>
+      <br>
       <p style="color: green;">{{ copiedMessage }}</p>
+      <button @click="toggleEditMode">{{ isEditing ? 'Cancel' : 'Edit' }}</button>
     </div>
 
     <div class="action-container">
       <router-link :to="{ name: 'create' }" class="create-url">Create new Short URL</router-link>
       <br>
       <router-link :to="{ name: 'url-table' }" class="url-list-link">View all Existing URLs</router-link>
+    </div>
+    <!-- Edit Form -->
+    <div v-if="isEditing" class="edit-form">
+      <h3>Edit URL Details</h3>
+      <form @submit.prevent="submitEdit">
+        <label for="targetUrl">Target URL:</label>
+        <input
+          id="targetUrl"
+          type="text"
+          v-model="editedTargetUrl"
+          required
+        />
+        <label for="expiryDate">Expiry Date:</label>
+        <input
+          id="expiryDate"
+          type="date"
+          v-model="editedExpiryDate"
+          :min="getTodayDate()"
+        />
+
+        <label for="description">Notes:</label>
+        <textarea
+          id="description"
+          v-model="editedDescription"
+          rows="3"
+          placeholder="Enter description (optional)"
+        ></textarea>
+        <button type="submit">Submit</button>
+      </form>
     </div>
   </div>
 </template>
@@ -71,36 +103,103 @@ const description = ref('');
 const expiryDate = ref('');
 const createdTime = ref('');
 const createdBy = ref('');
+const updatedAt = ref('');
+const editedBy = ref(''); // New reactive reference for editedBy
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 const frontendURL = import.meta.env.VITE_FRONTEND_URL;
 const copiedMessage = ref('');
 
+// Edit Mode State
+const isEditing = ref(false);
+const editedTargetUrl = ref('');
+const editedExpiryDate = ref('');
+const editedDescription = ref('');
+
+const toggleEditMode = () => {
+  isEditing.value = !isEditing.value;
+
+  // Populate the editable fields with current values when entering edit mode
+  if (isEditing.value) {
+    editedTargetUrl.value = targetUrl.value || '';
+    editedExpiryDate.value = expiryDate.value ? formatExpiryDate(expiryDate.value) : '';
+    editedDescription.value = description.value || ''; // Populate description field
+  }
+};
+
+const submitEdit = async () => {
+  const userStore = useUserStore();
+  try {
+    const payload = {
+      targetUrl: editedTargetUrl.value,
+      expiryDate: editedExpiryDate.value
+        ? dayjs(editedExpiryDate.value)
+            .endOf('day') // Set time to end of the day in local timezone
+            .utc() // Convert to UTC
+            .toISOString() // Format as ISO string
+        : null,
+      description: editedDescription.value,
+    };
+
+    const response = await axios.put(`${backendURL}/update-url/${customId.value}`, payload, {
+      headers: { Authorization: `Bearer ${userStore.token}` },
+    });
+
+    const updatedData = response.data.urlDocument;
+    console.log('Updated Data:', updatedData);
+
+    targetUrl.value = updatedData.targetUrl || 'N/A';
+    expiryDate.value = updatedData.expiryDate || '';
+    description.value = updatedData.description || 'No description provided';
+    updatedAt.value = updatedData.updatedAt ? convertToLocalTime(updatedData.updatedAt) : 'No Edits';
+    editedBy.value = updatedData.editedBy || 'No Edits';
+
+    isEditing.value = false;
+  } catch (error) {
+    console.error('Error updating URL:', error);
+  }
+};
+
+
 onMounted(async () => {
-  // Assign the customId value from the route parameters using useRoute
   customId.value = route.params.customId;
-  const userStore = useUserStore(); // Use the userStore to get the token
+  const userStore = useUserStore();
 
   try {
-    // Retrieve data from the backend using customId
     const response = await axios.get(`${backendURL}/url-summary/${customId.value}`, {
       headers: {
-        Authorization: `Bearer ${userStore.token}` // Add the authorization header here
+        Authorization: `Bearer ${userStore.token}`
       }
     });
     const data = response.data;
 
+    // Log the full response to see if the data structure is as expected
+    console.log('API Response:', data);
+
+    // Directly use data for all properties
     shortenedUrl.value = data.shortenedUrl || 'N/A';
     targetUrl.value = data.targetUrl || 'N/A';
     description.value = data.description || 'No description provided';
-    expiryDate.value = data.expiryDate || '';
-    
-    // Only reassign customId if it exists in the response
-    if (data.customId) {
-      customId.value = data.customId;
+    expiryDate.value = data.expiryDate ? formatExpiryDate(data.expiryDate) : 'No expiry date';
+
+    // Reassign customId if it's present in the response
+    if (data.customId) customId.value = data.customId;
+    if (data.createdBy) createdBy.value = data.createdBy;
+
+    // Format and assign createdTime if available in data
+    if (data.createdTime) {
+      createdTime.value = convertToLocalTime(data.createdTime);
     }
 
-    if ('createdTime' in data) {
-      createdTime.value = convertToLocalTime(data.createdTime);
+    // Now directly use the root-level `updatedAt` and `editedBy`
+    if (data.updatedAt) {
+      updatedAt.value = convertToLocalTime(data.updatedAt);
+    } else {
+      updatedAt.value = 'No edits';  // Set 'No edits' if updatedAt is missing
+    }
+
+    // Set the editedBy field if available
+    if (data.editedBy) {
+      editedBy.value = data.editedBy || 'No edits';
     }
 
   } catch (error) {
@@ -108,18 +207,24 @@ onMounted(async () => {
   }
 });
 
-const formatExpiryDate = (dateString) => {
-  if (!dateString) return 'No expiry date';
-
-  const date = new Date(dateString);
-  return date.toISOString().split('T')[0];
-};
-
+// Helper function to convert UTC to local time
 const convertToLocalTime = (utcDate) => {
   return dayjs(utcDate)
     .tz(dayjs.tz.guess())
     .format('YYYY-MM-DD HH:mm:ss');
 };
+
+const formatExpiryDate = (utcDate) => {
+  if (!utcDate) return 'No expiry date';
+  return dayjs(utcDate)
+    .tz(dayjs.tz.guess()) // Convert UTC to local timezone
+    .format('YYYY-MM-DD'); // Format as YYYY-MM-DD
+};
+const getTodayDate = () => {
+  return dayjs().tz(dayjs.tz.guess()).format('YYYY-MM-DD');
+};
+
+
 
 const copyToClipboard = (text) => {
   const input = document.createElement('textarea');
@@ -134,6 +239,7 @@ const copyToClipboard = (text) => {
   }, 5000);
 };
 </script>
+
 
 <style scoped>
 .url-summary-container {
@@ -181,6 +287,7 @@ a {
   color: rgb(0, 0, 0);
   text-decoration: underline;
 }
+
 /* Style for the "Create a new Short URL" link */
 .create-url {
   display: inline-block; /* Makes it a block for better padding */
@@ -195,4 +302,36 @@ a {
   transform: translateY(0); /* Returns to normal position */
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Slightly reduced shadow */
 }
+
+.edit-form {
+  margin-top: 20px;
+}
+
+.edit-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.edit-form input {
+  margin-bottom: 15px;
+  padding: 5px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.edit-form button {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.edit-form button:hover {
+  background-color: #0056b3;
+}
+
 </style>
