@@ -22,12 +22,20 @@
           <div class="input-container">
             <label for="expiryDate">Expiry Date (Optional):</label>
             <!-- Input field for expiry date of the short URL -->
-            <input type="date" v-model="expiryDate" placeholder="Choose Expiry Date" :disabled="formSubmitted" />
+            <input 
+              type="date" 
+              id="expiryDate" 
+              v-model="expiryDate" 
+              placeholder="Choose Expiry Date" 
+              :disabled="formSubmitted" 
+              :min="getTodayDate()" 
+            />
             <!-- Display validation error if the selected date is in the past -->
             <span class="error" v-if="isPastDate(expiryDate) && expiryDate">
-              Please select a future expiry date
+              Expiry date cannot be set in the past
             </span>
           </div>
+
 
           <!-- Notes Input -->
           <div class="input-container">
@@ -62,6 +70,13 @@ import { ref } from 'vue'; // Import reactive refs
 import axios from 'axios'; // For API requests
 import { useRouter } from 'vue-router'; // For navigation
 import { useUserStore } from '@/stores/userStore'; // Access user authentication data
+import dayjs from 'dayjs'; // Import dayjs
+import utc from 'dayjs/plugin/utc'; // UTC plugin for dayjs
+import timezone from 'dayjs/plugin/timezone'; // Timezone plugin for dayjs
+
+// Extend dayjs with plugins
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 // Reactive variables for form data
 const targetUrl = ref(''); // Holds the target URL
@@ -85,9 +100,17 @@ const submitForm = async () => {
   isSubmitting.value = true; // Mark form as submitting
 
   try {
-    // Get the current time in local time zone
-    const currentTime = new Date();
-    const localTime = new Date(currentTime.toLocaleString('en-US', { timeZone: 'America/Vancouver' }));
+    const currentTime = dayjs().tz(dayjs.tz.guess()); // Get current time in user's timezone
+
+    let expiryDateUTC = null;
+    if (expiryDate.value) {
+      // Convert the expiry date to the end of the selected day in the user's timezone
+      expiryDateUTC = dayjs(expiryDate.value)
+        .endOf('day') // Set to end of day
+        .tz(dayjs.tz.guess()) // Interpret as local timezone
+        .utc() // Convert to UTC
+        .toISOString(); // Convert to ISO string
+    }
 
     // Send form data to the backend API
     const response = await axios.post(
@@ -95,8 +118,8 @@ const submitForm = async () => {
       {
         targetUrl: targetUrl.value,
         description: description.value,
-        expiryDate: expiryDate.value,
-        createdTime: localTime.toISOString(), // Add the current time
+        expiryDate: expiryDateUTC, // Send UTC expiry date
+        createdTime: currentTime.utc().toISOString(), // Add the current UTC time
       },
       {
         headers: {
@@ -135,11 +158,17 @@ const isValidUrl = (url: string) => {
 
 // Date validation function
 const isPastDate = (date: string) => {
-  const currentDate = new Date(); // Get current date
-  const selectedDate = new Date(date); // Convert input to a Date object
-  return selectedDate < currentDate; // Return true if the date is in the past
+  const now = dayjs().tz(dayjs.tz.guess()); // Get current time in user's timezone
+  const selectedDate = dayjs(date).tz(dayjs.tz.guess()); // Interpret the input date in local timezone
+  return selectedDate.isBefore(now, 'day'); // Check if the date is before today
 };
+
+const getTodayDate = () => {
+  return dayjs().tz(dayjs.tz.guess()).format('YYYY-MM-DD');
+};
+
 </script>
+
 <style scoped>
 /* Style for the URL shortener container */
 .url-shortener {

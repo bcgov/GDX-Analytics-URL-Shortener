@@ -1,7 +1,15 @@
-import moment from 'moment-timezone'; // Import Moment.js with timezone support
+import dayjs from 'dayjs'; // Import dayjs
+import utc from 'dayjs/plugin/utc.js';
+import timezone from 'dayjs/plugin/timezone.js';
+
 import { UrlModel } from './db.js';
 import { generateRandomString } from './randomstring.js';
-import { authenticateMiddleware } from './auth.js'; // Import the middleware
+import { authenticateMiddleware } from './auth.js'; // Import middleware
+
+// Extend dayjs with plugins
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 
 // Helper function to generate the next customId
 const getNextCustomId = async () => {
@@ -23,11 +31,8 @@ export const shortenUrl = [
     }
 
     try {
-      // Log the user object to ensure it's populated correctly
-      console.log('Authenticated User:', req.user);
-
-      // Get the current time in the Pacific/Vancouver timezone
-      const createdTime = moment.tz('America/Vancouver').toDate();
+      // Get the current time in UTC
+      const createdTime = dayjs().utc().toDate(); // Get current UTC time
 
       // Generate the next customId
       const nextId = await getNextCustomId();
@@ -38,12 +43,15 @@ export const shortenUrl = [
         shortenedUrlString = generateRandomString(6);
       } while (await UrlModel.exists({ shortenedUrlString }));
 
+      // Prepare the expiry date
+      const expiryDateUTC = expiryDate ? dayjs(expiryDate).utc().toDate() : null;
+
       // Create a new document in the MongoDB collection
       const urlDocument = new UrlModel({
         targetUrl,
         description,
-        expiryDate: expiryDate || null, // Allow expiryDate to be optional
-        createdTime,
+        expiryDate: expiryDateUTC, // Store expiry date as UTC
+        createdTime, // Current time in UTC
         shortenedUrlString,
         customId: nextId,
         createdBy: req.user ? req.user.idir_username : 'unknown', // Ensure createdBy is assigned
@@ -66,6 +74,7 @@ export const shortenUrl = [
     }
   },
 ];
+
 
 
 export const updateUrl = [
@@ -95,17 +104,17 @@ export const updateUrl = [
         targetUrl: urlDocument.targetUrl,
         expiryDate: urlDocument.expiryDate,
         description: urlDocument.description,
-        updatedAt: new Date(), // Current timestamp for versioning
+        updatedAt: dayjs().utc().toDate(), // Current UTC timestamp for versioning
         editedBy: req.user ? req.user.idir_username : 'unknown', // Track who edited
       });
 
       // Update the fields with new values
       if (targetUrl) urlDocument.targetUrl = targetUrl;
-      if (expiryDate) urlDocument.expiryDate = expiryDate;
+      if (expiryDate) urlDocument.expiryDate = dayjs(expiryDate).utc().toDate(); // Convert expiry date to UTC
       if (description) urlDocument.description = description;
 
       // Update the main document with new `updatedAt` and `editedBy`
-      urlDocument.updatedAt = new Date(); // Set updated timestamp
+      urlDocument.updatedAt = dayjs().utc().toDate(); // Set updated UTC timestamp
       urlDocument.editedBy = req.user ? req.user.idir_username : 'unknown'; // Set who edited
 
       // Save the updated document
@@ -118,6 +127,7 @@ export const updateUrl = [
     }
   },
 ];
+
 
 
 export const getHistory = [
@@ -133,11 +143,18 @@ export const getHistory = [
         return res.status(404).json({ error: 'URL not found' });
       }
 
+      // Convert dates in the versions array to UTC for consistency
+      const versions = urlDocument.versions.map(version => ({
+        ...version,
+        updatedAt: version.updatedAt ? dayjs(version.updatedAt).utc().toISOString() : null,
+      }));
+
       // Respond with the version history
-      res.json({ versions: urlDocument.versions });
+      res.json({ versions });
     } catch (error) {
       console.error('Error fetching version history:', error.message);
       res.status(500).json({ error: 'Internal Server Error' });
     }
   },
 ];
+
