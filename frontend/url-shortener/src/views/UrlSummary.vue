@@ -68,7 +68,7 @@
           type="date"
           v-model="editedExpiryDate"
         />
-        <label for="description">Description:</label>
+        <label for="description">Notes:</label>
         <textarea
           id="description"
           v-model="editedDescription"
