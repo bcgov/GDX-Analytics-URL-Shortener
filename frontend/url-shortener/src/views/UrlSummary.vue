@@ -46,21 +46,17 @@
       <p><strong>Edited Date/Time:</strong> {{ updatedAt || 'No edits' }}</p>
       <p><strong>Edited By:</strong> {{ editedBy || 'No edits' }}</p>
       <br />
-      <p><strong>Notes:</strong> {{ description || 'No description provided' }}</p>
-      <br />
-      <p style="color: green;">{{ copiedMessage }}</p>
-
+      <p><strong>Notes:</strong></p>
+      <p> &nbsp;{{ description || 'No description provided' }}</p>
+        <!-- Feedback message -->
+        <p v-if="copiedMessage" style="color: green;">{{ copiedMessage }}</p>
     </div>
-
-    <div class="action-container">
-      <router-link :to="{ name: 'create' }" class="create-url">Create new Short URL</router-link>
-      <br />
-      <router-link :to="{ name: 'url-table' }" class="url-list-link">View all Existing URLs</router-link>
-    </div>
-
     <!-- Edit Form -->
     <div v-if="isEditing" class="edit-form">
-      <h3>Edit URL Details</h3>
+    
+      <h3 style="font-weight: bold;">Edit</h3>
+      <br />
+      <div class="edit-form-container">
       <form @submit.prevent="submitEdit">
         <label for="targetUrl">Target URL:</label>
         <input
@@ -70,7 +66,7 @@
           :disabled="fieldsDisabled"
           required
         />
-        <label for="expiryDate">Expiry Date:</label>
+        <label for="expiryDate">Expiry Date (Optional):</label>
         <input
           id="expiryDate"
           type="date"
@@ -78,7 +74,7 @@
           :disabled="fieldsDisabled"
           :min="getTodayDate()"
         />
-        <label for="description">Notes:</label>
+        <label for="description">Notes (Optional):</label>
         <textarea
           id="description"
           v-model="editedDescription"
@@ -94,9 +90,13 @@
           {{ isSubmitting ? "Changes saved successfully!" : "Submit" }}
         </button>
 
-        <!-- Optional feedback message -->
-        <p v-if="copiedMessage" style="color: green;">{{ copiedMessage }}</p>
       </form>
+      </div>
+    </div>
+    <div class="action-container">
+      <router-link :to="{ name: 'create' }" class="create-url">Create new Short URL</router-link>
+      <br />
+      <router-link :to="{ name: 'url-table' }" class="url-list-link">View all Existing URLs</router-link>
     </div>
   </div>
 </template>
@@ -381,7 +381,13 @@ a {
   opacity: 0.7; /* Slightly transparent */
   border: 1px solid #bfbfbf; /* Optional: Add a border to show it's disabled */
 }
-
+.edit-form-container {
+  width: 50%;
+  padding: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional styling */
+  border: 1px solid #ccc; /* Optional styling */
+  border-radius: 8px; /* Optional styling */
+}
 
 
 input:disabled,
