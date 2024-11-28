@@ -1,56 +1,63 @@
 <template>
   <div class="url-summary-container">
+    <!-- Edit Button -->
+    <button class="bcgov-edit-button" @click="toggleEditMode">
+      {{ editButtonText }}
+    </button>
+
+
     <div class="url-details">
       <h2>
         <strong>Short URL:</strong>
         <a :href="shortenedUrl || '#'" target="_blank" class="short-url">{{ shortenedUrl || 'N/A' }}</a>
         <button class="copy-btn" @click="copyToClipboard(shortenedUrl || '')">
-          <img src="../assets/copy.svg" alt="Copy icon">
+          <img src="../assets/copy.svg" alt="Copy icon" />
         </button>
       </h2>
-      <br>
+      <br />
       <h3 style="font-weight: bold;">Details</h3>
-      <br>
+      <br />
       <p v-if="shortenedUrl">
         <strong>Full Short URL:</strong>
         <a :href="shortenedUrl || '#'" target="_blank" class="short-url">{{ shortenedUrl || 'N/A' }}</a>
         <button class="copy-btn" @click="copyToClipboard(shortenedUrl || '')">
-          <img src="../assets/copy.svg" alt="Copy icon">
+          <img src="../assets/copy.svg" alt="Copy icon" />
         </button>
       </p>
       <p v-if="targetUrl">
         <strong>Target URL:</strong>
         <a :href="targetUrl || '#'" target="_blank" class="short-url">{{ targetUrl || 'N/A' }}</a>
         <button class="copy-btn" @click="copyToClipboard(targetUrl || '')">
-          <img src="../assets/copy.svg" alt="Copy icon">
+          <img src="../assets/copy.svg" alt="Copy icon" />
         </button>
       </p>
       <p v-if="customId">
         <strong>Internal Link:</strong>
         <a :href="`${frontendURL}/url-summary/${customId}`" target="_blank">{{ `${frontendURL}/url-summary/${customId}` || 'N/A' }}</a>
         <button class="copy-btn" @click="copyToClipboard(`${frontendURL}/url-summary/${customId}`)">
-          <img src="../assets/copy.svg" alt="Copy icon">
+          <img src="../assets/copy.svg" alt="Copy icon" />
         </button>
       </p>
-      <br>
+      <br />
       <p><strong>Expiry Date:</strong> {{ formatExpiryDate(expiryDate) || 'No expiry date' }}</p>
-      <br>
+      <br />
       <p><strong>Created By:</strong> {{ createdBy || 'Unknown' }}</p>
       <p><strong>Created Date/Time:</strong> {{ createdTime || 'N/A' }}</p>
       <p><strong>Edited Date/Time:</strong> {{ updatedAt || 'No edits' }}</p>
-      <p><strong>Edited By:</strong> {{ editedBy || 'No edits' }}</p> <!-- New field for editedBy -->
-      <br>
+      <p><strong>Edited By:</strong> {{ editedBy || 'No edits' }}</p>
+      <br />
       <p><strong>Notes:</strong> {{ description || 'No description provided' }}</p>
-      <br>
+      <br />
       <p style="color: green;">{{ copiedMessage }}</p>
-      <button @click="toggleEditMode">{{ isEditing ? 'Cancel' : 'Edit' }}</button>
+
     </div>
 
     <div class="action-container">
       <router-link :to="{ name: 'create' }" class="create-url">Create new Short URL</router-link>
-      <br>
+      <br />
       <router-link :to="{ name: 'url-table' }" class="url-list-link">View all Existing URLs</router-link>
     </div>
+
     <!-- Edit Form -->
     <div v-if="isEditing" class="edit-form">
       <h3>Edit URL Details</h3>
@@ -60,6 +67,7 @@
           id="targetUrl"
           type="text"
           v-model="editedTargetUrl"
+          :disabled="fieldsDisabled"
           required
         />
         <label for="expiryDate">Expiry Date:</label>
@@ -67,17 +75,27 @@
           id="expiryDate"
           type="date"
           v-model="editedExpiryDate"
+          :disabled="fieldsDisabled"
           :min="getTodayDate()"
         />
-
         <label for="description">Notes:</label>
         <textarea
           id="description"
           v-model="editedDescription"
+          :disabled="fieldsDisabled"
           rows="3"
           placeholder="Enter description (optional)"
         ></textarea>
-        <button type="submit">Submit</button>
+        <button
+          type="submit"
+          class="bcgov-submit-button"
+          :disabled="isSubmitting"
+        >
+          {{ isSubmitting ? "Changes saved successfully!" : "Submit" }}
+        </button>
+
+        <!-- Optional feedback message -->
+        <p v-if="copiedMessage" style="color: green;">{{ copiedMessage }}</p>
       </form>
     </div>
   </div>
@@ -90,13 +108,13 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-import { useUserStore } from '@/stores/userStore'; // Import the user store
+import { useUserStore } from '@/stores/userStore';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const route = useRoute();
-const customId = ref(route.params.customId || '');  // Use fallback
+const customId = ref(route.params.customId || '');
 const shortenedUrl = ref('');
 const targetUrl = ref('');
 const description = ref('');
@@ -104,127 +122,123 @@ const expiryDate = ref('');
 const createdTime = ref('');
 const createdBy = ref('');
 const updatedAt = ref('');
-const editedBy = ref(''); // New reactive reference for editedBy
+const editedBy = ref('');
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 const frontendURL = import.meta.env.VITE_FRONTEND_URL;
 const copiedMessage = ref('');
 
-// Edit Mode State
 const isEditing = ref(false);
+const isSubmitting = ref(false);
+const fieldsDisabled = ref(false);
+
 const editedTargetUrl = ref('');
 const editedExpiryDate = ref('');
 const editedDescription = ref('');
+const editButtonText = ref('Edit'); // Tracks button text
+
 
 const toggleEditMode = () => {
   isEditing.value = !isEditing.value;
 
-  // Populate the editable fields with current values when entering edit mode
   if (isEditing.value) {
+    // Entering edit mode
+    isSubmitting.value = false; // Re-enable the submit button
+    fieldsDisabled.value = false; // Re-enable fields
     editedTargetUrl.value = targetUrl.value || '';
     editedExpiryDate.value = expiryDate.value ? formatExpiryDate(expiryDate.value) : '';
-    editedDescription.value = description.value || ''; // Populate description field
+    editedDescription.value = description.value || '';
+    editButtonText.value = 'Cancel'; // Change button text to "Cancel"
+  } else {
+    // Exiting edit mode
+    fieldsDisabled.value = true;
+    editButtonText.value = 'Edit'; // Change button text to "Edit"
   }
 };
 
+
 const submitEdit = async () => {
   const userStore = useUserStore();
+  isSubmitting.value = true; // Disable the button immediately
+  fieldsDisabled.value = true; // Disable input fields immediately
+
   try {
     const payload = {
       targetUrl: editedTargetUrl.value,
       expiryDate: editedExpiryDate.value
-        ? dayjs(editedExpiryDate.value)
-            .endOf('day') // Set time to end of the day in local timezone
-            .utc() // Convert to UTC
-            .toISOString() // Format as ISO string
+        ? dayjs(editedExpiryDate.value).endOf("day").utc().toISOString()
         : null,
       description: editedDescription.value,
     };
 
-    const response = await axios.put(`${backendURL}/update-url/${customId.value}`, payload, {
-      headers: { Authorization: `Bearer ${userStore.token}` },
-    });
+    const response = await axios.put(
+      `${backendURL}/update-url/${customId.value}`,
+      payload,
+      {
+        headers: { Authorization: `Bearer ${userStore.token}` },
+      }
+    );
 
     const updatedData = response.data.urlDocument;
-    console.log('Updated Data:', updatedData);
 
-    targetUrl.value = updatedData.targetUrl || 'N/A';
-    expiryDate.value = updatedData.expiryDate || '';
-    description.value = updatedData.description || 'No description provided';
-    updatedAt.value = updatedData.updatedAt ? convertToLocalTime(updatedData.updatedAt) : 'No Edits';
-    editedBy.value = updatedData.editedBy || 'No Edits';
+    targetUrl.value = updatedData.targetUrl || "N/A";
+    expiryDate.value = updatedData.expiryDate || "";
+    description.value = updatedData.description || "No description provided";
+    updatedAt.value = updatedData.updatedAt
+      ? convertToLocalTime(updatedData.updatedAt)
+      : "No Edits";
+    editedBy.value = updatedData.editedBy || "No Edits";
 
-    isEditing.value = false;
+    setTimeout(() => {
+      copiedMessage.value = "";
+    }, 5000);
+
+    // Update button state
+    editButtonText.value = "Edit";
+    isSubmitting.value = true; // Keep the button disabled after submission
   } catch (error) {
-    console.error('Error updating URL:', error);
+    console.error("Error updating URL:", error);
   }
 };
 
 
+
+
 onMounted(async () => {
-  customId.value = route.params.customId;
   const userStore = useUserStore();
 
   try {
     const response = await axios.get(`${backendURL}/url-summary/${customId.value}`, {
-      headers: {
-        Authorization: `Bearer ${userStore.token}`
-      }
+      headers: { Authorization: `Bearer ${userStore.token}` },
     });
+
     const data = response.data;
 
-    // Log the full response to see if the data structure is as expected
-    console.log('API Response:', data);
-
-    // Directly use data for all properties
     shortenedUrl.value = data.shortenedUrl || 'N/A';
     targetUrl.value = data.targetUrl || 'N/A';
     description.value = data.description || 'No description provided';
     expiryDate.value = data.expiryDate ? formatExpiryDate(data.expiryDate) : 'No expiry date';
-
-    // Reassign customId if it's present in the response
-    if (data.customId) customId.value = data.customId;
-    if (data.createdBy) createdBy.value = data.createdBy;
-
-    // Format and assign createdTime if available in data
-    if (data.createdTime) {
-      createdTime.value = convertToLocalTime(data.createdTime);
-    }
-
-    // Now directly use the root-level `updatedAt` and `editedBy`
-    if (data.updatedAt) {
-      updatedAt.value = convertToLocalTime(data.updatedAt);
-    } else {
-      updatedAt.value = 'No edits';  // Set 'No edits' if updatedAt is missing
-    }
-
-    // Set the editedBy field if available
-    if (data.editedBy) {
-      editedBy.value = data.editedBy || 'No edits';
-    }
-
+    createdTime.value = convertToLocalTime(data.createdTime);
+    updatedAt.value = data.updatedAt ? convertToLocalTime(data.updatedAt) : 'No edits';
+    createdBy.value = data.createdBy || 'Unknown'; // Fix for `createdBy`
+    editedBy.value = data.editedBy || 'No edits';
   } catch (error) {
     console.error('Error retrieving URL details:', error);
   }
 });
 
-// Helper function to convert UTC to local time
+
 const convertToLocalTime = (utcDate) => {
-  return dayjs(utcDate)
-    .tz(dayjs.tz.guess())
-    .format('YYYY-MM-DD HH:mm:ss');
+  return dayjs(utcDate).tz(dayjs.tz.guess()).format('YYYY-MM-DD HH:mm:ss');
 };
 
 const formatExpiryDate = (utcDate) => {
   if (!utcDate) return 'No expiry date';
-  return dayjs(utcDate)
-    .tz(dayjs.tz.guess()) // Convert UTC to local timezone
-    .format('YYYY-MM-DD'); // Format as YYYY-MM-DD
+  return dayjs(utcDate).tz(dayjs.tz.guess()).format('YYYY-MM-DD');
 };
+
 const getTodayDate = () => {
   return dayjs().tz(dayjs.tz.guess()).format('YYYY-MM-DD');
 };
-
-
 
 const copyToClipboard = (text) => {
   const input = document.createElement('textarea');
@@ -245,6 +259,7 @@ const copyToClipboard = (text) => {
 .url-summary-container {
   margin: 0 auto;
   padding: 20px;
+  position: relative;
 }
 
 .url-details p {
@@ -321,17 +336,61 @@ a {
   border-radius: 4px;
 }
 
-.edit-form button {
-  background-color: #007bff;
-  color: white;
-  padding: 8px 12px;
+
+.bcgov-edit-button {
+  position: absolute; /* Position relative to container */
+  top: 15px; /* Adjust top margin */
+  right: 20px; /* Adjust right margin */
+  padding: 7px 10px; /* Smaller padding for compact size */
+  font-size: 20px; /* Smaller font size */
+  background-color: var(--surface-color-primary-button-default); /* Primary button color */
+  color: var(--typography-color-primary-invert); /* Inverted text color */
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: auto; /* Ensure the button only takes as much space as its content */
+  display: inline-block; /* Prevent it from expanding */
+  text-align: center; /* Center text alignment */
 }
 
-.edit-form button:hover {
-  background-color: #0056b3;
+.bcgov-edit-button:hover {
+  background-color: var(--surface-color-primary-button-hover);
 }
+
+.bcgov-edit-button:focus {
+  outline: 2px solid #2684FF;
+  outline-offset: 2px;
+}
+
+.bcgov-submit-button {
+  background-color: var(--surface-color-primary-button-default);
+  color: var(--typography-color-primary-invert);
+  border: none;
+  border-radius: 4px;
+  padding: 12px 24px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.bcgov-submit-button:disabled {
+  background-color: #d3d3d3; /* Grey out the button */
+  color: #9c9c9c; /* Change text color */
+  cursor: not-allowed; /* Show not-allowed cursor */
+  opacity: 0.7; /* Slightly transparent */
+  border: 1px solid #bfbfbf; /* Optional: Add a border to show it's disabled */
+}
+
+
+
+input:disabled,
+textarea:disabled {
+  background-color: var(--surface-color-disabled);
+  color: var(--typography-color-disabled);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 
 </style>
