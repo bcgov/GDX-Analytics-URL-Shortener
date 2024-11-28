@@ -1,6 +1,10 @@
 /* src/assets/main.css */
 
 @import './base.css';
+/* importing bc design system tokens */
+@import '@bcgov/design-tokens/css/variables.css';
+
+
 
 /* Reset default margin and padding for body and html */
 body, html {

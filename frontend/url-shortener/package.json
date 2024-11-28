@@ -15,6 +15,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@bcgov/design-tokens": "^3.1.1",
     "axios": "^1.7.4",
     "dayjs": "^1.11.13",
     "eslint": "^8.57.1",
