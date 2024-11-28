@@ -63,6 +63,7 @@
           id="targetUrl"
           type="text"
           v-model="editedTargetUrl"
+          pattern="https?://.*(:[0-9]+)?(/.*)?"
           :disabled="fieldsDisabled"
           required
         />
@@ -342,7 +343,7 @@ a {
   top: 15px; /* Adjust top margin */
   right: 20px; /* Adjust right margin */
   padding: 7px 10px; /* Smaller padding for compact size */
-  font-size: 20px; /* Smaller font size */
+  font-size: 18px; /* Smaller font size */
   background-color: var(--surface-color-primary-button-default); /* Primary button color */
   color: var(--typography-color-primary-invert); /* Inverted text color */
   border: none;
