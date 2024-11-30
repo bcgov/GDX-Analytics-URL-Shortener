@@ -94,6 +94,33 @@
       </form>
       </div>
     </div>
+          <!-- History Table -->
+  <div class="history-table">
+  <h3>Edit History</h3>
+  <table v-if="formattedHistory.length">
+    <thead>
+      <tr>
+        <th>Field Edited</th>
+        <th>Old Value</th>
+        <th>New Value</th>
+        <th>Edited By</th>
+        <th>Edited At</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(history, index) in formattedHistory" :key="index">
+        <td>{{ history.fieldEdited }}</td>
+        <td>{{ history.oldValue || 'N/A' }}</td>
+        <td>{{ history.newValue || 'N/A' }}</td>
+        <td>{{ history.editedBy || 'Unknown' }}</td>
+        <td>{{ convertToLocalTime(history.updatedAt) }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <p v-else>No history available.</p>
+</div>
+
+
     <div class="action-container">
       <router-link :to="{ name: 'create' }" class="create-url">Create new Short URL</router-link>
       <br />
@@ -110,7 +137,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { useUserStore } from '@/stores/userStore';
-
+import { computed } from 'vue';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -136,7 +163,7 @@ const editedTargetUrl = ref('');
 const editedExpiryDate = ref('');
 const editedDescription = ref('');
 const editButtonText = ref('Edit'); // Tracks button text
-
+const historyData = ref([]);
 
 const toggleEditMode = () => {
   isEditing.value = !isEditing.value;
@@ -159,8 +186,8 @@ const toggleEditMode = () => {
 
 const submitEdit = async () => {
   const userStore = useUserStore();
-  isSubmitting.value = true; // Disable the button immediately
-  fieldsDisabled.value = true; // Disable input fields immediately
+  isSubmitting.value = true;
+  fieldsDisabled.value = true;
 
   try {
     const payload = {
@@ -171,36 +198,136 @@ const submitEdit = async () => {
       description: editedDescription.value,
     };
 
-    const response = await axios.put(
-      `${backendURL}/update-url/${customId.value}`,
-      payload,
-      {
-        headers: { Authorization: `Bearer ${userStore.token}` },
-      }
-    );
+    await axios.put(`${backendURL}/update-url/${customId.value}`, payload, {
+      headers: { Authorization: `Bearer ${userStore.token}` },
+    });
 
-    const updatedData = response.data.urlDocument;
+    await new Promise(resolve => setTimeout(resolve, 500)); // Wait briefly for DB update
+    await fetchUrlSummary(); // Refresh main document
+    await fetchHistory(); // Refresh history
 
-    targetUrl.value = updatedData.targetUrl || "N/A";
-    expiryDate.value = updatedData.expiryDate || "";
-    description.value = updatedData.description || "No description provided";
-    updatedAt.value = updatedData.updatedAt
-      ? convertToLocalTime(updatedData.updatedAt)
-      : "No Edits";
-    editedBy.value = updatedData.editedBy || "No Edits";
-
-    setTimeout(() => {
-      copiedMessage.value = "";
-    }, 5000);
-
-    // Update button state
+    isSubmitting.value = false;
+    fieldsDisabled.value = false;
     editButtonText.value = "Edit";
-    isSubmitting.value = true; // Keep the button disabled after submission
+
+    console.log("Edit submitted successfully and history reloaded.");
   } catch (error) {
     console.error("Error updating URL:", error);
+    isSubmitting.value = false;
+    fieldsDisabled.value = false;
   }
 };
 
+// Function: Fetch the main document (URL summary)
+const fetchUrlSummary = async () => {
+  const userStore = useUserStore();
+
+  try {
+    const response = await axios.get(`${backendURL}/url-summary/${customId.value}`, {
+      headers: { Authorization: `Bearer ${userStore.token}` },
+    });
+
+    const data = response.data;
+
+    shortenedUrl.value = data.shortenedUrl || 'N/A';
+    targetUrl.value = data.targetUrl || 'N/A';
+    description.value = data.description || 'No description provided';
+    expiryDate.value = data.expiryDate ? formatExpiryDate(data.expiryDate) : 'No expiry date';
+    createdTime.value = convertToLocalTime(data.createdTime);
+    updatedAt.value = data.updatedAt ? convertToLocalTime(data.updatedAt) : 'No edits';
+    createdBy.value = data.createdBy || 'Unknown';
+    editedBy.value = data.editedBy || 'No edits';
+
+    console.log("Fetched updated URL summary:", data);
+  } catch (error) {
+    console.error("Error fetching URL summary:", error);
+  }
+};
+
+const fetchHistory = async () => {
+  const userStore = useUserStore();
+
+  try {
+    const response = await axios.get(`${backendURL}/url-history/${customId.value}`, {
+      headers: { Authorization: `Bearer ${userStore.token}` },
+    });
+
+    historyData.value = response.data.versions || [];
+    console.log("Fetched history data:", historyData.value); // Debug log
+  } catch (error) {
+    console.error("Error fetching history:", error);
+  }
+};
+
+
+const formattedHistory = computed(() => {
+  const result = [];
+
+  // Start with the main document (latest values)
+  const mainEntry = {
+    targetUrl: targetUrl.value,
+    expiryDate: expiryDate.value,
+    description: description.value,
+    updatedAt: updatedAt.value,
+    editedBy: editedBy.value,
+  };
+
+  // Combine versions array (oldest to newest) followed by the main document
+  const combinedHistory = [...historyData.value.map(entry => entry._doc || entry), mainEntry];
+
+  // Traverse history from newest to oldest to ensure correct chronology
+  for (let i = combinedHistory.length - 1; i > 0; i--) {
+    const currentEntry = combinedHistory[i];
+    const prevEntry = combinedHistory[i - 1];
+
+    // Process field changes and track specific `updatedAt` and `editedBy`
+    const changes = [
+      {
+        fieldEdited: 'Target URL',
+        oldValue: prevEntry.targetUrl || 'N/A',
+        newValue: currentEntry.targetUrl || 'N/A',
+        changed: currentEntry.targetUrl !== prevEntry.targetUrl,
+        updatedAt: prevEntry.updatedAt || currentEntry.updatedAt, // Use the entry where the change occurred
+        editedBy: prevEntry.editedBy || currentEntry.editedBy, // Use the editor responsible for the change
+      },
+      {
+        fieldEdited: 'Expiry Date',
+        oldValue: prevEntry.expiryDate
+          ? dayjs(prevEntry.expiryDate).tz(dayjs.tz.guess()).format('YYYY-MM-DD')
+          : 'N/A',
+        newValue: currentEntry.expiryDate
+          ? dayjs(currentEntry.expiryDate).tz(dayjs.tz.guess()).format('YYYY-MM-DD')
+          : 'N/A',
+        changed: String(currentEntry.expiryDate) !== String(prevEntry.expiryDate),
+        updatedAt: prevEntry.updatedAt || currentEntry.updatedAt,
+        editedBy: prevEntry.editedBy || currentEntry.editedBy,
+      },
+      {
+        fieldEdited: 'Description',
+        oldValue: prevEntry.description || 'N/A',
+        newValue: currentEntry.description || 'N/A',
+        changed: currentEntry.description !== prevEntry.description,
+        updatedAt: prevEntry.updatedAt || currentEntry.updatedAt,
+        editedBy: prevEntry.editedBy || currentEntry.editedBy,
+      },
+    ];
+
+    // Add only changed fields to the result
+    changes.forEach(change => {
+      if (change.changed) {
+        result.push({
+          fieldEdited: change.fieldEdited,
+          oldValue: change.oldValue,
+          newValue: change.newValue,
+          editedBy: change.editedBy || 'Unknown',
+          updatedAt: convertToLocalTime(change.updatedAt || 'N/A'),
+        });
+      }
+    });
+  }
+
+  return result;
+});
 
 
 
@@ -222,6 +349,11 @@ onMounted(async () => {
     updatedAt.value = data.updatedAt ? convertToLocalTime(data.updatedAt) : 'No edits';
     createdBy.value = data.createdBy || 'Unknown'; // Fix for `createdBy`
     editedBy.value = data.editedBy || 'No edits';
+
+    // Fetch the main document (URL summary)
+    await fetchUrlSummary();
+    // Fetch history data
+    await fetchHistory();
   } catch (error) {
     console.error('Error retrieving URL details:', error);
   }
@@ -229,8 +361,11 @@ onMounted(async () => {
 
 
 const convertToLocalTime = (utcDate) => {
+  if (!utcDate) return 'N/A';
   return dayjs(utcDate).tz(dayjs.tz.guess()).format('YYYY-MM-DD HH:mm:ss');
 };
+
+
 
 const formatExpiryDate = (utcDate) => {
   if (!utcDate) return 'No expiry date';
