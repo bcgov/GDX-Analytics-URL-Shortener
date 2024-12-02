@@ -41,7 +41,8 @@
       <br />
       <p><strong>Expiry Date:</strong> {{ formatExpiryDate(expiryDate) || 'No expiry date' }}</p>
       <br />
-      <p><strong>Created By:</strong> {{ createdBy || 'Unknown' }}</p>
+      <!--<p><strong>Created By:</strong> {{ createdBy || 'Unknown' }}</p>-->
+      <p><strong>Created By:</strong> {{ 'Unknown' }}</p>
       <p><strong>Created Date/Time:</strong> {{ createdTime || 'N/A' }}</p>
       <p><strong>Edited Date/Time:</strong> {{ updatedAt || 'No edits' }}</p>
       <!--<p><strong>Edited By:</strong> {{ editedBy || 'No edits' }}</p>-->
@@ -282,6 +283,8 @@ const fetchHistory = async () => {
 // Compute formatted history to display in the table
 const formattedHistory = computed(() => {
   const result = [];
+
+  // Start with the main document (latest values)
   const mainEntry = {
     targetUrl: targetUrl.value,
     expiryDate: expiryDate.value,
@@ -290,22 +293,23 @@ const formattedHistory = computed(() => {
     editedBy: editedBy.value,
   };
 
-  const combinedHistory = [...historyData.value.map((entry) => entry._doc || entry), mainEntry];
+  // Combine versions array (oldest to newest) followed by the main document
+  const combinedHistory = [...historyData.value.map(entry => entry._doc || entry), mainEntry];
 
-  // Traverse history and compare entries
+  // Traverse history from newest to oldest
   for (let i = combinedHistory.length - 1; i > 0; i--) {
     const currentEntry = combinedHistory[i];
     const prevEntry = combinedHistory[i - 1];
 
+    // Compare changes between the current and previous entries
     const changes = [
-      // Track changes for each field
       {
         fieldEdited: 'Target URL',
         oldValue: prevEntry.targetUrl || 'N/A',
         newValue: currentEntry.targetUrl || 'N/A',
         changed: currentEntry.targetUrl !== prevEntry.targetUrl,
-        updatedAt: currentEntry.targetUrl !== prevEntry.targetUrl ? currentEntry.updatedAt : null,
-        editedBy: currentEntry.targetUrl !== prevEntry.targetUrl ? currentEntry.editedBy : null,
+        updatedAt: prevEntry.updatedAt, // Use prevEntry's updatedAt for historical accuracy
+        editedBy: prevEntry.editedBy || 'Unknown',
       },
       {
         fieldEdited: 'Expiry Date',
@@ -316,28 +320,24 @@ const formattedHistory = computed(() => {
           ? dayjs(currentEntry.expiryDate).format('YYYY-MM-DD')
           : 'N/A',
         changed: !dayjs(prevEntry.expiryDate).isSame(currentEntry.expiryDate, 'day'),
-        updatedAt: !dayjs(prevEntry.expiryDate).isSame(currentEntry.expiryDate, 'day')
-          ? currentEntry.updatedAt
-          : null,
-        editedBy: !dayjs(prevEntry.expiryDate).isSame(currentEntry.expiryDate, 'day')
-          ? currentEntry.editedBy
-          : null,
+        updatedAt: prevEntry.updatedAt, // Use prevEntry's updatedAt for historical accuracy
+        editedBy: prevEntry.editedBy || 'Unknown',
       },
       {
         fieldEdited: 'Description',
         oldValue: prevEntry.description || 'N/A',
         newValue: currentEntry.description || 'N/A',
         changed: currentEntry.description !== prevEntry.description,
-        updatedAt: currentEntry.description !== prevEntry.description ? currentEntry.updatedAt : null,
-        editedBy: currentEntry.description !== prevEntry.description ? currentEntry.editedBy : null,
+        updatedAt: prevEntry.updatedAt, // Use prevEntry's updatedAt for historical accuracy
+        editedBy: prevEntry.editedBy || 'Unknown',
       },
     ];
 
-    // Add only unique changes to the result
-    changes.forEach((change) => {
-      if (change.changed && change.updatedAt) {
+    // Add only actual changes to the result
+    changes.forEach(change => {
+      if (change.changed) {
         const isDuplicate = result.some(
-          (entry) =>
+          entry =>
             entry.fieldEdited === change.fieldEdited &&
             entry.updatedAt === convertToLocalTime(change.updatedAt)
         );
@@ -347,8 +347,7 @@ const formattedHistory = computed(() => {
             fieldEdited: change.fieldEdited,
             oldValue: change.oldValue,
             newValue: change.newValue,
-            //editedBy: change.editedBy || 'Unknown',
-            editedBy: 'Unknown',
+            //editedBy: change.editedBy,
             updatedAt: convertToLocalTime(change.updatedAt),
           });
         }
@@ -358,11 +357,6 @@ const formattedHistory = computed(() => {
 
   return result;
 });
-
-
-
-
-
 
 onMounted(async () => {
   const userStore = useUserStore();
