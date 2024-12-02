@@ -48,6 +48,7 @@
       <br />
       <p><strong>Notes:</strong></p>
       <p> &nbsp;{{ description || 'No description provided' }}</p>
+      <br />
         <!-- Feedback message -->
         <p v-if="copiedMessage" style="color: green;">{{ copiedMessage }}</p>
     </div>
@@ -94,17 +95,19 @@
       </form>
       </div>
     </div>
+    <br />
           <!-- History Table -->
   <div class="history-table">
-  <h3>Edit History</h3>
+  <h3 style="font-weight: bold;">History</h3>
+  <br />
   <table v-if="formattedHistory.length">
     <thead>
       <tr>
-        <th>Field Edited</th>
+        <th>Field</th>
         <th>Old Value</th>
         <th>New Value</th>
         <th>Edited By</th>
-        <th>Edited At</th>
+        <th>Timestamp</th>
       </tr>
     </thead>
     <tbody>
@@ -130,6 +133,7 @@
 </template>
 
 <script setup>
+// Import necessary libraries and plugins
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
@@ -138,9 +142,12 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { useUserStore } from '@/stores/userStore';
 import { computed } from 'vue';
+
+// Extend dayjs with plugins
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
+// Define reactive state variables
 const route = useRoute();
 const customId = ref(route.params.customId || '');
 const shortenedUrl = ref('');
@@ -155,70 +162,83 @@ const backendURL = import.meta.env.VITE_BACKEND_URL;
 const frontendURL = import.meta.env.VITE_FRONTEND_URL;
 const copiedMessage = ref('');
 
-const isEditing = ref(false);
-const isSubmitting = ref(false);
-const fieldsDisabled = ref(false);
+// State for editing and submission
+const isEditing = ref(false); // Tracks if the form is in edit mode
+const isSubmitting = ref(false); // Tracks if the submit button is disabled
+const fieldsDisabled = ref(false); // Tracks if form fields are disabled
 
+// Form-specific values
 const editedTargetUrl = ref('');
 const editedExpiryDate = ref('');
 const editedDescription = ref('');
-const editButtonText = ref('Edit'); // Tracks button text
-const historyData = ref([]);
+const editButtonText = ref('Edit'); // Tracks the button's displayed text
+const historyData = ref([]); // Tracks the history data of edits
 
+// Toggles the edit mode for the form
 const toggleEditMode = () => {
-  isEditing.value = !isEditing.value;
-
-  if (isEditing.value) {
-    // Entering edit mode
-    isSubmitting.value = false; // Re-enable the submit button
+  if (!isEditing.value) {
+    // Enter edit mode directly
+    isEditing.value = true;
     fieldsDisabled.value = false; // Re-enable fields
+    isSubmitting.value = false; // Allow submission
+    editButtonText.value = 'Cancel'; // Change button text to "Cancel"
+
+    // Populate fields with current values
     editedTargetUrl.value = targetUrl.value || '';
     editedExpiryDate.value = expiryDate.value ? formatExpiryDate(expiryDate.value) : '';
     editedDescription.value = description.value || '';
-    editButtonText.value = 'Cancel'; // Change button text to "Cancel"
   } else {
-    // Exiting edit mode
-    fieldsDisabled.value = true;
-    editButtonText.value = 'Edit'; // Change button text to "Edit"
+    // Exit edit mode
+    isEditing.value = false;
+    fieldsDisabled.value = true; // Disable fields
+    editButtonText.value = 'Edit'; // Reset button text to "Edit"
   }
 };
 
-
+// Handles form submission to update URL details
 const submitEdit = async () => {
   const userStore = useUserStore();
-  isSubmitting.value = true;
-  fieldsDisabled.value = true;
+  isSubmitting.value = true; // Disable the submit button
+  fieldsDisabled.value = true; // Temporarily disable fields during submission
 
   try {
+    // Create payload with updated values
     const payload = {
       targetUrl: editedTargetUrl.value,
       expiryDate: editedExpiryDate.value
-        ? dayjs(editedExpiryDate.value).endOf("day").utc().toISOString()
+        ? dayjs(editedExpiryDate.value).endOf('day').utc().toISOString()
         : null,
       description: editedDescription.value,
     };
 
+    // Make the PUT request to update data
     await axios.put(`${backendURL}/update-url/${customId.value}`, payload, {
       headers: { Authorization: `Bearer ${userStore.token}` },
     });
 
-    await new Promise(resolve => setTimeout(resolve, 500)); // Wait briefly for DB update
-    await fetchUrlSummary(); // Refresh main document
-    await fetchHistory(); // Refresh history
+    // Wait briefly to allow the database to update
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
-    isSubmitting.value = false;
-    fieldsDisabled.value = false;
-    editButtonText.value = "Edit";
+    // Refresh the URL summary and history after submission
+    await fetchUrlSummary();
+    await fetchHistory();
 
-    console.log("Edit submitted successfully and history reloaded.");
+    // Keep the form visible but disable further edits
+    fieldsDisabled.value = true;
+    isSubmitting.value = true; // Keep the submit button disabled
+    isEditing.value = true; // Keep the form in view
+    editButtonText.value = 'Edit'; // Reset button text to "Edit"
+    console.log('Edit submitted successfully and history reloaded.');
   } catch (error) {
-    console.error("Error updating URL:", error);
+    console.error('Error updating URL:', error);
+
+    // Re-enable the form to allow retrying the edit
     isSubmitting.value = false;
     fieldsDisabled.value = false;
   }
 };
 
-// Function: Fetch the main document (URL summary)
+// Fetch the URL summary details
 const fetchUrlSummary = async () => {
   const userStore = useUserStore();
 
@@ -227,8 +247,8 @@ const fetchUrlSummary = async () => {
       headers: { Authorization: `Bearer ${userStore.token}` },
     });
 
+    // Update state variables with response data
     const data = response.data;
-
     shortenedUrl.value = data.shortenedUrl || 'N/A';
     targetUrl.value = data.targetUrl || 'N/A';
     description.value = data.description || 'No description provided';
@@ -237,13 +257,12 @@ const fetchUrlSummary = async () => {
     updatedAt.value = data.updatedAt ? convertToLocalTime(data.updatedAt) : 'No edits';
     createdBy.value = data.createdBy || 'Unknown';
     editedBy.value = data.editedBy || 'No edits';
-
-    console.log("Fetched updated URL summary:", data);
   } catch (error) {
-    console.error("Error fetching URL summary:", error);
+    console.error('Error fetching URL summary:', error);
   }
 };
 
+// Fetch the edit history for the URL
 const fetchHistory = async () => {
   const userStore = useUserStore();
 
@@ -252,18 +271,16 @@ const fetchHistory = async () => {
       headers: { Authorization: `Bearer ${userStore.token}` },
     });
 
+    // Update the history data
     historyData.value = response.data.versions || [];
-    console.log("Fetched history data:", historyData.value); // Debug log
   } catch (error) {
-    console.error("Error fetching history:", error);
+    console.error('Error fetching history:', error);
   }
 };
 
-
+// Compute formatted history to display in the table
 const formattedHistory = computed(() => {
   const result = [];
-
-  // Start with the main document (latest values)
   const mainEntry = {
     targetUrl: targetUrl.value,
     expiryDate: expiryDate.value,
@@ -272,62 +289,76 @@ const formattedHistory = computed(() => {
     editedBy: editedBy.value,
   };
 
-  // Combine versions array (oldest to newest) followed by the main document
-  const combinedHistory = [...historyData.value.map(entry => entry._doc || entry), mainEntry];
+  const combinedHistory = [...historyData.value.map((entry) => entry._doc || entry), mainEntry];
 
-  // Traverse history from newest to oldest to ensure correct chronology
+  // Traverse history and compare entries
   for (let i = combinedHistory.length - 1; i > 0; i--) {
     const currentEntry = combinedHistory[i];
     const prevEntry = combinedHistory[i - 1];
 
-    // Process field changes and track specific `updatedAt` and `editedBy`
     const changes = [
+      // Track changes for each field
       {
         fieldEdited: 'Target URL',
         oldValue: prevEntry.targetUrl || 'N/A',
         newValue: currentEntry.targetUrl || 'N/A',
         changed: currentEntry.targetUrl !== prevEntry.targetUrl,
-        updatedAt: prevEntry.updatedAt || currentEntry.updatedAt, // Use the entry where the change occurred
-        editedBy: prevEntry.editedBy || currentEntry.editedBy, // Use the editor responsible for the change
+        updatedAt: currentEntry.targetUrl !== prevEntry.targetUrl ? currentEntry.updatedAt : null,
+        editedBy: currentEntry.targetUrl !== prevEntry.targetUrl ? currentEntry.editedBy : null,
       },
       {
         fieldEdited: 'Expiry Date',
         oldValue: prevEntry.expiryDate
-          ? dayjs(prevEntry.expiryDate).tz(dayjs.tz.guess()).format('YYYY-MM-DD')
+          ? dayjs(prevEntry.expiryDate).format('YYYY-MM-DD')
           : 'N/A',
         newValue: currentEntry.expiryDate
-          ? dayjs(currentEntry.expiryDate).tz(dayjs.tz.guess()).format('YYYY-MM-DD')
+          ? dayjs(currentEntry.expiryDate).format('YYYY-MM-DD')
           : 'N/A',
-        changed: String(currentEntry.expiryDate) !== String(prevEntry.expiryDate),
-        updatedAt: prevEntry.updatedAt || currentEntry.updatedAt,
-        editedBy: prevEntry.editedBy || currentEntry.editedBy,
+        changed: !dayjs(prevEntry.expiryDate).isSame(currentEntry.expiryDate, 'day'),
+        updatedAt: !dayjs(prevEntry.expiryDate).isSame(currentEntry.expiryDate, 'day')
+          ? currentEntry.updatedAt
+          : null,
+        editedBy: !dayjs(prevEntry.expiryDate).isSame(currentEntry.expiryDate, 'day')
+          ? currentEntry.editedBy
+          : null,
       },
       {
         fieldEdited: 'Description',
         oldValue: prevEntry.description || 'N/A',
         newValue: currentEntry.description || 'N/A',
         changed: currentEntry.description !== prevEntry.description,
-        updatedAt: prevEntry.updatedAt || currentEntry.updatedAt,
-        editedBy: prevEntry.editedBy || currentEntry.editedBy,
+        updatedAt: currentEntry.description !== prevEntry.description ? currentEntry.updatedAt : null,
+        editedBy: currentEntry.description !== prevEntry.description ? currentEntry.editedBy : null,
       },
     ];
 
-    // Add only changed fields to the result
-    changes.forEach(change => {
-      if (change.changed) {
-        result.push({
-          fieldEdited: change.fieldEdited,
-          oldValue: change.oldValue,
-          newValue: change.newValue,
-          editedBy: change.editedBy || 'Unknown',
-          updatedAt: convertToLocalTime(change.updatedAt || 'N/A'),
-        });
+    // Add only unique changes to the result
+    changes.forEach((change) => {
+      if (change.changed && change.updatedAt) {
+        const isDuplicate = result.some(
+          (entry) =>
+            entry.fieldEdited === change.fieldEdited &&
+            entry.updatedAt === convertToLocalTime(change.updatedAt)
+        );
+
+        if (!isDuplicate) {
+          result.push({
+            fieldEdited: change.fieldEdited,
+            oldValue: change.oldValue,
+            newValue: change.newValue,
+            editedBy: change.editedBy || 'Unknown',
+            updatedAt: convertToLocalTime(change.updatedAt),
+          });
+        }
       }
     });
   }
 
   return result;
 });
+
+
+
 
 
 
@@ -360,22 +391,24 @@ onMounted(async () => {
 });
 
 
+// Convert UTC date to local time
 const convertToLocalTime = (utcDate) => {
   if (!utcDate) return 'N/A';
   return dayjs(utcDate).tz(dayjs.tz.guess()).format('YYYY-MM-DD HH:mm:ss');
 };
 
-
-
+// Format expiry date to a readable string
 const formatExpiryDate = (utcDate) => {
   if (!utcDate) return 'No expiry date';
   return dayjs(utcDate).tz(dayjs.tz.guess()).format('YYYY-MM-DD');
 };
 
+// Get today's date in local time
 const getTodayDate = () => {
   return dayjs().tz(dayjs.tz.guess()).format('YYYY-MM-DD');
 };
 
+// Copy text to clipboard with feedback message
 const copyToClipboard = (text) => {
   const input = document.createElement('textarea');
   input.value = text;
