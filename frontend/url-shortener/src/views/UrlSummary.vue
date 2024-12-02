@@ -44,7 +44,8 @@
       <p><strong>Created By:</strong> {{ createdBy || 'Unknown' }}</p>
       <p><strong>Created Date/Time:</strong> {{ createdTime || 'N/A' }}</p>
       <p><strong>Edited Date/Time:</strong> {{ updatedAt || 'No edits' }}</p>
-      <p><strong>Edited By:</strong> {{ editedBy || 'No edits' }}</p>
+      <!--<p><strong>Edited By:</strong> {{ editedBy || 'No edits' }}</p>-->
+      <p><strong>Edited By:</strong> {{ 'Unknown' }}</p>
       <br />
       <p><strong>Notes:</strong></p>
       <p> &nbsp;{{ description || 'No description provided' }}</p>
