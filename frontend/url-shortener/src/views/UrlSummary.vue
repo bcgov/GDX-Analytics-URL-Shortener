@@ -346,7 +346,8 @@ const formattedHistory = computed(() => {
             fieldEdited: change.fieldEdited,
             oldValue: change.oldValue,
             newValue: change.newValue,
-            editedBy: change.editedBy || 'Unknown',
+            //editedBy: change.editedBy || 'Unknown',
+            editedBy: 'Unknown',
             updatedAt: convertToLocalTime(change.updatedAt),
           });
         }
