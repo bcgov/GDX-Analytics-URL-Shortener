@@ -4,6 +4,7 @@ import express from 'express'; // Import the Express framework for building the 
 import cors from 'cors'; // Import CORS middleware to enable cross-origin requests
 import { setRoutes } from './routes.js'; // Import the function to set up application routes
 import { authenticate } from './auth.js'; // Import the authenticate function for user validation
+import rateLimit from 'express-rate-limit'; // Import the express-rate-limit package
 
 // Load environment variables from the .env file into process.env
 dotenv.config();
@@ -13,6 +14,12 @@ const backendURL = process.env.BACKEND_URL;
 
 // Initialize an Express application
 const app = express();
+
+// Set up rate limiter: maximum of 100 requests per 15 minutes
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // max 100 requests per windowMs
+});
 
 // Use CORS middleware to allow cross-origin requests
 app.use(cors());
@@ -49,7 +56,7 @@ const authMiddleware = async (req, res, next) => {
 const router = express.Router();
 
 // Apply the authentication middleware to the router to protect all routes
-app.use(authMiddleware, router); // Secure all routes with the authentication middleware
+app.use(limiter, authMiddleware, router); // Secure all routes with the authentication middleware and rate limiter
 
 // Set up your application routes
 setRoutes(router);
