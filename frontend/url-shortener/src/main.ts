@@ -26,7 +26,13 @@ const userStore = useUserStore(); // User store instance
 initializeKeycloak(userStore)
   .then((keycloak) => {
     if (keycloak && keycloak.authenticated) { // Ensure keycloak is defined
+      // This is a global After-Hook which calls the Snowplow page tracking event.
+      // Vue.js documentation here: https://router.vuejs.org/guide/advanced/navigation-guards.html#global-after-hooks
+      router.afterEach(() => {
+        window.snowplow('trackPageView');
+      })
       app.mount('#app'); // Mount the app if the user is authenticated
+
     } else if (keycloak) {
       keycloak.login(); // Trigger Keycloak login if not authenticated
     } else {
