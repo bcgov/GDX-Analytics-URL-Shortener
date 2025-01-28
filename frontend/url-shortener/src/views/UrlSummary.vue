@@ -156,6 +156,7 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { useUserStore } from '@/stores/userStore';
 import { computed } from 'vue';
+import { nextTick } from 'vue'; 
 
 // Extend dayjs with plugins
 dayjs.extend(utc);
@@ -187,6 +188,14 @@ const editedExpiryDate = ref('');
 const editedDescription = ref('');
 const editButtonText = ref('Edit'); // Tracks the button's displayed text
 const historyData = ref([]); // Tracks the history data of edits
+
+
+// Function to refresh Snowplow link click tracking
+const refreshSnowplowTracking = () => {
+  if (window.snowplow) {
+    window.snowplow('refreshLinkClickTracking');
+  }
+};
 
 // Toggles the edit mode for the form
 const toggleEditMode = () => {
@@ -271,6 +280,10 @@ const fetchUrlSummary = async () => {
     updatedAt.value = data.updatedAt ? convertToLocalTime(data.updatedAt) : 'No edits';
     createdBy.value = data.createdBy || 'Unknown';
     editedBy.value = data.editedBy || 'No edits';
+    // Refresh Snowplow link click tracking after data is loaded
+    nextTick(() => {
+      refreshSnowplowTracking();
+    });
   } catch (error) {
     console.error('Error fetching URL summary:', error);
   }
