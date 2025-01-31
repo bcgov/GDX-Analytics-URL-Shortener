@@ -57,7 +57,7 @@ Check if the Persistent Volume Claim (PVC) is bound:
 oc get pvc -n <namespace>
 ```
 
-## Step 8: Uninstall MongoDB if Needed
+## Step 5: Uninstall MongoDB if Needed
 
 To remove MongoDB, run:
 
