@@ -7,7 +7,10 @@ This guide provides a simple way to deploy MongoDB in OpenShift using Helm. Make
 Before deploying MongoDB using Helm, ensure you have the following:
 
 - OpenShift CLI (`oc`) installed and configured
-- Helm installed (`helm version` to check)
+- Helm installed (`helm version` to check), use brew to install it
+```sh
+brew install helm
+```
 - A configured OpenShift project/namespace
 - A `values.yaml` file with your custom configurations
 
@@ -43,6 +46,12 @@ For our Dev environment in Openshift we use the following command to install or 
 helm upgrade --install -f values-dev.yaml mongodb-dev bitnami/mongodb -n c6d33e-dev
 ```
 
+For our Test environment in Openshift we use the following command to install or upgrade the MongoDB deployment
+
+```sh
+helm upgrade --install -f values-test.yaml mongodb-test bitnami/mongodb -n c6d33e-test
+```
+
 ## Step 4: Verify the Deployment
 
 Check if the MongoDB pod is running:
@@ -73,7 +82,7 @@ oc delete pvc -l app.kubernetes.io/name=mongodb -n <namespace>
 
 ## Notes
 
-- Ensure the MongoDB secret (`mongodb-dev`) exists before deployment with atleast these values
+- Ensure the MongoDB secret (`mongodb-dev`) or (`mongodb-test`) exists before deployment with atleast these values
   mongodb-database
   mongodb-password
   mongodb-replica-set-key
