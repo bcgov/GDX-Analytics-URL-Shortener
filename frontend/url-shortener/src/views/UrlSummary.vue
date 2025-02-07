@@ -196,13 +196,6 @@ const editButtonText = ref('Edit'); // Tracks the button's displayed text
 const historyData = ref([]); // Tracks the history data of edits
 
 
-// Function to refresh Snowplow link click tracking
-const refreshSnowplowTracking = () => {
-  if (window.snowplow) {
-    window.snowplow('refreshLinkClickTracking');
-  }
-};
-
 // Toggles the edit mode for the form
 const toggleEditMode = () => {
   if (!isEditing.value) {
