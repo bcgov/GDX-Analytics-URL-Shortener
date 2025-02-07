@@ -1,0 +1,26 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.appName }}
+  namespace: {{ .Values.licensePlate }}-{{ .Values.environment }}
+  labels:
+    app: {{ .Values.appName }}
+    app.kubernetes.io/component: {{ .Values.appName }}
+    app.kubernetes.io/instance: {{ .Values.appName }}
+    app.kubernetes.io/name: {{ .Values.appName }}
+    app.kubernetes.io/part-of: gdx-analytics-url-shortener-app
+  annotations:
+    app.openshift.io/vcs-ref: dev
+    app.openshift.io/vcs-uri: 'https://github.com/bcgov/GDX-Analytics-URL-Shortener/'
+spec:
+  ports:
+    - name: 8080-tcp
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
+  selector:
+    app: {{ .Values.appName }}
+    deployment: {{ .Values.appName }}
+...
