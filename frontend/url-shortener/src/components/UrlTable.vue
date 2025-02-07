@@ -37,7 +37,7 @@
             Created By {{ getSortIcon('createdBy') }}
           </th>
           <th @click="sort('createdTime')" :class="{ 'sortable': true, 'asc': sortField === 'createdTime' }">
-            Created On {{ getSortIcon('createdTime') }}
+            Created Date {{ getSortIcon('createdTime') }}
           </th>
           <!--<th>Tags</th>-->
           <th>Notes</th>
@@ -53,7 +53,7 @@
           </td>
           <td class="shorturl-cell">
               <a :href="url.shortenedUrlString" target="_blank">
-                {{ url.shortenedUrlString.replace(/^https?:\/\//, '') }}
+                {{ url.shortenedUrlString }}
               </a>
               <button class="copy-btn" @click="copyToClipboard(url.shortenedUrlString)">
                 <img src="../assets/copy.svg" alt="Copy icon">
@@ -116,6 +116,15 @@ const copiedMessage = ref('');
 const frontendURL = import.meta.env.VITE_FRONTEND_URL;
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 import { useUserStore } from '@/stores/userStore';
+import { nextTick } from 'vue'; // Vue core functions
+
+
+// Function to refresh Snowplow link click tracking
+const refreshSnowplowTracking = () => {
+  if (window.snowplow) {
+    window.snowplow('refreshLinkClickTracking');
+  }
+};
 
 // Import the dayjs library for date manipulation.
 // Day.js is a minimalist JavaScript library that parses, validates, manipulates, and displays dates and times for modern browsers. Source - https://day.js.org/
@@ -153,6 +162,10 @@ onMounted(async () => {
     const startIndex = (currentPage.value - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     currentPageUrls.value = urlTable.value.slice(startIndex, endIndex);
+    // Refresh Snowplow link click tracking after data is loaded
+    nextTick(() => {
+      refreshSnowplowTracking();
+    });
   } catch (error) {
     console.error('Error retrieving URL table:', error);
     // Handle the error gracefully, e.g., show a user-friendly message
