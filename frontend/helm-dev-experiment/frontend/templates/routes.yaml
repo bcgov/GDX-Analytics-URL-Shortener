@@ -1,0 +1,25 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: {{ .Values.appName }}
+  namespace: {{ .Values.licensePlate }}-{{ .Values.environment }}
+  labels:
+    app: {{ .Values.appName }}
+    app.kubernetes.io/component: {{ .Values.appName }}
+    app.kubernetes.io/instance: {{ .Values.appName }}
+    app.kubernetes.io/name: {{ .Values.appName }}
+    app.kubernetes.io/part-of: gdx-analytics-url-shortener-app
+  annotations:
+    haproxy.router.openshift.io/ip_whitelist: {{ .Values.ipWhitelist }}
+    openshift.io/host.generated: 'true'
+spec:
+  to:
+    kind: Service
+    name: {{ .Values.appName }}
+    weight: 100
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: None
+  port:
+    targetPort: 8080-tcp
+  wildcardPolicy: None

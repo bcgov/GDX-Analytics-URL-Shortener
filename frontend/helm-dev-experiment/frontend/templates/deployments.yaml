@@ -1,0 +1,53 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  annotations:
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"{{ .Values.appName }}:latest","namespace":"{{ .Values.licensePlate }}-{{ .Values.environment }}"},"fieldPath":"spec.template.spec.containers[?(@.name==\"{{ .Values.appName }}\")].image","pause":"false"}]'
+  name: {{ .Values.appName }}
+  namespace: {{ .Values.licensePlate }}-{{ .Values.environment }}
+  labels:
+    app: {{ .Values.appName }}
+    app.kubernetes.io/component: {{ .Values.appName }}
+    app.kubernetes.io/instance: {{ .Values.appName }}
+    app.kubernetes.io/name: {{ .Values.appName }}
+    app.kubernetes.io/part-of: gdx-analytics-url-shortener-app
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}
+        deployment: {{ .Values.appName }}
+    spec:
+      containers:
+        - name: {{ .Values.appName }}
+          image: 'image-registry.openshift-image-registry.svc:5000/{{ .Values.licensePlate }}-{{ .Values.environment }}/{{ .Values.appName }}@sha256:e5db142c757bb6ad0d8ccb066afc81bbf412d719ebe59de18763fcd3fef72858'
+          env:
+            - name: VITE_FRONTEND_URL
+              value: 'https://app.{{ .Values.appName }}-{{ .Values.licensePlate }}-{{ .Values.environment }}.apps.silver.devops.gov.bc.ca'
+            - name: VITE_BACKEND_URL
+              value: 'https://gdx-analytics-url-shortener-backend-{{ .Values.licensePlate }}-{{ .Values.environment }}.apps.silver.devops.gov.bc.ca'
+            - name: VITE_SSO_REDIRECT_URI
+              value: 'https://{{ .Values.appName }}-{{ .Values.licensePlate }}-{{ .Values.environment }}.apps.silver.devops.gov.bc.ca'
+            - name: VITE_SSO_AUTH_SERVER_URL
+              value: 'https://dev.loginproxy.gov.bc.ca/auth'
+            - name: VITE_SSO_REALM
+              value: standard
+            - name: VITE_SSO_CLIENT_ID
+              value: url-shortener-frontend-5780
+            - name: VITE_VANITY_URL
+              value: 'https://{{ .Values.appName }}-{{ .Values.licensePlate }}-{{ .Values.environment }}.apps.silver.devops.gov.bc.ca'
+          imagePullPolicy: Always
+      restartPolicy: Always
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 3
+  progressDeadlineSeconds: 600
+...
