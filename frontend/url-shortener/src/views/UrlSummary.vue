@@ -156,8 +156,14 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { useUserStore } from '@/stores/userStore';
 import { computed } from 'vue';
-import { nextTick } from 'vue'; 
+import { nextTick } from 'vue'; // Vue core functions
 
+// Function to refresh Snowplow link click tracking
+const refreshSnowplowTracking = () => {
+  if (window.snowplow) {
+    window.snowplow('refreshLinkClickTracking');
+  }
+};
 // Extend dayjs with plugins
 dayjs.extend(utc);
 dayjs.extend(timezone);

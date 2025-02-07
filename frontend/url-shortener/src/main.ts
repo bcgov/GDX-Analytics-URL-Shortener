@@ -1,23 +1,22 @@
 // Import global CSS file for app-wide styling
 import './assets/main.css';
 
-// Import necessary libraries and modules from Vue
 import { createApp, nextTick } from 'vue'; // Vue core functions
-import { createPinia } from 'pinia'; // State management library
-import App from './App.vue'; // Root component of the application
-import router from './router'; // Router instance for navigation
-import { initializeKeycloak } from './services/keycloak'; // Function to initialize Keycloak authentication
-import { useUserStore } from '@/stores/userStore'; // Store for managing user-related data
+import { createPinia } from 'pinia';
+import App from './App.vue';// Main application component
+import router from './router';// Router for navigation
 
+// Import the Keycloak initialization function for authentication
+import { initializeKeycloak } from './services/keycloak';
+// Import the user store to manage user state
+import { useUserStore } from '@/stores/userStore';
 // Extend the global Window interface to include Snowplow's method
 declare global {
   interface Window {
     snowplow?: (...args: any[]) => void; // Optional Snowplow analytics function
   }
 }
-
-// Create the Vue application instance
-const app = createApp(App);
+const app = createApp(App); // Create the Vue application instance
 
 // Initialize Pinia for state management and register it with the app
 const pinia = createPinia();
