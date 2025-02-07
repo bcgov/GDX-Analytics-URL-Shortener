@@ -26,7 +26,7 @@ let mongoURL;
 // Construct MongoDB connection URL
 if (isLocal) {
   mongoURL = `mongodb://${mongodbHost}:${mongodbPort}/${mongodbDatabase}`;
-  console.log(`Local MongoDB URL: ${mongoURL}`);
+  //console.log(`Local MongoDB URL: ${mongoURL}`);
 } else {
   if (process.env.MONGODB_USER && process.env.MONGODB_PASSWORD) {
     const mongodbUser = process.env.MONGODB_USER;
@@ -65,7 +65,7 @@ async function connectToDatabase() {
     // Only log full error and URL in 'local'
     if (isLocal) {
       console.error('Full Error:', err);
-      console.error('MongoDB URL:', mongoURL);
+      //console.error('MongoDB URL:', mongoURL);
     }
 
     connectionAttempts++;
