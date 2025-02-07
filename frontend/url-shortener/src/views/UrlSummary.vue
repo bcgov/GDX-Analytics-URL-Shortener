@@ -4,133 +4,147 @@
     <button class="bcgov-edit-button" @click="toggleEditMode">
       {{ editButtonText }}
     </button>
-
-
-    <div class="url-details">
-      <h2>
-        <strong>Short URL:</strong>
-        <a :href="shortenedUrl || '#'" target="_blank" class="short-url">{{ shortenedUrl || 'N/A' }}</a>
+    
+      <h2><strong>Short URL: </strong>
+        <a :href="shortenedUrl || '#'" target="_blank">{{ shortenedUrl || 'N/A' }}</a>
         <button class="copy-btn" @click="copyToClipboard(shortenedUrl || '')">
           <img src="../assets/copy.svg" alt="Copy icon" />
         </button>
       </h2>
+      
+
       <br />
-      <h3 style="font-weight: bold;">Details</h3>
-      <br />
-      <p v-if="shortenedUrl">
-        <strong>Full Short URL:</strong>
-        <a :href="shortenedUrl || '#'" target="_blank" class="short-url">{{ shortenedUrl || 'N/A' }}</a>
-        <button class="copy-btn" @click="copyToClipboard(shortenedUrl || '')">
-          <img src="../assets/copy.svg" alt="Copy icon" />
-        </button>
-      </p>
+    <!-- URL Details Section -->
+    <div class="url-details">
+      <h2><strong>URL Details</strong></h2>
+      
+        <p>
+          <span style="font-weight: bold;">Full Short URL: </span>
+          <a 
+            :href="shortenedUrl ? `https://${shortenedUrl.replace(/^https?:\/\//, '')}` : '#'" 
+            target="_blank"
+          >
+            {{ shortenedUrl ? `https://${shortenedUrl.replace(/^https?:\/\//, '')}` : 'N/A' }}
+          </a>
+          <button 
+            class="copy-btn" 
+            @click="copyToClipboard(shortenedUrl ? `https://${shortenedUrl.replace(/^https?:\/\//, '')}` : '')"
+          >
+            <img src="../assets/copy.svg" alt="Copy icon" />
+          </button>
+        </p>
+
       <p v-if="targetUrl">
-        <strong>Target URL:</strong>
-        <a :href="targetUrl || '#'" target="_blank" class="short-url">{{ targetUrl || 'N/A' }}</a>
+        <span style="font-weight: bold;">Target URL: </span>
+        <a :href="targetUrl || '#'" target="_blank">{{ targetUrl || 'N/A' }}</a>
         <button class="copy-btn" @click="copyToClipboard(targetUrl || '')">
           <img src="../assets/copy.svg" alt="Copy icon" />
         </button>
       </p>
+      <p><span style="font-weight: bold;">Expiry Date:</span> {{ formatExpiryDate(expiryDate) || 'No expiry date' }}</p>
       <p v-if="customId">
-        <strong>Internal Link:</strong>
+        <span style="font-weight: bold;">Internal Link: </span>
         <a :href="`${frontendURL}/url-summary/${customId}`" target="_blank">{{ `${frontendURL}/url-summary/${customId}` || 'N/A' }}</a>
         <button class="copy-btn" @click="copyToClipboard(`${frontendURL}/url-summary/${customId}`)">
           <img src="../assets/copy.svg" alt="Copy icon" />
         </button>
       </p>
-      <br />
-      <p><strong>Expiry Date:</strong> {{ formatExpiryDate(expiryDate) || 'No expiry date' }}</p>
-      <br />
-      <p><strong>Created By:</strong> {{ createdBy || 'Unknown' }}</p>
-      <p><strong>Created Date/Time:</strong> {{ createdTime || 'N/A' }}</p>
-      <p><strong>Edited Date/Time:</strong> {{ updatedAt || 'No edits' }}</p>
-      <p><strong>Edited By:</strong> {{ editedBy || 'No edits' }}</p>
-      <br />
-      <p><strong>Notes:</strong></p>
-      <p> &nbsp;{{ description || 'No description provided' }}</p>
-      <br />
-        <!-- Feedback message -->
-        <p v-if="copiedMessage" style="color: green;">{{ copiedMessage }}</p>
+      
+      <p><span style="font-weight: bold;">Created By:</span> {{ createdBy || 'Unknown' }}</p>
+      <p><span style="font-weight: bold;">Created Date:</span> {{ createdTime || 'N/A' }}</p>
+      <p><span style="font-weight: bold;">Edited By:</span> {{ editedBy || 'No edits' }}</p>
+      <p><span style="font-weight: bold;">Edited Date:</span> {{ updatedAt || 'No edits' }}</p>
+      <p><span style="font-weight: bold;">Notes:</span> {{ description || 'No description provided' }}</p>
     </div>
+
+    <!-- Feedback Message -->
+    <p v-if="copiedMessage" style="color: green;">{{ copiedMessage }}</p>
+
     <!-- Edit Form -->
     <div v-if="isEditing" class="edit-form">
-    
-      <h3 style="font-weight: bold;">Edit</h3>
-      <br />
+      <h2><strong>Edit Form</strong></h2>
       <div class="edit-form-container">
-      <form @submit.prevent="submitEdit">
-        <label for="targetUrl">Target URL:</label>
-        <input
-          id="targetUrl"
-          type="text"
-          v-model="editedTargetUrl"
-          pattern="https?://.*(:[0-9]+)?(/.*)?"
-          :disabled="fieldsDisabled"
-          required
-        />
-        <label for="expiryDate">Expiry Date (Optional):</label>
-        <input
-          id="expiryDate"
-          type="date"
-          v-model="editedExpiryDate"
-          :disabled="fieldsDisabled"
-          :min="getTodayDate()"
-        />
-        <label for="description">Notes (Optional):</label>
-        <textarea
-          id="description"
-          v-model="editedDescription"
-          :disabled="fieldsDisabled"
-          rows="3"
-          placeholder="Enter description (optional)"
-        ></textarea>
-        <button
-          type="submit"
-          class="bcgov-submit-button"
-          :disabled="isSubmitting"
-        >
-          {{ isSubmitting ? "Changes saved successfully!" : "Submit" }}
-        </button>
-
-      </form>
+        <form @submit.prevent="submitEdit">
+          <label for="targetUrl">Target URL:</label>
+          <input
+            id="targetUrl"
+            type="text"
+            v-model="editedTargetUrl"
+            pattern="https?://.*(:[0-9]+)?(/.*)?"
+            :disabled="fieldsDisabled"
+            required
+          />
+          <label for="expiryDate">Expiry Date (Optional):</label>
+          <input
+            id="expiryDate"
+            type="date"
+            v-model="editedExpiryDate"
+            :disabled="fieldsDisabled"
+            :min="getTodayDate()"
+          />
+        
+          <label for="description">Notes (Optional):</label>
+          <p style="font-style: italic;" >{{editedDescription.length }} / 500 max character limit</p>
+          <textarea
+            id="description"
+            v-model="editedDescription"
+            :disabled="fieldsDisabled"
+            rows="3"
+            placeholder="Enter description (optional)"
+            maxlength="500"
+          ></textarea>
+          <button
+            type="submit"
+            class="bcgov-submit-button"
+            :disabled="isSubmitting"
+          >
+            {{ isSubmitting ? "Changes saved successfully!" : "Save Edits" }}
+          </button>
+        </form>
       </div>
     </div>
     <br />
-          <!-- History Table -->
-  <div class="history-table">
-  <h3 style="font-weight: bold;">History</h3>
-  <br />
-  <table v-if="formattedHistory.length">
-    <thead>
-      <tr>
-        <th>Field</th>
-        <th>Old Value</th>
-        <th>New Value</th>
-        <th>Edited By</th>
-        <th>Timestamp</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="(history, index) in formattedHistory" :key="index">
-        <td>{{ history.fieldEdited }}</td>
-        <td>{{ history.oldValue || 'N/A' }}</td>
-        <td>{{ history.newValue || 'N/A' }}</td>
-        <td>{{ history.editedBy || 'Unknown' }}</td>
-        <td>{{ convertToLocalTime(history.updatedAt) }}</td>
-      </tr>
-    </tbody>
-  </table>
-  <p v-else>No history available.</p>
-</div>
 
 
+
+    <!-- History Table -->
+    <div class="history-table">
+      <h2><strong>History</strong></h2>
+  
+      <table v-if="formattedHistory.length">
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>Old Value</th>
+            <th>New Value</th>
+            <th>Edited By</th>
+            <th>Edited Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(history, index) in formattedHistory" :key="index">
+            <td>{{ history.fieldEdited }}</td>
+            <td>{{ history.oldValue || 'N/A' }}</td>
+            <td>{{ history.newValue || 'N/A' }}</td>
+            <td>{{ history.editedBy || 'Unknown' }}</td>
+            <td>{{ convertToLocalTime(history.updatedAt) }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p v-else>No history available.</p>
+    </div>
+
+    <!-- Action Links -->
     <div class="action-container">
       <router-link :to="{ name: 'create' }" class="create-url">Create new Short URL</router-link>
       <br />
       <router-link :to="{ name: 'url-table' }" class="url-list-link">View all Existing URLs</router-link>
     </div>
+   
+     
   </div>
 </template>
+
 
 <script setup>
 // Import necessary libraries and plugins
@@ -142,7 +156,14 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { useUserStore } from '@/stores/userStore';
 import { computed } from 'vue';
+import { nextTick } from 'vue'; // Vue core functions
 
+// Function to refresh Snowplow link click tracking
+const refreshSnowplowTracking = () => {
+  if (window.snowplow) {
+    window.snowplow('refreshLinkClickTracking');
+  }
+};
 // Extend dayjs with plugins
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -173,6 +194,7 @@ const editedExpiryDate = ref('');
 const editedDescription = ref('');
 const editButtonText = ref('Edit'); // Tracks the button's displayed text
 const historyData = ref([]); // Tracks the history data of edits
+
 
 // Toggles the edit mode for the form
 const toggleEditMode = () => {
@@ -257,6 +279,10 @@ const fetchUrlSummary = async () => {
     updatedAt.value = data.updatedAt ? convertToLocalTime(data.updatedAt) : 'No edits';
     createdBy.value = data.createdBy || 'Unknown';
     editedBy.value = data.editedBy || 'No edits';
+    // Refresh Snowplow link click tracking after data is loaded
+    nextTick(() => {
+      refreshSnowplowTracking();
+    });
   } catch (error) {
     console.error('Error fetching URL summary:', error);
   }
