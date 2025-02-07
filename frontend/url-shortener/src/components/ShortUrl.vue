@@ -40,14 +40,15 @@
           <!-- Notes Input -->
           <div class="input-container">
             <label for="description">Notes (Optional):</label>
+            <p style="font-style: italic;" >{{description.length }} / 500 max character limit</p>
             <!-- Input field for adding additional notes -->
-            <textarea v-model="description" placeholder="Enter Notes" :disabled="formSubmitted"></textarea>
+            <textarea v-model="description" placeholder="Enter Notes" :disabled="formSubmitted" maxlength="500" ></textarea>
           </div>
 
           <!-- Submit Button -->
           <button type="submit" :disabled="isSubmitting || formSubmitted">
             <!-- Button text changes based on form state -->
-            {{ isSubmitting || formSubmitted ? 'Processing...' : 'Shorten URL' }}
+            {{ isSubmitting || formSubmitted ? 'Processing...' : 'Create Short URL' }}
           </button>
         </div>
       </form>
