@@ -14,7 +14,7 @@ The GDX URL Shortener Project is a GDX Analytics project supported by GCPE that 
  
 ## Project Status
 
-This repository is no longer maintained.
+GDX-Analytics-URL-Shortener application development has been paused.
  
 ## Contents by Directory:
 
