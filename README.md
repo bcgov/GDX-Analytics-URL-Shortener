@@ -3,7 +3,7 @@
 
 # GDX-Analytics-URL-Shortener (Discontinued)
 
-[![Lifecycle:Retired](https://img.shields.io/badge/Lifecycle-Retired-d45500)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
+[![Lifecycle:Dormant](https://img.shields.io/badge/Lifecycle-Dormant-ff7f2a)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
 
 ---
 A URL shortener service that generates shorter URLs and redirects short URLs to full URLs.
