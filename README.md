@@ -1,5 +1,10 @@
-# GDX-Analytics-URL-Shortener
-[![img](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
+> [!IMPORTANT]
+> GDX-Analytics-URL-Shortener application development has been paused.
+
+# GDX-Analytics-URL-Shortener (Discontinued)
+
+[![Lifecycle:Dormant](https://img.shields.io/badge/Lifecycle-Dormant-ff7f2a)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
+
 ---
 A URL shortener service that generates shorter URLs and redirects short URLs to full URLs.
  
@@ -9,9 +14,7 @@ The GDX URL Shortener Project is a GDX Analytics project supported by GCPE that 
  
 ## Project Status
 
-This project is currently under development and actively supported by the GDX Analytics Team.
-
-Check the backend/ and frontend/ folders for their respective Readme and installation steps.
+GDX-Analytics-URL-Shortener application development has been paused.
  
 ## Contents by Directory:
 

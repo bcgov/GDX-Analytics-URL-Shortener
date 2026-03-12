@@ -1,4 +1,9 @@
-# URL-S Frontend
+> [!IMPORTANT]
+> GDX-Analytics-URL-Shortener application development has been paused.
+
+# URL-S Frontend (Discontinued)
+
+[![Lifecycle:Dormant](https://img.shields.io/badge/Lifecycle-Dormant-ff7f2a)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
 
 Instructions for configuring and starting the URL-S frontend app, Vue.js, and its dependencies.
 
