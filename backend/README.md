@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> GDX-Analytics-URL-Shortener application has been discontinued and is no longer maintained.
+> GDX-Analytics-URL-Shortener application development has been paused.
 
 # URL-S Backend (Discontinued)
 
